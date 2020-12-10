@@ -7,7 +7,7 @@ from grobid.grobid_client import GrobidClient
 from pdf2json.tei_to_json import convert_tei_xml_file_to_s2orc_json
 
 
-def process_pdf_file(input_file: str, temp_dir: str, output_dir: str):
+def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:
     """
     Process a PDF file and get JSON representation
     :param input_file:
@@ -28,6 +28,8 @@ def process_pdf_file(input_file: str, temp_dir: str, output_dir: str):
 
     # process PDF through Grobid -> TEI.XML
     client = GrobidClient()
+    # TODO: compute PDF hash
+    # TODO: add grobid version number to output
     client.process_pdf(input_file, temp_dir, "processFulltextDocument")
 
     # process TEI.XML -> JSON
@@ -36,7 +38,9 @@ def process_pdf_file(input_file: str, temp_dir: str, output_dir: str):
 
     # write to file
     with open(output_file, 'w') as outf:
-        json.dump(paper.as_json(), outf, indent=4)
+        json.dump(paper.release_json(), outf, indent=4)
+
+    return output_file
 
 
 if __name__ == '__main__':

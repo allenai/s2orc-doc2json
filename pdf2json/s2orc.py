@@ -26,7 +26,8 @@ class ReferenceEntry:
       "TABREF2": {
         "text": "Diversity indices of...",
         "latex": null,
-        "type": "table"
+        "type": "table",
+        "content": ""
       }
     }
     """
@@ -35,17 +36,20 @@ class ReferenceEntry:
             ref_id: str,
             text: str,
             latex: Optional[str],
+            content: Optional[str],
             type_str: str
     ):
         self.ref_id = ref_id
         self.text = text
         self.latex = latex
+        self.content = content
         self.type_str = type_str
 
     def as_json(self):
         return {
             "text": self.text,
             "latex": self.latex,
+            "content": self.content,
             "type": self.type_str
         }
 
@@ -313,6 +317,7 @@ class Paper:
     def __init__(
             self,
             paper_id: str,
+            pdf_hash: str,
             metadata: Dict,
             abstract: List[Dict],
             body_text: List[Dict],
@@ -321,6 +326,7 @@ class Paper:
             ref_entries: Dict
         ):
         self.paper_id = paper_id
+        self.pdf_hash = pdf_hash
         self.metadata = Metadata(**metadata)
         self.abstract = [Paragraph(**para) for para in abstract]
         self.body_text = [Paragraph(**para) for para in body_text]
@@ -337,6 +343,7 @@ class Paper:
     def as_json(self):
         return {
             "paper_id": self.paper_id,
+            "pdf_hash": self.pdf_hash,
             "metadata": self.metadata.as_json(),
             "abstract": [para.as_json() for para in self.abstract],
             "body_text": [para.as_json() for para in self.body_text],
@@ -346,9 +353,40 @@ class Paper:
         }
 
     @property
+    def raw_abstract_text(self) -> str:
+        """
+        Get all the body text joined by a newline
+        :return:
+        """
+        return '\n'.join([para.text for para in self.abstract])
+
+    @property
     def raw_body_text(self) -> str:
         """
         Get all the body text joined by a newline
         :return:
         """
         return '\n'.join([para.text for para in self.body_text])
+
+    def release_json(self):
+        """
+        Return in release JSON format
+        :return:
+        """
+        # TODO: not fully implemented; metadata format is not right; extra keys in some places
+        release_dict = {"paper_id": self.paper_id}
+        release_dict.update(self.metadata.as_json())
+        release_dict.update({"abstract": self.raw_abstract_text})
+        release_dict.update({
+            "pdf_parse": {
+                "paper_id": self.paper_id,
+                "_pdf_hash": self.pdf_hash,
+                "abstract": [para.as_json() for para in self.abstract],
+                "body_text": [para.as_json() for para in self.body_text],
+                "back_matter": [para.as_json() for para in self.back_matter],
+                "bib_entries": {bib.bib_id: bib.as_json() for bib in self.bib_entries},
+                "ref_entries": {ref.ref_id: ref.as_json() for ref in self.ref_entries}
+            },
+            "latex_parse": None
+        })
+        return release_dict

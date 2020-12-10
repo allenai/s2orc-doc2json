@@ -100,13 +100,15 @@ def extract_figures_and_tables_from_tei_xml(sp: BeautifulSoup) -> Dict[str, Dict
                     ref_map[normalize_grobid_id(fig.get('xml:id'))] = {
                         "text": fig.figDesc.text.strip() if fig.figDesc else fig.head.text.strip() if fig.head else "",
                         "latex": None,
-                        "type": "table"
+                        "type": "table",
+                        "content": fig.table.text.strip()
                     }
                 else:
                     ref_map[normalize_grobid_id(fig.get('xml:id'))] = {
                         "text": fig.figDesc.text.strip() if fig.figDesc else "",
                         "latex": None,
-                        "type": "figure"
+                        "type": "figure",
+                        "content": ""
                     }
         except AttributeError:
             continue
@@ -139,6 +141,20 @@ def check_if_citations_are_bracket_style(sp: BeautifulSoup) -> bool:
             return True
 
     return False
+
+
+def sub_all_note_tags(sp: BeautifulSoup) -> None:
+    """
+    Sub all note tags with p tags
+    :param para_el:
+    :param sp:
+    :return:
+    """
+    for ntag in sp.find_all('note'):
+        p_tag = sp.new_tag('p')
+        p_tag.string = ntag.text.strip()
+        ntag.replace_with(p_tag)
+    return sp
 
 
 def process_formulas_in_paragraph(para_el: BeautifulSoup, sp: BeautifulSoup) -> None:
@@ -565,10 +581,12 @@ def extract_back_matter_from_tei_xml(
     return back_text
 
 
-def convert_tei_xml_soup_to_s2orc_json(soup: BeautifulSoup, paper_id: str) -> Paper:
+def convert_tei_xml_soup_to_s2orc_json(soup: BeautifulSoup, paper_id: str, pdf_hash: str) -> Paper:
     """
     Convert Grobid TEI XML to S2ORC json format
-    :param doc_contents: BeautifulSoup of XML file content
+    :param soup: BeautifulSoup of XML file content
+    :param paper_id: name of file
+    :param pdf_hash: hash of PDF
     :return:
     """
     # extract metadata
@@ -591,6 +609,9 @@ def convert_tei_xml_soup_to_s2orc_json(soup: BeautifulSoup, paper_id: str) -> Pa
     # get bracket style
     is_bracket_style = check_if_citations_are_bracket_style(soup)
 
+    # substitute all note tags with p tags
+    soup = sub_all_note_tags(soup)
+
     # process abstract if possible
     abstract_entries = extract_abstract_from_tei_xml(soup, bibkey_map, refkey_map, is_bracket_style)
 
@@ -603,6 +624,7 @@ def convert_tei_xml_soup_to_s2orc_json(soup: BeautifulSoup, paper_id: str) -> Pa
     # form final paper entry
     return Paper(
         paper_id=paper_id,
+        pdf_hash=pdf_hash,
         metadata=metadata,
         abstract=abstract_entries,
         body_text=body_entries,
@@ -612,15 +634,16 @@ def convert_tei_xml_soup_to_s2orc_json(soup: BeautifulSoup, paper_id: str) -> Pa
     )
 
 
-def convert_tei_xml_file_to_s2orc_json(tei_file: str) -> Paper:
+def convert_tei_xml_file_to_s2orc_json(tei_file: str, pdf_hash: str = "") -> Paper:
     """
     Convert a TEI XML file to S2ORC JSON
     :param tei_file:
+    :param pdf_hash:
     :return:
     """
     if not os.path.exists(tei_file):
         raise FileNotFoundError("Input TEI XML file doesn't exist")
     paper_id = tei_file.split('/')[-1].split('.')[0]
     soup = BeautifulSoup(open(tei_file, "rb").read(), "xml")
-    paper = convert_tei_xml_soup_to_s2orc_json(soup, paper_id)
+    paper = convert_tei_xml_soup_to_s2orc_json(soup, paper_id, pdf_hash)
     return paper
