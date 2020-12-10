@@ -143,7 +143,7 @@ def check_if_citations_are_bracket_style(sp: BeautifulSoup) -> bool:
     return False
 
 
-def sub_all_note_tags(sp: BeautifulSoup) -> None:
+def sub_all_note_tags(sp: BeautifulSoup) -> BeautifulSoup:
     """
     Sub all note tags with p tags
     :param para_el:
