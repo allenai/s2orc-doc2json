@@ -21,7 +21,7 @@ require something scalable too, which is not implemented for the moment.
 
 DEFAULT_GROBID_CONFIG = {
     "grobid_server": "localhost",
-    "grobid_port": "8080",
+    "grobid_port": "8070",
     "batch_size": 1000,
     "sleep_time": 5,
     "generateIDs": False,

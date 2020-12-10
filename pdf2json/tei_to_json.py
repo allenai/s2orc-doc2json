@@ -53,7 +53,7 @@ def normalize_grobid_id(grobid_id: str):
     return str_norm
 
 
-def parse_bibliography(soup: BeautifulSoup) -> List[GorcBibliographyEntry]:
+def parse_bibliography(soup: BeautifulSoup) -> List[Dict]:
     """
     Finds all bibliography entries in a grobid xml.
     """
@@ -67,7 +67,7 @@ def parse_bibliography(soup: BeautifulSoup) -> List[GorcBibliographyEntry]:
     for entry in entries:
         bib_entry = parse_bib_entry(entry)
         # add bib entry only if it has a title
-        if bib_entry.title:
+        if bib_entry['title']:
             structured_entries.append(bib_entry)
 
     bibliography.decompose()
@@ -99,11 +99,13 @@ def extract_figures_and_tables_from_tei_xml(sp: BeautifulSoup) -> Dict[str, Dict
                 if fig.get('type') == 'table':
                     ref_map[normalize_grobid_id(fig.get('xml:id'))] = {
                         "text": fig.figDesc.text.strip() if fig.figDesc else fig.head.text.strip() if fig.head else "",
+                        "latex": None,
                         "type": "table"
                     }
                 else:
                     ref_map[normalize_grobid_id(fig.get('xml:id'))] = {
                         "text": fig.figDesc.text.strip() if fig.figDesc else "",
+                        "latex": None,
                         "type": "figure"
                     }
         except AttributeError:
@@ -359,7 +361,7 @@ def process_paragraph(
         bib_dict: Dict,
         ref_dict: Dict,
         bracket: bool
-):
+) -> Dict:
     """
     Process one paragraph
     :param sp:
@@ -446,7 +448,12 @@ def process_paragraph(
     }
 
 
-def extract_abstract_from_tei_xml(sp: BeautifulSoup, bib_dict: Dict, ref_dict: Dict, cleanup_bracket: bool) -> List[GorcParagraph]:
+def extract_abstract_from_tei_xml(
+        sp: BeautifulSoup,
+        bib_dict: Dict,
+        ref_dict: Dict,
+        cleanup_bracket: bool
+) -> List[Dict]:
     """
     Parse abstract from soup
     :param sp:
@@ -472,7 +479,12 @@ def extract_abstract_from_tei_xml(sp: BeautifulSoup, bib_dict: Dict, ref_dict: D
     return abstract_text
 
 
-def extract_body_text_from_tei_xml(sp: BeautifulSoup, bib_dict: Dict, ref_dict: Dict, cleanup_bracket: bool) -> List[GorcParagraph]:
+def extract_body_text_from_tei_xml(
+        sp: BeautifulSoup,
+        bib_dict: Dict,
+        ref_dict: Dict,
+        cleanup_bracket: bool
+) -> List[Dict]:
     """
     Parse body text from soup
     :param sp:
@@ -516,7 +528,12 @@ def extract_body_text_from_tei_xml(sp: BeautifulSoup, bib_dict: Dict, ref_dict: 
     return body_text
 
 
-def extract_back_matter_from_tei_xml(sp: BeautifulSoup, bib_dict: Dict, ref_dict: Dict, cleanup_bracket: bool) -> List[GorcParagraph]:
+def extract_back_matter_from_tei_xml(
+        sp: BeautifulSoup,
+        bib_dict: Dict,
+        ref_dict: Dict,
+        cleanup_bracket: bool
+) -> List[Dict]:
     """
     Parse back matter from soup
     :param sp:
@@ -562,7 +579,7 @@ def convert_tei_xml_soup_to_s2orc_json(soup: BeautifulSoup, paper_id: str) -> Pa
     # parse bibliography entries (removes empty bib entries)
     biblio_entries = parse_bibliography(soup)
     bibkey_map = {
-        normalize_grobid_id(bib.ref_id): bib.as_json() for bib in biblio_entries
+        normalize_grobid_id(bib['ref_id']): bib for bib in biblio_entries
     }
 
     # process formulas and replace with text
@@ -583,7 +600,7 @@ def convert_tei_xml_soup_to_s2orc_json(soup: BeautifulSoup, paper_id: str) -> Pa
     # parse back matter (acks, author statements, competing interests, abbrevs etc)
     back_matter = extract_back_matter_from_tei_xml(soup, bibkey_map, refkey_map, is_bracket_style)
 
-    # form final gorc entry
+    # form final paper entry
     return Paper(
         paper_id=paper_id,
         metadata=metadata,
