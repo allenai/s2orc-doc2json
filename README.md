@@ -14,7 +14,7 @@ We may eventually make these components available as well, but no promises.
 
 ## Setup your environment
 
-NOTE: Miniconda is shown but any other python env manager should be fine
+NOTE: Conda is shown but any other python env manager should be fine
 
 ```console
 conda create -n s2orc_grobid python=3.8 pytest
