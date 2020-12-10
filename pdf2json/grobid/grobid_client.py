@@ -1,14 +1,12 @@
-import sys
 import os
 import io
 import json
 import argparse
 import time
-import concurrent.futures
 import glob
-from grobid.client import ApiClient
+from pdf2json.grobid.client import ApiClient
 import ntpath
-from typing import Dict, List
+from typing import List
 
 '''
 This version uses the standard ProcessPoolExecutor for parallelizing the concurrent calls to the GROBID services.

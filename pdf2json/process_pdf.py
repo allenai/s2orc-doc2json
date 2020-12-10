@@ -3,7 +3,7 @@ import json
 import argparse
 import time
 
-from grobid.grobid_client import GrobidClient
+from pdf2json.grobid.grobid_client import GrobidClient
 from pdf2json.tei_to_json import convert_tei_xml_file_to_s2orc_json
 
 
