@@ -41,7 +41,7 @@ def process_pdf_file(input_file: str, temp_dir: str, output_dir: str):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run S2ORC PDF2JSON")
-    parser.add_argument("-i", "--input_file", default=None, help="path to the input PDF file")
+    parser.add_argument("-i", "--input", default=None, help="path to the input PDF file")
     parser.add_argument("-t", "--temp", default='temp/', help="path to the temp dir for putting tei xml files")
     parser.add_argument("-o", "--output", default='output/', help="path to the output dir for putting json files")
     parser.add_argument("-k", "--keep", action='store_true')

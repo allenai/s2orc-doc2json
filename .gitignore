@@ -3,3 +3,4 @@
 *.egg-info/
 tests/output/*
 tests/temp/*
+.DS_Store
