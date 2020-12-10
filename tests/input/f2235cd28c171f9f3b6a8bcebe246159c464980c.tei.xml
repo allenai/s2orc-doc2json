@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 /home/lucyw/grobid-0.5.5/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="es">
+		<encodingDesc>
+			<appInfo>
+				<application version="0.5.5" ident="GROBID" when="2019-10-04T21:55+0000">
+					<ref target="https://github.com/kermitt2/grobid">GROBID - A machine learning software for extracting information from scholarly documents</ref>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">M P RA Munich Personal RePEc Archive Territorial Rural Development in Latin America and the Caribbean: Discourses and Realities</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2006">2006</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Jorge</forename><surname>Mora-Alfaro</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Programa Regional de Maestría en Desarrollo Rural</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">M P RA Munich Personal RePEc Archive Territorial Rural Development in Latin America and the Caribbean: Discourses and Realities</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2006">2006</date>
+						</imprint>
+					</monogr>
+					<note>Online at MPRA Paper No. 8468, posted 26. April 2008 14:42 UTC</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<profileDesc>
+			<abstract/>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="es">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introducción</head><p>La reorientación ocurrida en el desarrollo socioeconómico y en los sistemas institucionales de América Latina a partir de la década de los años 80, genera significativas transformaciones en el medio rural de la región. La centralidad asignada en las políticas públicas a la promoción de las exportaciones y a la atracción de inversiones externas, contribuye a conformar un dinámico sector de productores y empresarios agrícolas, agroindustriales y comerciales vinculados a los mercados internacionales. El substancial crecimiento de las exportaciones y las importaciones agrícolas, ocurridas en el marco de la estrategia de apertura económica implantada en estos países, son una clara expresión de los resultados alcanzados con las medidas económicas y los estímulos a la liberalización y expansión del comercio internacional.</p><p>Por otra parte, fenómenos tales como, A) la modificación en las reglas del juego mediante las cuales se regulan las relaciones entre los productores agrícolas y el estado; B) la reducción, el traslado al sector privado, el desmantelamiento o el deterioro de funciones públicas esenciales de apoyo al desarrollo agrícola (investigación, extensión, fomento productivo, financiamiento); C) el debilitamiento de las políticas sectoriales y el énfasis puesto en la búsqueda de los equilibrios macroeconómicos; D) así como los débiles mecanismos de encadenamiento entre el sector más dinámico de la agricultura, la agroindustria y los agronegocios, con extendidos grupos de productores familiares o con los territorios más deprimidos de la región, generan un paisaje rural más complejo, con situaciones productivas y económicas más diversas y con la presencia de agudos problemas sociales. La diversificación de las actividades agrícolas, la acentuación de los procesos de diferenciación social de los territorios, la multiplicación de las actividades rurales no agrícolas y de la pluriactividad familiar, la intensificación de los movimientos migratorios 1 Programa Regional de Maestría en Desarrollo Rural, Universidad Nacional (UNA), Costa Rica.</p><p>jorpili@ice.co.cr Apartado Postal 1441-3000 Teléfonos (506) 2611671 / (506) 8438542 internacionales y desde los espacios rurales a las áreas urbanas o de los espacios rurales deprimidos hacia otros territorios de mayor dinamismo económico y la persistente pobreza e indigencia sufrida por numerosas familias rurales, llevan a la configuración de un medio rural con fuertes necesidades y demandas.</p><p>Un estado debilitado cuyos recursos se colocan, de forma prioritaria, en el estímulo a las actividades productivas de exportación, con formas de atención al medio rural institucionalmente fragmentadas, organizada por medio de acciones sectoriales y sustentadas, de manera predominante, en iniciativas asistenciales y en arraigadas relaciones de clientela, enfrenta la necesidad de buscar estrategias alternativas para revertir los desequilibrios regionales, resolver las apremiantes situaciones de exclusión social y buscar mecanismos eficaces para promover el desarrollo territorial, la generación de empleo y el bienestar en las comunidades rurales. Las medidas de descentralización y fortalecimiento de los gobiernos locales y los intentos dirigidos a diseñar diversas iniciativas de desarrollo rural, encuentran en el enfoque del desarrollo territorial rural (DTR), una opción que pareciera responder adecuadamente a la búsqueda de una ruta alternativa para impulsar las transformaciones requeridas por el medio rural de la región. El conocimiento de las exitosas experiencias de DTR llevadas a cabo en la Unión Europea, el desarrollo de varias iniciativas territoriales de desarrollo rural, ejecutadas con el apoyo técnico y financiero otorgado por distintos programas de cooperación internacional y la promoción efectuada por parte de los principales organismos financieros internacionales presentes en la región, colocan el tema de las políticas y las estrategias de desarrollo territorial rural en un destacado lugar en la agenda de la mayoría de los gobiernos de América Latina y el Caribe.</p><p>La denominada "nueva ruralidad" y el "desarrollo territorial rural" pasan a ser elementos obligados en los renovados discursos académicos, políticos, técnicos y de los organismos de cooperación internacional. El diseño de políticas, programas y estrategias, así como la aprobación de legislaciones nacionales de desarrollo rural, marcan el rumbo de los esfuerzos dirigidos a afrontar, con nuevos enfoques e instrumentos, las demandas y los desafíos surgidos en un medio rural regional con significativas transformaciones estructurales.</p><p>Pero, ¿Se han creado las condiciones requeridas para impulsar procesos endógenos de desarrollo territorial rural?¿Se han impulsado las transformaciones institucionales necesarias para poner en práctica, de manera efectiva, las diversas iniciativas de desarrollo territorial rural?¿Se están llevando a cabo acciones formativas o de reclutamiento de los equipos técnicos que lleven a cabo estos procesos?¿Se han asignado los recursos financieros que permitan darle sostenibilidad a los procesos?¿Se han puesto en práctica políticas de traslado de competencias y recursos a los gobiernos locales y de estímulo a la participación y la autogestión de las comunidades en los diversos territorios rurales?¿ Se están haciendo esfuerzos de territorialización de las políticas sectoriales y los arreglos institucionales requeridos para superar la dispersión institucional en los territorios?¿Existe la disposición estatal para diseñar estrategias de largo plazo, con un enfoque ascendente y con espacios efectivos de participación ciudadana en los territorios rurales?¿Se están creando las condiciones que permitan que las iniciativas impulsadas en el marco de la cooperación internacional tengan continuidad y sostenibilidad una vez finalizado el apoyo externo?</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Algunas condiciones compartidas por el medio rural regional</head><p>Las reformas económicas y políticas aplicadas a partir de la década de los años 80 en América Latina y el Caribe, con diferentes grados de profundidad en las diversas naciones de esta heterogénea región, son el marco obligado para el análisis de las transformaciones experimentadas por el medio rural y los territorios particulares que la conforman <ref type="bibr" target="#b16">(Gascó, 2004;</ref><ref type="bibr">CEPAL, 2000)</ref> 2 . Entre las decisiones más destacados adoptadas con estos procesos sobresalen, entre otras, A) la apertura y desregulación de la economía; B) la reducción y privatización de funciones esenciales desempeñadas por el estado durante el período precedente (industrialización sustitutiva de importaciones -ISI-.); C) la reducción relativa de las inversiones en investigación y fomento agrícola y la privatización o terecerización de los servicios de extensión y transferencia tecnológica; D) la orientación prioritaria de las políticas 2 En un estudio efectuado por CEPAL en el año 2000 sobre el impacto de las reformas en América Latina y el Caribe en nueve países seleccionados para el análisis, se concluye en que "los resultados de las reformas no fueron tan positivos como predecían sus partidarios ni tan negativos como temían sus oponentes". Las naciones fueron divididas en reformadores radicales (Argentina, Bolivia, Chile y Perú) y reformadores cautos (Brasil, Colombia, Costa Rica, Jamaica y México). Los primeros son países con condiciones iniciales muy difíciles, por lo que decidieron llevar a cabo reformas más profundas. Los segundos tenían un buen desempeño inicial y pretendían mantener ciertas fortalezas de sus economías y sociedades, por lo que optaron por reformas más graduales y selectivas. Según concluye el estudio en casi todos ellos el efecto de las reformas en la productividad, el crecimiento, el empleo y la equidad son muy limitados o resultan negativos, sobre todo en este último aspecto" <ref type="bibr">( Stallings y Peres, 2000:256)</ref>.</p><p>económicas hacia la promoción y diversificación de las exportaciones (introducción de la agricultura no tradicional de exportación -ANTEx-); E) la sustitución de las políticas redistributivas por medidas de compensación y focalización del gasto social, destinadas a responder al impacto social ocasionado por la reorientación en el patrón de crecimiento económico; y, F) la adopción de políticas centradas en la búsqueda del equilibrio macroeconómico, la reducción del gasto público y la eliminación o traslado al sector privado de una serie de programas de bienestar social.</p><p>Las reformas, concretadas por medio de los denominados Programas de Ajuste Estructural (PAES), se constituyen en una suerte de gran proyecto de ingeniería social promovido por diversos organismos financieros internacionales (Banco Mundial, Fondo</p><p>Monetario Internacional, Banco Interamericano de Desarrollo) <ref type="bibr" target="#b33">(Stiglitz, 2002)</ref>. La fórmula aplicada para enfrentar la situación del desarrollo económico y político de la región e impulsar el crecimiento de la economía es extendida por la mayoría de los países, con independencia de las condiciones históricas, políticas, institucionales o culturales de cada nación en particular. La creciente integración económica, política y cultural de la sociedad contemporánea -en el plano global-, y la conformación de nuevas coaliciones gobernantes -en el plano regional-, favorecen el impulso de la reorientación en las políticas económicas y en el modelo de acumulación implantado en la región <ref type="bibr">(CEPAL, 2002;</ref><ref type="bibr" target="#b0">Barbosa y Neiman, 2005)</ref>.</p><p>Este complejo entorno de mutación socioeconómica y política condiciona el surgimiento de significativas transformaciones en el medio rural de América Latina y el Caribe. Las variaciones en las estructuras productivas rurales no se hacen esperar. El dinamismo cobrado por el sector externo de las economías regionales se manifiesta, con claridad, en el revelador incremento de las actividades destinadas al mercado exterior. Como lo muestra el gráfico 1, entre 1990 y 2003 se constata el significativo aumento de las exportaciones agrícolas. Por su parte, la apertura económica contribuye, de manera determinante, a la sustitución de la producción de alimentos y materias primas destinadas a los mercados domésticos por bienes importados. Esto genera un notable incremento de las importaciones de productos agrícolas(ver gráfico 2). Estos factores influyen, de igual manera, en los cambios experimentados en cuanto a la composición de la producción agrícola regional (ver Gráfico 3). Como se apunta en un reciente análisis de FAO sobre las tendencias y desafíos de la agricultura, los montes y la pesca en América Latina y el Caribe, "La</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Gráfico 1</head><p>Fuente: FAO, 2005</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Gráfico 2</head><p>Fuente: <ref type="bibr" target="#b12">FAO, 2005</ref> composición de la producción agrícola de América Latina y el Caribe ha presentado cambios altamente significativos en las últimas dos décadas. En los años ochenta el crecimiento de la producción frutícola había llevado a este grupo a ser el más importante en términos de valor de la producción, desbancando a los cereales que tradicionalmente habían constituido el grupo más importante dentro de la producción agrícola de la región. El crecimiento explosivo de la soya en los últimos años implicó que las oleaginosas alcanzaran la mayor participación dentro del valor de la producción agrícola de la región, ligeramente por encima de las frutas y los cereales. En 2003 cada uno de estos tres grupos representó aproximadamente el 21% del valor de la producción agrícola de la región" <ref type="bibr">(FAO, 2005: 152)</ref>.</p><p>Estas importantes modificaciones advertidas en la producción agrícola regional, así como en el funcionamiento del sistema estatal, acarrean consecuencias significativas en</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Gráfico 3</head><p>Fuente, <ref type="bibr" target="#b12">FAO, 2005</ref> numerosos grupos de familias rurales dedicadas a la producción de alimentos y materias primas para los mercados locales, con poca capacidad para reinsertarse en el nuevo marco económico y político instaurado en la región. Situación enfrentada, asimismo, por otros grupos de productores dedicados a estas mismas actividades agrícolas pero con mayor capacidad para reorientar o reconvertir sus explotaciones, lo que les permite una paulatina integración en los procesos económicos. El resultado de estas transformaciones es un medio rural más complejo, con una clara segmentación de las cadenas productivas precedentes y la sustitución de éstas por nuevos encadenamientos agrocomerciales y con una mayor diferenciación territorial, o al interior mismo de los espacios rurales particulares, en consonancia con las mutaciones experimentadas por las actividades agrícolas y la extensión de los cultivos con un mayor potencial de incorporación (de Janvry y Sadoulet, 2004) expansión de estos movimientos o su dinamismo no ha sido lo suficiente como para evitar el crecimiento del número de pobres e indigentes presentes en el medio rural regional <ref type="bibr" target="#b36">(Sumpsi y Mora, 2004)</ref>. Empleando la clasificación de de Janvry y Sadoulet, por lo general estas</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Gráfico 4</head><p>Fuente: <ref type="bibr" target="#b12">FAO, 2005</ref> actividades han logrado constituirse en una fuente dinamizadora de las economías locales únicamente en los denominados territorios o áreas rurales favorables (ARF). En los cuadros 16 y 17 si incluye la información sobre la evolución del número de personas en condición de pobreza en América Latina y el Caribe, en términos absolutos y porcentuales, entre los años 1980 y 2002. Es importante resaltar en esta información el incremento de la pobreza durante este período en el cual pasa de 135,9 millones de personas en 1980 a 221,4 en 2002 y en la indigencia la cual pasa de 62,4 millones de personas en 1980 a 97,4 veintidós años después.</p><p>Aunque los datos muestran un incremento más significativo de la pobreza urbana en relación con el comportamiento de la pobreza rural, diversos estudios efectuados en la región concluyen en que en buena parte el crecimiento de la pobreza urbana es el resultado del propias comunidades rurales, aprovechando sus propias capacidades y las oportunidades ofrecidas por las nuevas condiciones de la economía global.</p><p>Por otra parte, es posible distinguir un conjunto de espacios rurales estancados (EREs), cuyo potencial de desarrollo no se impulsa enteramente, por no contar con los instrumentos (políticas, proyectos, fondos, sistema institucional local) con los cuales es posible inducir su diversificación y reconversión productiva. Por lo general, se encuentran en estos espacios empresas agrícolas, agroindustriales o comerciales con formas tradicionales de funcionamiento o con poca capacidad de impulsar el desarrollo territorial. En ciertos casos establecen vínculos contractuales con productores familiares quienes abastecen parte de la demanda de estas agrupaciones. En otras situaciones, ofrecen oportunidades de empleo permanente o temporal a algunos miembros de las unidades familiares locales (hombres, mujeres, jóvenes), pero sin generar las condiciones requeridas para impulsar procesos sostenibles de desarrollo económico y de superación de la pobreza. En estos espacios la pluriactividad de las familias rurales, mediante la incorporación de los integrantes del grupo familiar en actividades generadoras de ingresos en otros territorios o fuera del país, adquiere mucha relevancia para lograr su subsistencia. áreas urbanas, a los espacios rurales de mayor dinamismo o al exterior, es el camino seguido por los pobladores de estos territorios, sobre todo los jóvenes y jefes de familia.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Políticas públicas y participación ciudadana</head><p>El análisis sobre las tendencias del desarrollo agrícola y del medio rural en la región muestra una frecuente desvinculación entre las principales orientaciones de las políticas públicas y las condiciones existentes en la mayoría de los espacios rurales. Esta disgregación hace que, aún en muchos casos en los cuales se ha creado legislación y se cuenta con políticas o programas de desarrollo rural, con un enfoque territorial, los resultados obtenidos con las iniciativas impulsadas desde el estado no lleguen a traducirse en procesos territoriales de desarrollo rural sostenibles 5 . El lugar concedido a las políticas o programas de desarrollo rural en la mayoría de los casos las sitúa en una posición desvinculada de las políticas económicas preponderantes, reduciendo su efectividad o recibiendo una colocación secundaria en relación con las medidas destinadas a estimular las actividades agrícolas de exportación llevadas a cabo por inversionistas locales o externos. La prevaleciente organización sectorial de las instituciones públicas vinculadas con el medio rural y la separación entre las políticas económicas y las políticas, programas o estrategias de desarrollo rural, constituyen dos obstáculos significativos para la concreción de las propuestas de desarrollo territorial rural, <ref type="bibr">5</ref> Por ejemplo, no cabe duda sobre la importante posición asignada en las políticas públicas de México a las políticas agrarias y de desarrollo rural. El monto de recursos asignado a estos programas, agrupados en la denominada Alianza Para el Campo, ascendió aproximadamente a mil millones de dólares anuales (10 mil millones de pesos mexicanos). Esto permite impulsar un conjunto de programas, con relativa articulación, para enfrentar las difíciles condiciones del medio rural en ese país. Sin embargo, las distancias entre los planteamientos conceptuales y políticos, centrados en el impulso del desarrollo territorial rural, y los resultados efectivamente alcanzados, muestran los obstáculos existentes en el momento de la operacionalización del enfoque y la ejecución de las iniciativas y en cuanto a la capacidad efectiva de las familias rurales y sus organizaciones para asumir la dirección de sus procesos de desarrollo. En una evaluación sobre la Alianza para el Campo, efectuada en 2003, en relación con este tema se concluye lo siguiente: "La formación de capacidades en la población fueran (Sic) productivas de administración y de gestión, fueron prácticamente inexistentes o apenas perceptibles. Cuatro problemas centrales se presentaron en la operación del PRODEPESCA: i) insuficiente capacitación de los PSPs para cumplir el cometido; ii) mecanismos de control incompletos o inoportunos, para asegurar la puesta en práctica de proyectos con pertinencia económica y/ o social local, situación que permitió la clonación de proyectos, independientemente de su adecuación al contexto; iii) el pago por productos se expresó en la entrega de servicios aislados, en detrimento de una integralidad en el funcionamiento y en el seguimiento del proyecto y iv) el descuido relativo de poblaciones marginadas aisladas, quienes, a pesar de los pagos diferenciados y a favor de esos grupos previstos en las Reglas de Operación 2002, fueron relegadas a un segundo plano, debido al costo de oportunidad de los PPSs " <ref type="bibr" target="#b13">(FAO, 2003)</ref>.</p><p>conceptualmente bien definidas pero con relevantes limitaciones en sus alcances y en su ejecución 6 .</p><p>Diversas experiencias exitosas de desarrollo territorial rural llevadas a cabo en la región han contado con el respaldo de la cooperación internacional. Este es un factor de mucha relevancia pues crea condiciones para articular las acciones sectoriales, propiciar la participación efectiva de las comunidades en la toma de decisiones y formar personal técnico regional en los aspectos operativos que permiten la aplicación del enfoque territorial del desarrollo rural, en correspondencia con las condiciones particulares de los espacios rurales en los cuales se llevan a cabo estas iniciativas <ref type="bibr" target="#b7">(Cherret, 1999;</ref><ref type="bibr" target="#b23">Miranda, 2003)</ref>. Asimismo, el desarrollo de estas experiencias permite detectar con más claridad los obstáculos de diversa naturaleza prevalecientes en América Latina y el Caribe para el impulso efectivo de iniciativas de desarrollo territorial rural <ref type="bibr" target="#b37">(Sumpsi, 2005)</ref>. Pero, estas beneficiosas experiencias generan algunos problemas previsibles y superables, en la medida en la cual se logre un balance adecuado entre las exigencias de corto plazo establecidas por los organismos de cooperación internacional o las agencias de financiamiento que brindan el apoyo financiero y técnico para la ejecución de estas iniciativas y las condiciones particulares de los territorios y las familias u organizaciones con las cuales se llevan a cabo estos procesos de desarrollo rural, cuyos resultados sustanciales y sostenibles se obtienen en el mediano o el largo plazo.</p><p>Para Roberto Martínez, "Estos proyectos no deben concebirse como instrumentos aislados, sino consolidando conjuntos de acciones integradas. La falta de integración se advierte con particular frecuencia en los proyectos de desarrollo rural, los cuales suelen reflejar las preferencias de los donantes o financiadores, con una precaria articulación entre ellos y relaciones débiles con los ámbitos que tienen una responsabilidad central sobre el asunto tratado. Además, los proyectos que así se gestionaron enfrentan el riesgo de quedar aislados con respecto al resto de las acciones de política y del aparato administrativo. Esta gestión suele tender a la autosuficiencia, evitando la creación de relaciones que generen dependencias e incertidumbres. Su aislamiento y sus condiciones excepcionales de operación dificultan con <ref type="bibr">6</ref> Un buen ejemplo sobre esta situación lo constituye el establecimiento de una "Estrategia de Desarrollo Rural" en Costa Rica <ref type="bibr">(PDR, 2003)</ref>, definida como una iniciativa de alcance nacional, pero relegada como un programa en una posición secundaria con pocas posibilidades de lograr una incidencia efectiva en el medio rural del país, dedicada impulsar una serie de proyectos localizados en determinados espacios locales y con grandes dificultades para concretar su enfoque conceptual de desarrollo territorial rural (Véase: <ref type="bibr" target="#b27">Mora, 2003)</ref>. Para Kliskberg, "En América Latina el discurso político ha tendido a reconocer crecientemente a la participación. Sería claramente antipopular enfrentar la presión pro participación tan fuerte en la sociedad, y con argumentos tan contundentes a su favor. Sin embargo, los avances reales en cuanto a la implementación efectiva de programas con altos niveles de participación comunitaria son muy reducidos. Siguen predominando los programas 'llave en mano', impuestos verticalmente, donde los decisores o diseñadores, son los que saben y la comunidad desfavorecida debe acatar sus directivas, y ser sujeto pasivo de los mismos". Por otra parte, de acuerdo con lo apuntado por el autor, con frecuencia en los programas se hacen fuertes apelativos a su carácter participativo, cuando en la realidad las comunidades tan sólo tienen una mínima intervención efectiva en la toma de decisiones. Para</p><p>Kliskberg, "El discurso dice sí a la participación en la región, pero los hechos con frecuencia dicen no. Asimismo la presencia de la comunidad es uno de los pocos medios probados que previene efectivamente la corrupción. El control social de la misma sobre la gestión es una gran garantía al respecto que se pierde al impedir la participación" <ref type="bibr">(Kliskberg, 2001: 28)</ref>.</p><p>Como bien apunta el autor, existe hoy una generalizada convalidación mundial sobre la superioridad en términos de efectividad de la participación comunitaria, sobre las formas organizativas tradicionales de corte vertical o burocrático. Esto es muy visible en campos como el del desarrollo rural o en el de las políticas sociales. En el desarrollo de estas iniciativas, señala Kliskberg, se logra hacer un mejor uso de los recursos, se alcanzan con mayor efectividad sus metas y crean sostenibilidad si las comunidades a las que se desea favorecer participan desde el inicio y a lo largo de todo su desarrollo y comparten la planificación, la gestión, el control y la evaluación. Cuando prevalece el divorcio entre el discurso y la realidad esta separación es claramente percibida por las comunidades quienes reaccionan ante esta situación con descontento y frustración. "Se limitan así las posibilidades de programas donde se ofrezca participación genuina porque las comunidades están 'quemadas' al respecto por las falsas promesas. El sí pero no, está basado en resistencias profundas a que en definitiva realmente las comunidades pobres participen, que se disfrazan ante su ilegitimidad conceptual, política, y ética." <ref type="bibr">(Kliskberg, 2001: 28)</ref>.</p><p>Este es uno de los principales obstáculos enfrentados en la ejecución de las iniciativas de desarrollo territorial en la región. En la medida en que prevalezcan las formas de vinculación sustentadas en las relaciones de clientela o en el asistencialismo y la participación de las comunidades rurales sea más un discurso que una realidad, prevalecerán los limites para el impulso de estrategias o iniciativas de desarrollo rural, salvo en aquellos casos en los cuales la propia organización y movilización de los actores sociales locales permita impulsar los procesos y generar los emprendimientos a partir de su propia iniciativa, con un enfoque efectivamente ascendente.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Un obstáculo básico: el desmantelamiento de los servicios de asistencia técnica y las limitaciones de acceso a ala información y el conocimiento.</head><p>Una de las dificultades más relevantes para el impulso de las iniciativas de desarrollo territorial rural en la región, no siempre incorporada en los análisis sobre el desarrollo rural en América Latina y el Caribe, lo constituye el desmantelamiento, la tercerización o privatización y el deterioro experimentado en los sistemas de asistencia técnica (extensión, investigación agrícola y transferencia), como resultado de las medidas orientadas a la disminución del tamaño del estado por la vía de la contracción y el traslado de algunas de sus funciones esenciales al sector privado, la disminución en la cantidad del personal técnico contratado y en la drástica reducción del gasto público destinado a estas labores <ref type="bibr" target="#b13">( FAO, 2003)</ref>.</p><p>Como resultado de estos procesos se presenta una marcada diversidad en cuanto a las modalidades mediante las cuales se prestan los diferentes tipos de servicios de investigación, asistencia técnica y extensión agrícola o rural <ref type="bibr" target="#b1">(Berdegué, 2002)</ref>. Por un lado, producto de la sensible disminución de los recursos asignados a estos programas, se presenta un evidente deterioro en la mayoría de los sistemas en los cuales se mantuvo su carácter predominantemente estatal y en los cuales se continuaron considerando estos servicios como un bien público. Por otro lado, en aquellos casos en los cuales se desmontan los programas públicos y se privatiza o terceriza la prestación de los servicios, surgen una serie de programas dirigidos a la creación de un mercado de servicios profesionales mediante el cual proveedores privados sustituyen, en parte, las funciones previamente desempeñadas por el estado. La asignación de fondos públicos o de recursos financieros externos a grupos de productores rurales para la adquisición de los servicios ofrecidos por empresas profesionales emergentes, muchas veces constituidas por los técnicos y profesionales separados de las instituciones estatales, es el camino más frecuente para fomentar el mercado de servicios profesionales. En algunos casos, como en Nicaragua, se crea un sistema mixto en el cual se combina la "extensión pagada" (Paid Extension), con el acceso gratuito a estos servicios por parte de los grupos de productores rurales de menores ingresos <ref type="bibr" target="#b28">(Mora, 2002)</ref>.</p><p>Pese a la existencia de experiencias positivas en relación con las nuevas modalidades de prestación de servicios de apoyo al desarrollo agrícola y rural, sobre todo en algunos de los países del sur de la región, predomina aún una tendencia a la disminución de la cobertura de la población atendida y una concentración de los servicios en los grupos de productores con capacidad financiera para la adquisición de éstos. El acompañamiento de las iniciativas de desarrollo territorial rural por lo general enfrentan el problema de la organización sectorial de</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Gráfico 5</head><p>Fuente: <ref type="bibr" target="#b12">FAO, 2005</ref> los servicios o la ausencia de programas que permitan un seguimiento permanente de los procesos <ref type="bibr" target="#b26">(Mora, 2004)</ref>.</p><p>La competitividad de la agricultura y de los territorios rurales, en las condiciones de la sociedad contemporánea, descansa en gran medida en la capacidad de generar conocimientos y de impulsar procesos de investigación y desarrollo (I&amp;D), con los cuales se posibilite la innovación permanente y el incremento constante en la productividad <ref type="bibr" target="#b3">(Boisier, 2005)</ref>. En América Latina y el Caribe, a la situación enfrentada con el tema particular de la investigación agrícola y con los sistemas de apoyo a la agricultura y el desarrollo rural, se suma el enorme desafío de las limitadas inversiones efectuadas, con muy contadas excepciones, como la de Brasil, en investigación agrícola y en general en investigación y desarrollo <ref type="bibr">(Saín, G. y Ardila, J. 2004)</ref> 7 . Los datos incluidos en el gráfico 6 muestran que esta situación lejos de revertirse, en comparación con los esfuerzos efectuados entre 1990 y 2000 por otras regiones del mundo, más bien tiende a ahondarse. Los bajos porcentajes del PIB destinados a la I&amp;D en la región, tienen consecuencias muy importantes en el fomento agrícola y en el desarrollo del medio rural en la región <ref type="bibr" target="#b2">(Berdegué and Escobar, 2001</ref>).</p><p>El establecimiento o fortalecimiento de sistemas de investigación y extensión que permitan articular los esfuerzos dispersos efectuados por distintos actores corporativos, públicos y privados, enfocados hacia el cumplimiento de determinadas metas de desarrollo, es un paso requerido para generar procesos de I&amp;D y promover la innovación en los espacios rurales de la región. El reforzamiento de las inversiones en ciencia y tecnología y la aplicación de los recursos en función de las demandas de productores y territorios, son medidas de indiscutible importancia para favorecer las políticas y las estrategias de desarrollo territorial rural en América Latina y el Caribe. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Actores sociales y gobiernos locales: una alianza estratégica</head><p>Otro obstáculo significativo al impulso de los procesos de desarrollo territorial rural en la región lo constituye la extendida debilidad de los gobiernos locales y la posición secundaria asignada a éstos en las políticas y estrategias diseñadas para impulsar el desarrollo en la región. En los países con un mayor grado de centralización política la situación se torna aún más complicada, pues la transferencia de competencias y recursos hacia los gobiernos municipales es muy restringida y el cumplimiento de sus funciones se encuentra por lo general limitada tanto por la cantidad de recursos de que disponen, como por su debilitada capacidad de gestión. El frecuente aislamiento de los gobiernos locales en relación con los principales actores sociales locales y con los procesos de desarrollo de sus territorios a los cuales se hayan vinculados, encuentra en los temas de la gestión pública local y en los recursos de que disponen para afrontar los desafíos del desarrollo territorial, dos factores condicionantes de sus limitaciones.</p><p>Los procesos de descentralización impulsados durante las dos últimas décadas en la región, con diferentes grados de profundización y de traslado efectivo de competencias y recursos a los gobiernos locales, ofrecen una oportunidad para el fortalecimiento de su capacidad de gestión, para promover el asociacionismo municipal y para colocar a estas entidades gubernamentales en posición de responder a las demandas del desarrollo territorial y al fortalecimiento de los procesos de democracia local. La formación en aspectos vinculados con la planificación local participativa, el ordenamiento territorial, la gestión ambiental, el manejo de riesgos y la apertura de espacios de participación efectiva de los habitantes de los espacios rurales en el impulso de los procesos de desarrollo económico local, son disposiciones de gran relevancia para fortalecer a los gobiernos municipales y contribuir así a crear una condición básica para el impulso de los procesos de desarrollo territorial rural en la región <ref type="bibr" target="#b14">(Finot, 2005)</ref>.</p><p>La posición de los gobiernos locales en el enfoque territorial de desarrollo rural no es antojadiza. Por las competencias y las funciones que desempeñan éstos en las diversas comunidades rurales, con sus diferencias propias de las condiciones del entorno político-institucional en el cual se desenvuelven, constituye organismos estatales de mucha relevancia para la continuidad y la sostenibilidad de los procesos. Al ser un componente esencial en la conformación de los territorios, la proximidad con los diversos fenómenos que ocurren en él, le ofrece la posibilidad de responder con mayor efectividad a las demandas y necesidades del desarrollo local. Sin embargo, el adecuado cumplimiento de sus competencias y funciones requiere de una vinculación estrecha con los actores sociales locales y de los acuerdos que les permitan articular proyectos de desarrollo territorial con participación de organizaciones sociales, empresas, dependencias públicas locales y otros actores relevantes de acuerdo con las condiciones particulares de cada territorio. Como apunta Finot, "Hoy en día la descentralización política cobra nueva importancia, ya no solamente para avanzar en ciudadanía e inclusión social sino también en desarrollo económico. En efecto, se ha llegado a consenso en que la competitividad depende, no solamente de las empresas, de los equilibrios macroeconómicos y de políticas nacionales activas, sino de la capacidad de cada localidad para encarar su propio desarrollo a través de procesos de concertación público-social-privada.</p><p>Y para esto es indispensable que las localidades cuenten con más autonomía." <ref type="bibr">(Finot, 2005:30)</ref>.</p><p>El fortalecimiento de la autonomía local y de la capacidad de gestión de los gobiernos locales, el establecimiento de alianzas efectivas de los gobiernos municipales con los actores sociales locales y la apertura de espacios de participación de las comunidades en los procesos de desarrollo terriotial, son decisiones sustanciales para promover iniciativas de desarrollo territorial rural en las cuales la dirección de los procesos recaiga en los habitantes de los territorios y no en los equipos técnicos con una presencia temporal o permanente en estos espacios, situación que impediría darle continuidad a las transformaciones productivas, institucionales y sociales requeridas para promover el desarrollo y el bienestar en el medio rural regional.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.">Conclusiones</head><p>El análisis sobre algunas tendencias del desarrollo político y económico de América Latina y el Caribe permite percibir una serie de factores limitantes para el impulso efectivo de procesos de desarrollo territorial rural en la región. Algunos de ellos se ubican más allá del medio rural regional, del funcionamiento de las instituciones públicas vinculadas, de manera directa, con los procesos de desarrollo agrícola y rural y de los aspectos operativos enfrentados en la ejecución de los programas específicos de desarrollo territorial rural en la región, con una incidencia notable en las posibilidades de concreción de estas iniciativas.</p><p>Otros, por el contrario, tiene que ver con trabas surgidas en la propia orientación de las iniciativas y en las situaciones particulares existentes en el medio rural de la región. El conocimiento de estos obstáculos y su colocación como desafíos a vencer para promover procesos sostenibles de desarrollo rural, con un efectivo enfoque ascendente y generando las condiciones requeridas para que los actores sociales locales (públicos, sociales y privados), asuman la dirección de los procesos de desarrollo en sus territorios, resulta imprescindible para superar las frustraciones con frecuencia enfrentadas en múltiples acciones impulsadas en la región que no logran plasmar las evoluciones esperadas o la sostenibilidad imprescindible para que éstas tengan lugar en el mediano o el largo plazo.</p><p>Tres aspectos adquieren mucha relevancia en el impulso de los procesos de desarrollo territorial rural, como complementos indispensables a la legislación establecida por algunos países o a las políticas públicas y estrategias diseñadas con el fin de responder a las nuevas condiciones del medio rural en la región: por una parte, la elaboración de arreglos institucionales que permitan pasar de la visión y el funcionamiento sectorial de las organizaciones estatales vinculadas con el medio rural, a una acción integrada en respuesta a las necesidades y demandas particulares de los diversos territorios. Por otra parte, el restablecimiento de los servicios institucionales básicos de investigación y extensión rural, en correspondencia con las demandas territoriales y desarrollo de procesos de formación y capacitación del personal institucional con el propósito de crear las condiciones requeridas para la reorientación de las iniciativas ejecutadas en el medio rural. Por último, la aplicación del enfoque ascendente en los procesos de desarrollo territorial rural, de tal forma que se superen los programas o proyectos diseñados sin tomar en cuenta las situaciones específicas de los diferentes territorios presentes en el medio rural regional. El establecimiento de mecanismos precisos para la participación efectiva de las familias, las comunidades, las organizaciones rurales y los gobiernos locales, en las distintas fases de desarrollo de las iniciativas y la conducción paulatina de los procesos, por parte de los actores sociales locales, son elementos sustanciales para lograr el autodesarrollo y la sostenibilidad de los procesos de desarrollo territorial rural.</p><p>Los procesos de desarrollo territorial no corresponden, por lo general, con los plazos en los cuales deben ejecutarse los proyectos o los programas institucionales. Los primeros requieren de plazo que casi siempre exceden los límites temporales establecidas a las iniciativas impulsadas por las instituciones nacionales o los organismos de cooperación internacional. El análisis sobre los obstáculos enfrentados para la ejecución exitosa de las iniciativas promovidas en este campo, puede contribuir a encontrar otros caminos, de más largo plazo, que se requiere recorrer para alcanzar las metas de desarrollo del medio rural en</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0" validated="false"><head></head><label></label><figDesc>Fuente: CEPAL, sobre la base de tabulaciones especiales de las encuestas de hogares de los respectivos países. a/ Estimación correspondiente a 18 países de la región más Haití b/ Personas con ingresos inferiores a la línea de pobreza. Incluye a las personas que se encuentran en situación de indigencia c/ Personas con ingresos inferiores a la línea de indigencia.</figDesc><table>Cuadro 1: AMÉRICA LATINA: POBLACIÓN POBRE E INDIGENTE, a/ 
+1980-2002 
+Millones de personas 
+Pobres b/ 
+Indigentes c/ 
+Total 
+Urbana 
+Rural 
+Total 
+Urbana 
+Rural 
+1980 
+135,9 
+62,9 
+73,0 
+62,4 
+22,5 
+39,9 
+1990 
+200,2 
+121,7 
+78,5 
+93,4 
+45,0 
+48,4 
+1997 
+203,8 
+125,7 
+78,2 
+88,8 
+42,2 
+46,6 
+1999 
+211,4 
+134,2 
+77,2 
+89,4 
+43,0 
+46,4 
+2000 
+207,1 
+131,8 
+75,3 
+88,4 
+42,8 
+45,6 
+2001 
+213,9 
+138,7 
+75,2 
+91,7 
+45,8 
+45,9 
+2002 
+221,4 
+146,7 
+74,8 
+97,4 
+51,6 
+45,8 
+
+Cuadro 2: AMÉRICA LATINA: INCIDENCIA DE LA POBREZA E INDIGENCIA, a/ 
+1980-2002 
+Porcentaje de personas 
+Pobres b/ 
+Indigentes c/ 
+Total 
+Urbana 
+Rural 
+Total 
+Urbana 
+Rural 
+1980 
+40,5 
+29,8 
+59,9 
+18,6 
+10,6 
+32,7 
+1990 
+48,3 
+41,4 
+65,4 
+22,5 
+15,3 
+40,4 
+1997 
+43,5 
+36,5 
+63,0 
+19,0 
+12,3 
+37,6 
+1999 
+43,8 
+37,1 
+63,7 
+18,5 
+11,9 
+38,3 
+2000 
+42,5 
+35,9 
+62,5 
+18,1 
+11,7 
+37,8 
+2001 
+43,2 
+37,0 
+62,3 
+18,5 
+12,2 
+38,0 
+2002 
+44,0 
+38,4 
+61,8 
+19,4 
+13,5 
+37,9 </table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1" validated="false"><head></head><label></label><figDesc>Los costos de esta falacia son muy fuertes. Por un lado se están desechando enormes energías latentes en las comunidades pobres. Cuando se les moviliza como sucedió en experiencias latinoamericanas mundialmente reconocidas como Villa El Salvador en el Perú, las escuelas Educo en El Salvador, o el presupuesto municipal participativo en Porto Alegre, los resultados son sorprendentes. La comunidad multiplica los recursos escasos, sumando a ellos incontables horas de trabajo, y es generadora de continuas iniciativas innovativas.</figDesc><table></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2" validated="false"><head></head><label></label><figDesc>Gráfico 6 World Expenditure on R&amp;D in US$ PPP by region, 1990 &amp; 2000</figDesc><table>1999: US$ PPP 410 billion 
+
+Oceania 
+1% 
+
+North 
+America 
+38% 
+
+Latin 
+America 
+3% 
+
+Europe 
+34% 
+
+Africa 
+1% 
+
+Asia 
+23% 
+
+2000: US$ PPP 755 billion 
+
+Oceania 
+1,1% 
+North 
+America 
+37,3% 
+
+Latin 
+America 
+2,9% 
+
+Europe 
+27,3% 
+
+Africa 
+0,8% 
+
+Asia 
+30,6% 
+
+Fuente: UNESCO, 2004 
+
+</table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3">Los cambios en la estructura productiva y en el tipo de actividades económicas desarrolladas en el medio rural, el abandono por parte de amplios grupos de productores familiares de las actividades destinadas a atender la demanda local de alimentos y materias primas, la introducción de nuevas actividades agrícolas o agroindustriales con mayor dotación de capital y baja absorción de fuerza laboral y la tecnificación creciente de las actividades tradicionales, genera una disminución constante en el porcentaje de participación del empleo agrícola en población económicamente activa total. En el gráfico 4, se percibe con mucha claridad este descenso, ocurrido entre 1980 y 2004. Estas transformaciones acarrean, asimismo, un significativo crecimiento en la pobreza rural en la mayor parte de los espacios rurales de la región. Esto, desde luego, de manera más pronunciada en aquellos espacios rurales en los cuales se asientan las familias rurales con mayores dificultades para incorporarse en la nueva estrategia de crecimiento económico instaurada en estos países a partir de la década de los ochenta. En este sentido, si bien grupos importantes de familias rurales han impulsado modificaciones en su funcionamiento, reforzando la pluriactividad familiar o incorporándose en crecientes actividades rurales no agrícolas o empleándose en esa clase de actividades (Empleo Rural No Agrícola), la 3 De Janvry y Sadoulet distinguen, de manera genérica, dos tipos de territorios rurales en América Latina y el Caribe: las denominadas por ellos Áreas Rurales Marginales (ARM) y las Áreas Rurales Favorables (ARF). Para los autores un enfoque territorial del desarrollo rural debe tratar de conjugar ambos tipos de áreas, buscando que las primeras "constituyan una fuente de dinámica en sus relaciones con las ARF y buscar una especificidad territorial en las fuentes de ingresos, que pueda contribuir a las ARM" (2004:11).</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot">Fuente: CEPAL, sobre la base de tabulaciones especiales de las encuestas de hogares de los respectivos países. a/ Estimación correspondiente a 18 países de la región más Haití b/ Porcentaje de personas con ingresos inferiores a la línea de pobreza. Incluye a las personas que se encuentran en situación de indigencia c/ Porcentaje de personas con ingresos inferiores a la línea de indigencia. incremento de las migraciones rural-urbanas (de Janvry y Sadoulet, 1999; CEPAL, 2005). En otras palabras, lejos de alcanzarse una reducción de la pobreza rural como resultado de la aplicación de políticas agrarias o de desarrollo rural y diversos programas sociales, tales como los fondos de inversión social (FIS), lo que se produce es un traslado de la pobreza desde los espacios rurales hacia las áreas urbanas, agudizándose los problemas sociales en los principales centros urbanos de la región (Kjöllerström, 2004). La sustitución de políticas</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot">sociales de carácter universal por medidas de focalización, dirigidas a las familias rurales con más claros signos de deterioro social, en un marco de pobreza muy generalizada y políticas públicas con un marcado carácter excluyente, limita los alcances de los programas sociales y reduce la efectividad de las iniciativas en cuanto a la reducción sustancial de la pobreza y para promover diversas modalidades sostenibles de generación de empleo o de desarrollo territorial ( Hardy, 2004; Mora, 2005). El medio rural de América Latina y el Caribe muestra, desde esta perspectiva, la conformación de una clara diversidad territorial muy difícil de ubicar, aún efectuando una cuidadosa selección de los criterios, en un número limitado de tipos o categorías 4 . En una primera aproximación se encuentran una serie de espacios rurales plenamente incorporados a los procesos de desarrollo de la economía, con un aprovechamiento de las oportunidades ofrecidas por la creciente integración de los mercados y con diversos tipos de encadenamientos territoriales, nacionales e internacionales (Dussel, 2002; Pérez-Sainz &amp; Andrade-Eekhoff, 2003). Hemos denominado a éstos como espacios rurales dinámicos (ERDi). En algunos casos estas vinculaciones son un resultado de la orientación predominante de las políticas económicas, las inversiones dirigidas a fortalecer el sector exportador de las economías y la atracción de inversiones en actividades agrícolas y rurales no agrícolas, tales como el turismo, los agronegocios, los servicios o las agroindustrias. La generación de fuentes de empleo y la creación de algunos encadenamientos productivos permanentes, con capacidad de dinamizar los espacios locales, son procesos significativos en la activación económica y social de estos territorios. En otros casos, como los estudiados por Pérez-Sainz y Andrade-Eekhoff, se trata de procesos de integración impulsados por iniciativa de las 4 Dos maneras complementarias de entender el concepto de territorio en la cual sustentamos este análisis son, por un lado, la elaborada por Schejtman y Berdegué. Para los autores, el territorio como construcción social "(…) supone concebir al territorio no como un espacio físico 'objetivamente existente', sino como un conjunto de relaciones sociales que dan origen y a la vez expresan una identidad y un sentido de propósitos compartidos por múltiples agentes públicos y privados (aunque dicha construcción implique transitar por procesos de conflicto y negociación). Es dicha identidad la que permite dar sentido y contenido a un proyecto de desarrollo en un espacio determinado, a partir de la convergencia de intereses y voluntades (Schejtman y Berdegué, 2004). Sepúlveda, por su parte, pone el énfasis en la existencia de un tejido social propio en el territorio y en las relaciones con una determinada base de recursos naturales. Para el autor, "Un territorio es una unidad compuesta por un tejido social propio que se encuentra asentada en una base de recursos naturales particular, que presenta ciertas formas de producción, consumo e intercambio, y que está regida por instituciones y formas de organización, también particulares" (Sepúlveda, 2003)</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot">Por otra parte, se diferencian un conjunto de espacios rurales en declive (ERDe), asiento de amplios grupos de productores familiares dedicados en el pasado a la producción de alimentos y materias primas destinadas al mercado doméstico, cuyas actividades productivas tradicionales enfrentan problemas de precios o de incapacidad para competir con los productos agrícolas importados. La ausencia de recursos para dar un uso productivo a los activos o la insuficiencia o falta de éstos, la ausencia de encadenamientos y la pérdida de dinamismo de las escasas empresas agrícolas o agroindustriales establecidas en ellos, el debilitamiento de la base de recursos naturales locales, las dificultades para generar empleo e ingresos para la subsistencia de las familias y la ausencia o debilidad de las organizaciones comunales, reducen las posibilidades de generación de ingresos y bienestar para las familias asentadas en ellas. El potencial para el desarrollo de actividades rurales no agrícolas, con capacidad de generación de empleo e ingresos para las familias rurales establecidas en estos territorios, no se ha logrado impulsar por la ausencia de políticas o la prevaleciente orientación asistencial o clientelar de las acciones estatales. La emigración dirigida hacia las</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot">frecuencia el fortalecimiento de las capacidades establecidas, con fuertes riesgos para la sostenibilidad de los esfuerzos (Martínez, 2001:156). La articulación institucional, la inserción territorial, la formación de los funcionarios locales y la autogestión comunal son aspectos esenciales para lograr la sostenibilidad de las iniciativas de desarrollo territorial rural. En tanto los proyectos o programas impulsados con apoyo financiero y técnico externo contemplen en su ejecución estos elementos, se evitará la frecuente interrupción de los procesos una vez finalizada la cooperación externa. La ausencia de políticas públicas orientadas a fomentar la producción agrícola familiar y a impulsar procesos sostenidos de desarrollo rural, contribuye al aislamiento de estas iniciativas y a reducir su impacto multiplicador en el medio rural de los países en los cuales se ejecutan estas experiencias. Un aspecto central en el impulso de procesos de desarrollo territorial rural y en la aplicación de un enfoque ascendente que permita responder a las condiciones particulares de los espacios rurales en los cuales se llevan a cabo las iniciativas, es el de la participación efectiva de las familias, las comunidades y las organizaciones rurales en el diseño y la ejecución de las acciones. La creación de las condiciones requeridas para lograr la sostenibilidad de las iniciativas descansa en la participación real de los actores sociales locales y en las posibilidades con que cuenten para asumir, de manera paulatina, la dirección de sus propios procesos de desarrollo. Si se entiende el desarrollo territorial rural como un proceso de transformación productiva, social e institucional de los espacios rurales y de fortalecimiento del tejido social y la identidad cultural, conducido por los actores sociales locales con el apoyo de diversas agencias de desarrollo y orientado a la búsqueda del bienestar de la población rural en un marco de equidad, sostenibilidad ambiental y cohesión social, el tema de la participación adquiere una importancia mayúscula y se convierte en un aspecto determinante para el logro de la sostenibilidad de los procesos. Sin embargo, pese al extendido discurso favorable a la participación de las comunidades en sus propios procesos de desarrollo, las modalidades de trabajo institucional prevalecientes, la presencia de una visión tecnocrática y las fuertes relaciones asistenciales y de clientela que caracterizan los vínculos del estado con las comunidades rurales, establecen límites muy claros a la participación real de los actores sociales locales en el desarrollo de las iniciativas (Durston, 2003).</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="7">En el gráfico 5 se puede apreciar la importancia del efecto superficie como factor explicativo del crecimiento de la producción agrícola en América Latina y el Caribe. Asimismo, se ve la clara disminución enfrentada por el crecimiento de la producción durante el período 1980-1993 y la recuperación presente desde 1993. En los años 1980-1993 la superficie cultivada creció únicamente el 0.05%; mientras que entre 1993 y 2002 se presenta un incremento significativo de la superficie cultivada, presentándose en el Cono Sur un incremento del 3.65% anual. Este crecimiento en la superficie se acompaña del incremento en los rendimientos, sobre todo en Brasil y el Cono Sur (FAO, 2005).</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot">la región. Algunas de esas dificultades sólo encontrarán solución en la adopción de un modelo de desarrollo incluyente, en el cual las políticas sociales de carácter universal permitan el acceso de la población rural a servicios de calidad tales como la formación, la educación, la salud y la vivienda, así como a los productos de la investigación y la información, elementos esenciales para promover el desarrollo productivo y social en el medio rural. Asimismo, requerirán de una clara interrelación entre las políticas económicas impulsadas y las iniciativas de fomento y desarrollo agrícola y las acciones de desarrollo rural que se llevan a cabo en la región. Mientras persista un modelo de crecimiento económico marcadamente excluyente y no se cuente con políticas orientadas a promover la integración de la población rural en los procesos de desarrollo y a la búsqueda de la equidad y la cohesión social,</note>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">Acerca de la globalización en la agricultura. Territorios, empresas y desarrollo local en América Latina</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Barbosa</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Neiman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2005" />
+			<publisher>CICCUS</publisher>
+			<pubPlace>Buenos Aires; Fundación Centro Integral Comunicación</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Las reformas de los sistemas de extensión en América Latina a partir de la década de los 80</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Berdegué</surname></persName>
+		</author>
+		<ptr target="http://rimisp.cl/getdoc.php?docid=818(20/12/2005" />
+		<imprint>
+			<date type="published" when="2002" />
+			<pubPlace>Santiago de Chile</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Agricultural knowledge and information systems and poverty reduction</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Berdegué</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Escobar</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2001" />
+			<publisher>RIMISP</publisher>
+			<pubPlace>Santiago de Chile</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">¿Hay espacio para el desarrollo local en la globalización?</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">S</forename><surname>Boisier</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Revista de la CEPAL</title>
+		<imprint>
+			<biblScope unit="issue">86</biblScope>
+			<biblScope unit="page" from="47" to="62" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Globalización y desarrollo. Brasilia: Comisión Económica para América Latina y el Caribe -CEPAL-Publicaciones de las Naciones Unidas</title>
+	</analytic>
+	<monogr>
+		<title level="j">CEPAL</title>
+		<imprint>
+			<date type="published" when="2002" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+			</analytic>
+	<monogr>
+		<title level="m">Comisión Económica para América Latina y el Caribe -CEPAL-. Publicaciones de las Naciones Unidas</title>
+		<meeting><address><addrLine>Panorama Social de América Latina; Santiago de Chile</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2002" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Objetivos de Desarrollo del Milenio: una mirada desde América Latina y el Caribe</title>
+	</analytic>
+	<monogr>
+		<title level="m">Comisión Económica para América Latina y el Caribe -CEPAL-. Publicaciones de las Naciones Unidas</title>
+		<meeting><address><addrLine>Santiago de Chile</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Informe sobre la experiencia de Lempira Sur 1994-1998</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><surname>Cherret</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Secretaría de Agricultura y Ganadería, FAO</title>
+		<meeting><address><addrLine>Tegucigalpa (Honduras</addrLine></address></meeting>
+		<imprint>
+			<publisher>Gobierno de Holanda</publisher>
+			<date type="published" when="1999" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">Preparado para el IV Foro temático Regional de América Latina y el Caribe &quot;Cosechando oportunidades: Desarrollo Rural en el Siglo 21</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>De Janvry</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Sadoulet</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2004" />
+			<publisher>Banco Mundial-Sociedad Civil</publisher>
+			<biblScope unit="page">20</biblScope>
+			<pubPlace>San José, Costa Rica</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>Universidad de California (Sede de Berkeley</orgName>
+		</respStmt>
+	</monogr>
+	<note>Hacia un enfoque territorial del desarrollo rural. del 19 al 21 de octubre</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">En Cambios en el pensamiento y la práctica del desarrollo rural en Centroamérica</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>De Janvry</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Sadolulet</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Pobreza rural y el diseño de estrategias efectivas de desarrollo rural</title>
+		<imprint>
+			<date type="published" when="1999" />
+			<biblScope unit="page" from="5" to="26" />
+		</imprint>
+		<respStmt>
+			<orgName>Centro de Estudios para el Desarrollo Rural -CDR-/ Universidad Libre de Ámsterdam -ULA</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">En Capital social y reducción de la pobreza en América Latina y el caribe: en busca de un nuevo paradigma</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Durston</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page" from="147" to="202" />
+			<pubPlace>Santiago de Chile</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>Comisión Económica para América Latina y el Caribe -CEPAL-, Michigan State University</orgName>
+		</respStmt>
+	</monogr>
+	<note>Su papel en la persistencia y en la superación de la pobreza en América Latina y el Caribe</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Territorio y competitividad en la agroindustria en México. Condiciones y propuestas de política para los clusters de limón mexicano en Colima y la piña de Veracruz</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Dussel</surname></persName>
+		</author>
+		<editor>Plaza y Valdés, S. A. De C. V</editor>
+		<imprint>
+			<date type="published" when="2002" />
+			<pubPlace>México DF</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Tendencias y desafíos en la agricultura, los montes y la pesca en América Latina y el Caribe</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Fao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Organización de las Naciones Unidas para la Agricultura y la Alimentación</title>
+		<meeting><address><addrLine>Santiago de Chile</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2004" />
+		</imprint>
+		<respStmt>
+			<orgName>Oficina Regional para América Latina y el Caribe</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">Informe de evaluación nacional desarrollo Rural</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Fao</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2002" />
+			<publisher>FAO, Secretaría de Agricultura</publisher>
+			<biblScope unit="page">127</biblScope>
+			<pubPlace>México, D.F.; Ganadería, Desarrollo Rural, Pesca y Alimentación de México</pubPlace>
+		</imprint>
+	</monogr>
+	<note>Evaluación de la alianza para el campo</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Descentralización, transferencias territoriales y desarrollo local</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><surname>Finot</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Revista de la CEPAL</title>
+		<imprint>
+			<biblScope unit="issue">86</biblScope>
+			<biblScope unit="page" from="29" to="46" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">CLAHE, Ponencia presentada en el seminario &quot;Desarrollo con inclusión y equidad: sus implicancias desde lo local</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">E</forename><surname>Gallicchio</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page">24</biblScope>
+			<pubPlace>Córdoba (Argentina), en mayo</pubPlace>
+		</imprint>
+	</monogr>
+	<note>El desarrollo local en América Latina. Estrategia política basada en la construcción de capital social. realizado por SEHAS en la ciudad de</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">¿Luces? Y sombras de la reforma del Estado en América Latina</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Gascó</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Documentos de Trabajo</title>
+		<imprint>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page">21</biblScope>
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+<note type="report_type">Barcelona: Institut Internacional de Governabilitat de Catalunya</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">Equidad y protección social. Desafíos de políticas sociales en América Latina</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">C</forename><surname>Hardy</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2004" />
+			<pubPlace>Santiago de Chile: LOM Ediciones, Fundación Chile 21</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Competitividad del sector agrícola y pobreza rural: el papel del gasto público en América Latina</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">M</forename><surname>Kjöllerström</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Santiago de Chile: CEPAL</title>
+		<imprint>
+			<biblScope unit="issue">155</biblScope>
+			<biblScope unit="page">56</biblScope>
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+	<note>Serie de Desarrollo productivo</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Diez falacias sobre los problemas de América Latina</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Kliskberg</surname></persName>
+		</author>
+		<ptr target="http://www.clad.org.ve/congreso/klikdiez.html(22/12/2005" />
+	</analytic>
+	<monogr>
+		<title level="m">Centro de Documentación en Políticas Sociales. Documentos (27)</title>
+		<meeting><address><addrLine>Buenos Aires</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2001" />
+		</imprint>
+		<respStmt>
+			<orgName>Gobierno de la Ciudad de Buenos Aires</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Compiladores) (1998) Agricultura, medio ambiente y pobreza rural en América Latina</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">L</forename><surname>Leca</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Echeverría</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Instituto Internacional de Investigaciones sobre Políticas Alimentarias -IFPRI-, Banco</title>
+		<meeting><address><addrLine>Washington, DC</addrLine></address></meeting>
+		<imprint/>
+	</monogr>
+	<note>Interamericano de Desarrollo -BID-</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">El impacto de la desigualdad en el desarrollo humano en América Latina</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">I</forename><surname>Macías-Aymar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Documentos de Trabajo</title>
+		<imprint>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page">30</biblScope>
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+<note type="report_type">Barcelona: Institut Internacional de Governabilitat de Catalunya</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">reforma institucional y gestión del sector público agropecuario</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Martínez</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">En Desarrollo de las economías rurales</title>
+		<meeting><address><addrLine>Washington, DC</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2001" />
+			<biblScope unit="page" from="143" to="182" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">Capital social e institucionalidad: la experiencia del Proyecto IICAHolanda / Laderas</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Miranda</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+			<pubPlace>San Salvador (El Salvador</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>Atlantic International University, Instituto Interamericano de Cooperación para la Agricultura</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Desarrollo socioeconómico y pobreza en América Latina y el Caribe</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Mora</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Programa Regional de Maestría en Desarrollo Comunitario</title>
+		<meeting><address><addrLine>Heredia (Costa Rica</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+		<respStmt>
+			<orgName>Universidad Nacional</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Política agraria y desarrollo rural en Costa Rica: elementos para su definición en el nuevo entorno internacional</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Mora</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Agronomía Costarricense</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="101" to="133" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">Preparado para el IV Foro temático Regional de América Latina y el Caribe &quot;Cosechando oportunidades: Desarrollo Rural en el Siglo 21</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Mora</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2004" />
+			<publisher>Banco Mundial-Sociedad Civil</publisher>
+			<biblScope unit="page">25</biblScope>
+			<pubPlace>San José, Costa Rica</pubPlace>
+		</imprint>
+	</monogr>
+	<note>Extensión rural y gestión del conocimiento: la experiencia de la Agencia de Servicios Agropecuarios de Sarchí, Costa Rica. del 19 al 21 de octubre</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">Informe de consultoría, Instituto Interamericano de Cooperación para la Agricultura</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Mora</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page">50</biblScope>
+			<pubPlace>San José; Oficina de Costa Rica</pubPlace>
+		</imprint>
+	</monogr>
+	<note>Reposicionando el desarrollo rural: una propuesta de fortalecimiento institucional</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<title level="m" type="main">Desarrollo rural, cambio institucional y extensión rural en Centroamérica y México. Instituto Interamericano de Cooperación para la Agricultura (IICA), Proyecto FONTAGRO</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Mora</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page">59</biblScope>
+		</imprint>
+	</monogr>
+	<note>Investigación en extensión y servicios de apoyo: hacia una agricultura sostenible en América Latina y el Caribe. Informe de Investigación</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Communities in Globalization. The invisible Mayan Nahual</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">P</forename><surname>Pérez-Sainz</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">K</forename><surname>Andrade-Eekhoff</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2003" />
+			<publisher>Rowman &amp; Littlefield Publishers, Inc. PDR</publisher>
+			<pubPlace>Maryland</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>Estrategia de Desarrollo Rural. San José: Ministerio de Agricultura y Ganadería, Programa de Desarrollo Rural</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Una alianza para mejorar la productividad. La ciencia y la tecnología y el sector rural mesoamericano</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">G</forename><surname>Saín</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Ardila</surname></persName>
+		</author>
+		<ptr target="tp://www.iica.int/prensa/Comuniica/2005/n1-esp/pdfs/2Tecnologia.pdf.(20/12/2005" />
+	</analytic>
+	<monogr>
+		<title level="j">Tecnología e Innovación, COMUNICA Online</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="8" to="14" />
+			<date type="published" when="2005" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<title level="m" type="main">Crecimiento, empleo y equidad. El impacto de las reformas económicas en América Latina y el Caribe</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">B</forename><surname>Stallings</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">W</forename><surname>Peres</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2000" />
+		</imprint>
+		<respStmt>
+			<orgName>Santiago de Chile: Fondo de Cultura Económica-Comisión Económica para América Latina y el Caribe -CEPAL-</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Hacia una nueva agenda para América Latina</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Stiglitz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Revista de la CEPAL</title>
+		<imprint>
+			<biblScope unit="volume">80</biblScope>
+			<biblScope unit="issue">8</biblScope>
+			<biblScope unit="page" from="7" to="40" />
+			<date type="published" when="2003" />
+		</imprint>
+	</monogr>
+	<note>El rumbo de las reformas</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<title level="m" type="main">Globalization and its discontents</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Stiglitz</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2002" />
+			<publisher>W.W. Norton &amp; Company, Inc</publisher>
+			<pubPlace>New York</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Desarrollo Territorial Rural</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">A</forename><surname>Schejtman</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Berdeguér</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Fondo Internacional de Desarrollo Agrícola</title>
+		<meeting><address><addrLine>Washington, DC</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2003" />
+			<biblScope unit="page">54</biblScope>
+		</imprint>
+		<respStmt>
+			<orgName>BID, Departamento de Desarrollo Sustentable</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<monogr>
+		<title level="m" type="main">Estrategias de inserción de las áreas rurales en la economía mundial. Una aproximación desde Andalucía</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">R</forename><surname>Silva</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2002" />
+			<biblScope unit="page" from="103" to="131" />
+		</imprint>
+	</monogr>
+	<note>Boletín de la A.G.E. (33</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">Desarrollo rural: Nuevos enfoques y perspectivas</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">M</forename><surname>Sumpsi</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><surname>Mora</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fodepal</forename><surname>Cuadernos</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">Fodepal</forename><surname>Proyecto</surname></persName>
+		</author>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><surname>Fao/Upm/Aeci</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2004" />
+			<biblScope unit="page">43</biblScope>
+			<pubPlace>Santiago de Chile</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<monogr>
+		<title level="m" type="main">Experiencias de desarrollo territorial rural en América Latina y el Caribe. Banco Interamericano de Desarrollo</title>
+		<author>
+			<persName xmlns="http://www.tei-c.org/ns/1.0"><forename type="first">J</forename><forename type="middle">M</forename><surname>Sumpsi</surname></persName>
+		</author>
+		<ptr target="http://www.iadb.org/sds/publication/publication_4283_s.htm(22/12/2005" />
+		<imprint>
+			<date type="published" when="2005" />
+		</imprint>
+		<respStmt>
+			<orgName>Universidad Politécnica de Madrid</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">A Decade of Investment in Research and Development</title>
+	</analytic>
+	<monogr>
+		<title level="j">UIS Bulletin on Science and Technology Statistics Issue</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="1" to="4" />
+			<date type="published" when="2004" />
+		</imprint>
+	</monogr>
+	<note>UNESCO</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>
