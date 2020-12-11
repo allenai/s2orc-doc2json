@@ -4,6 +4,15 @@ html {
 
   * {
     box-sizing: inherit;
+    font-family: Calibri, Arial, sans-serif !important;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  h2, h3 {
+    font-size: 24px;
   }
 
   body {
