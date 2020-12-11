@@ -3,3 +3,4 @@ beautifulsoup4==4.7.1
 boto3==1.9.147
 requests==2.21.0
 Flask==1.0.2
+lxml
