@@ -2,9 +2,32 @@ import os
 import json
 import argparse
 import time
+from bs4 import BeautifulSoup
+from typing import Dict
 
 from pdf2json.grobid.grobid_client import GrobidClient
-from pdf2json.tei_to_json import convert_tei_xml_file_to_s2orc_json
+from pdf2json.tei_to_json import convert_tei_xml_file_to_s2orc_json, convert_tei_xml_soup_to_s2orc_json
+
+
+def process_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
+    """
+    Process PDF stream
+    :param input_file:
+    :param sha:
+    :param input_stream:
+    :return:
+    """
+    # process PDF through Grobid -> TEI.XML
+    client = GrobidClient()
+    tei_text = client.process_pdf_stream(input_file, input_stream, 'temp', "processFulltextDocument")
+
+    # make soup
+    soup = BeautifulSoup(tei_text, "xml")
+
+    # get paper
+    paper = convert_tei_xml_soup_to_s2orc_json(soup, input_file, sha)
+
+    return paper.as_json()
 
 
 def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:

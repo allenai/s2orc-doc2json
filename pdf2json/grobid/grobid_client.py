@@ -60,19 +60,12 @@ class GrobidClient(ApiClient):
         for pdf_file in pdf_files:
             self.process_pdf(pdf_file, output, service)
 
-    def process_pdf(self, pdf_file: str, output: str, service: str) -> None:
-        # check if TEI file is already produced
-        # we use ntpath here to be sure it will work on Windows too
-        pdf_file_name = ntpath.basename(pdf_file)
-        filename = os.path.join(output, os.path.splitext(pdf_file_name)[0] + '.tei.xml')
-        if os.path.isfile(filename):
-            return
-
-        print(pdf_file)
+    def process_pdf_stream(self, pdf_file: str, pdf_strm: bytes, output: str, service: str) -> str:
+        # process the stream
         files = {
             'input': (
                 pdf_file,
-                open(pdf_file, 'rb'),
+                pdf_strm,
                 'application/pdf',
                 {'Expires': '0'}
             )
@@ -99,6 +92,9 @@ class GrobidClient(ApiClient):
         else:
             the_data['consolidateCitations'] = '0'
 
+        the_data['includeRawCitations'] = '1'
+        the_data['includeRawAffiliations'] = '1'
+
         res, status = self.post(
             url=the_url,
             files=files,
@@ -108,16 +104,31 @@ class GrobidClient(ApiClient):
 
         if status == 503:
             time.sleep(self.sleep_time)
-            return self.process_pdf(pdf_file, output, service)
+            return self.process_pdf_stream(pdf_file, pdf_strm, service)
         elif status != 200:
             with open(os.path.join(output, "failed.log"), "a+") as failed:
-                failed.write(pdf_file_name.strip(".pdf") + "\n")
-
+                failed.write(pdf_file.strip(".pdf") + "\n")
             print('Processing failed with error ' + str(status))
+            return ""
         else:
-            # writing TEI file
+            return res.text
+
+    def process_pdf(self, pdf_file: str, output: str, service: str) -> None:
+        # check if TEI file is already produced
+        # we use ntpath here to be sure it will work on Windows too
+        pdf_file_name = ntpath.basename(pdf_file)
+        filename = os.path.join(output, os.path.splitext(pdf_file_name)[0] + '.tei.xml')
+        if os.path.isfile(filename):
+            return
+
+        print(pdf_file)
+        pdf_strm = open(pdf_file, 'rb').read()
+        tei_text = self.process_pdf_stream(pdf_file, pdf_strm, output, service)
+
+        # writing TEI file
+        if tei_text:
             with io.open(filename, 'w+', encoding='utf8') as tei_file:
-                tei_file.write(res.text)
+                tei_file.write(tei_text)
 
     def process_citation(self, bib_string: str, log_file: str) -> str:
         # process citation raw string and return corresponding dict
