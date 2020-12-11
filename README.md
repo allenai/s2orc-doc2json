@@ -35,6 +35,7 @@ This will start running Grobid immediately. Don't worry if it gets stuck at 88%;
 
 The expected port for the Grobid service is 8070, but you can change this as well. Make sure to edit the port in both the Grobid config file as well as `grobid/grobid_client.py`.
 
+
 ## Process a PDF
 
 To process a PDF, try:
@@ -44,6 +45,24 @@ python pdf2json/process_pdf.py -i input.pdf -t temp_dir/ -o output_dir/
 ```
 
 There are a couple of test PDFs in `tests/input/` if you'd like to try with that.
+
+
+## Run a Flask app and process PDFs through a web service
+
+First, start Grobid and the Flask app (Grobid is on 8070 and the Flask app on 8080)
+
+```console
+bash scripts/run_grobid.sh
+python pdf2json/flask/app.py
+```
+
+Go to [localhost:8080](localhost:8080) to upload and process PDFs.
+
+Or alternatively, you can do things like:
+
+```console
+curl localhost:8080/ -F file=@tests/input/5cd28c171f9f3b6a8bcebe246159c464980c.pdf
+```
 
 ### Contact
 
