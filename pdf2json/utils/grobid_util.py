@@ -298,6 +298,18 @@ def get_other_ids_from_grobid_xml(raw_xml: bs4.element.Tag) -> Dict[str, List]:
     return other_ids
 
 
+def get_raw_bib_text_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
+    """
+    Returns the raw bibiliography string
+    :param raw_xml:
+    :return:
+    """
+    for note in raw_xml.find_all("note"):
+        if note.has_attr("type") and note["type"] == "raw_reference":
+            return note.text
+    return ""
+
+
 def get_publication_datetime_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
     """
     Finds and returns the publication datetime if it exists
@@ -330,7 +342,8 @@ def parse_bib_entry(bib_entry: BeautifulSoup) -> Dict:
         'volume': get_volume_from_grobid_xml(bib_entry),
         'issue': get_issue_from_grobid_xml(bib_entry),
         'pages': get_pages_from_grobid_xml(bib_entry),
-        'other_ids': get_other_ids_from_grobid_xml(bib_entry)
+        'other_ids': get_other_ids_from_grobid_xml(bib_entry),
+        'raw_text': get_raw_bib_text_from_grobid_xml(bib_entry)
     }
 
 

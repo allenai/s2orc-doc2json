@@ -95,7 +95,8 @@ class BibliographyEntry:
             volume: Optional[str],
             issue: Optional[str],
             pages: Optional[str],
-            other_ids: Dict[str, List]
+            other_ids: Dict[str, List],
+            raw_text: Optional[str]
     ):
         self.bib_id = bib_id
         self.ref_id = ref_id
@@ -107,6 +108,7 @@ class BibliographyEntry:
         self.issue = issue
         self.pages = pages
         self.other_ids = other_ids
+        self.raw_text = raw_text
 
     def as_json(self):
         return {
@@ -118,7 +120,8 @@ class BibliographyEntry:
             "volume": self.volume,
             "issue": self.issue,
             "pages": self.pages,
-            "other_ids": self.other_ids
+            "other_ids": self.other_ids,
+            "raw_text": self.raw_text
         }
 
 

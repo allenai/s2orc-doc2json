@@ -25,6 +25,8 @@ DEFAULT_GROBID_CONFIG = {
     "generateIDs": False,
     "consolidate_header": False,
     "consolidate_citations": False,
+    "include_raw_citations": True,
+    "include_raw_affiliations": False,
     "max_workers": 2,
 }
 
@@ -35,6 +37,8 @@ class GrobidClient(ApiClient):
         self.generate_ids = self.config["generateIDs"]
         self.consolidate_header = self.config["consolidate_header"]
         self.consolidate_citations = self.config["consolidate_citations"]
+        self.include_raw_citations = self.config["include_raw_citations"]
+        self.include_raw_affiliations = self.config["include_raw_affiliations"]
         self.max_workers = self.config["max_workers"]
         self.grobid_server = self.config["grobid_server"]
         self.grobid_port = self.config["grobid_port"]
@@ -92,8 +96,15 @@ class GrobidClient(ApiClient):
         else:
             the_data['consolidateCitations'] = '0'
 
-        the_data['includeRawCitations'] = '1'
-        the_data['includeRawAffiliations'] = '1'
+        if self.include_raw_affiliations:
+            the_data['includeRawAffiliations'] = '1'
+        else:
+            the_data['includeRawAffiliations'] = '0'
+
+        if self.include_raw_citations:
+            the_data['includeRawCitations'] = '1'
+        else:
+            the_data['includeRawCitations'] = '0'
 
         res, status = self.post(
             url=the_url,
