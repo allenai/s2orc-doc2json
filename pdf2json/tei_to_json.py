@@ -21,7 +21,9 @@ REPLACE_TABLE_TOKS = {
     "</row>": "</tr>",
     "<cell>": "<td>",
     "<cell/>": "<td/>",
-    "</cell>": "</td>"
+    "</cell>": "</td>",
+    "<cell ": "<td ",
+    "cols=": "colspan="
 }
 
 
@@ -506,19 +508,34 @@ def extract_abstract_from_tei_xml(
     """
     abstract_text = []
     if sp.abstract:
-        for div in sp.abstract.find_all('div'):
-            if div.text:
-                if div.p:
-                    for para in div.find_all('p'):
-                        if para.text:
+        # process all divs
+        if sp.abstract.div:
+            for div in sp.abstract.find_all('div'):
+                if div.text:
+                    if div.p:
+                        for para in div.find_all('p'):
+                            if para.text:
+                                abstract_text.append(
+                                    process_paragraph(sp, para, [(None, "Abstract")], bib_dict, ref_dict, cleanup_bracket)
+                                )
+                    else:
+                        if div.text:
                             abstract_text.append(
-                                process_paragraph(sp, para, ["Abstract"], bib_dict, ref_dict, cleanup_bracket)
+                                process_paragraph(sp, div, [(None, "Abstract")], bib_dict, ref_dict, cleanup_bracket)
                             )
-                else:
-                    if div.text:
-                        abstract_text.append(
-                            process_paragraph(sp, div, ["Abstract"], bib_dict, ref_dict, cleanup_bracket)
-                        )
+        # process all paragraphs
+        elif sp.abstract.p:
+            for para in sp.abstract.find_all('p'):
+                if para.text:
+                    abstract_text.append(
+                        process_paragraph(sp, para, [(None, "Abstract")], bib_dict, ref_dict, cleanup_bracket)
+                    )
+        # else just try to get the text
+        else:
+            if sp.abstract.text:
+                abstract_text.append(
+                    process_paragraph(sp, sp.abstract, [(None, "Abstract")], bib_dict, ref_dict, cleanup_bracket)
+                )
         sp.abstract.decompose()
     return abstract_text
 
@@ -533,13 +550,14 @@ def extract_body_text_from_div(
 ) -> List[Dict]:
     """
     Parse body text from soup
+    :param sp:
     :param div:
+    :param sections:
     :param bib_dict:
     :param ref_dict:
     :param cleanup_bracket:
     :return:
     """
-    print(sections)
     chunks = []
     # check if nested divs; recursively process
     if div.div:
@@ -565,19 +583,40 @@ def extract_body_text_from_div(
                     ref_dict,
                     cleanup_bracket
                 )
-    # process p tags individually
-    elif div.p:
-        for para in div.find_all('p'):
-            if para.text:
+    # process tags individuals
+    for tag in div:
+        try:
+            if tag.name == 'p':
+                if tag.text:
+                    chunks.append(process_paragraph(
+                        sp, tag, sections, bib_dict, ref_dict, cleanup_bracket
+                    ))
+            elif tag.name == 'formula':
+                # e.g. <formula xml:id="formula_0">Y = W T X.<label>(1)</label></formula>
+                label = tag.label.text
+                tag.label.decompose()
+                eq_text = tag.text
+                chunks.append({
+                    'text': 'EQUATION',
+                    'cite_spans': [],
+                    'ref_spans': [],
+                    'eq_spans': [
+                        {
+                            "start": 0,
+                            "end": 8,
+                            "text": "EQUATION",
+                            "ref_id": "EQREF",
+                            "raw_str": eq_text,
+                            "eq_num": label
+                        }
+                    ],
+                    'section': sections
+                })
+        except AttributeError:
+            if tag.text:
                 chunks.append(process_paragraph(
-                    sp, para, sections, bib_dict, ref_dict, cleanup_bracket
+                    sp, tag, sections, bib_dict, ref_dict, cleanup_bracket
                 ))
-    # process whole div like a p tag
-    else:
-        if div.text:
-            chunks.append(process_paragraph(
-                sp, div, sections, bib_dict, ref_dict, cleanup_bracket
-            ))
 
     return chunks
 
@@ -660,8 +699,8 @@ def convert_tei_xml_soup_to_s2orc_json(soup: BeautifulSoup, paper_id: str, pdf_h
         normalize_grobid_id(bib['ref_id']): bib for bib in biblio_entries
     }
 
-    # process formulas and replace with text
-    extract_formulas_from_tei_xml(soup)
+    # # process formulas and replace with text
+    # extract_formulas_from_tei_xml(soup)
 
     # extract figure and table captions
     refkey_map = extract_figures_and_tables_from_tei_xml(soup)

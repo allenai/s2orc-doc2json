@@ -295,7 +295,7 @@ class Paragraph:
             cite_spans: List[Dict],
             ref_spans: List[Dict],
             eq_spans: List[Dict],
-            section: Optional[str]
+            section: Optional[List]
     ):
         self.text = text
         self.cite_spans = cite_spans
@@ -309,7 +309,8 @@ class Paragraph:
             "cite_spans": self.cite_spans,
             "ref_spans": self.ref_spans,
             "eq_spans": self.eq_spans,
-            "section": self.section
+            "section": '::'.join([sec[1] for sec in self.section]),
+            "sec_num": self.section[-1][0] if self.section else None
         }
 
 
