@@ -31,7 +31,13 @@ You can install your own version of Grobid and get it running, or you can run th
 bash scripts/setup_grobid.sh
 ```
 
-This will start running Grobid immediately. Don't worry if it gets stuck at 88%; this is normal and means Grobid is ready to process PDFs.
+This will setup Grobid, currently hard-coded as version 0.6.1. Then run:
+
+```console
+bash scripts/run_grobid.sh
+```
+
+to start the Grobid server. Don't worry if it gets stuck at 87%; this is normal and means Grobid is ready to process PDFs.
 
 The expected port for the Grobid service is 8070, but you can change this as well. Make sure to edit the port in both the Grobid config file as well as `grobid/grobid_client.py`.
 
