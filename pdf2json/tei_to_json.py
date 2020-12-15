@@ -5,7 +5,7 @@ import sys
 import bs4
 import re
 from bs4 import BeautifulSoup, NavigableString
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from pdf2json.s2orc import Paper
 
@@ -13,6 +13,18 @@ from pdf2json.utils.grobid_util import parse_bib_entry, extract_paper_metadata_f
 from pdf2json.utils.citation_util import SINGLE_BRACKET_REGEX, BRACKET_REGEX, BRACKET_STYLE_THRESHOLD
 from pdf2json.utils.citation_util import is_expansion_string, _clean_empty_and_duplicate_authors_from_grobid_parse
 from pdf2json.utils.refspan_util import sub_spans_and_update_indices
+
+
+REPLACE_TABLE_TOKS = {
+    "<row>": "<tr>",
+    "<row/>": "<tr/>",
+    "</row>": "</tr>",
+    "<cell>": "<td>",
+    "<cell/>": "<td/>",
+    "</cell>": "</td>",
+    "<cell ": "<td ",
+    "cols=": "colspan="
+}
 
 
 class UniqTokenGenerator:
@@ -85,6 +97,22 @@ def extract_formulas_from_tei_xml(sp: BeautifulSoup) -> None:
         eq.replace_with(sp.new_string(eq.text.strip()))
 
 
+def table_to_html(table: bs4.element.Tag) -> str:
+    """
+    Sub table tags with html table tags
+    :param table_str:
+    :return:
+    """
+    for tag in table:
+        if tag.name != 'row':
+            print(f'Unknown table subtag: {tag.name}')
+            tag.decompose()
+    table_str = str(table)
+    for token, subtoken in REPLACE_TABLE_TOKS.items():
+        table_str = table_str.replace(token, subtoken)
+    return table_str
+
+
 def extract_figures_and_tables_from_tei_xml(sp: BeautifulSoup) -> Dict[str, Dict]:
     """
     Generate figure and table dicts
@@ -101,7 +129,7 @@ def extract_figures_and_tables_from_tei_xml(sp: BeautifulSoup) -> Dict[str, Dict
                         "text": fig.figDesc.text.strip() if fig.figDesc else fig.head.text.strip() if fig.head else "",
                         "latex": None,
                         "type": "table",
-                        "content": fig.table.text.strip()
+                        "content": table_to_html(fig.table)
                     }
                 else:
                     ref_map[normalize_grobid_id(fig.get('xml:id'))] = {
@@ -373,7 +401,7 @@ def process_citations_in_paragraph(para_el: BeautifulSoup, sp: BeautifulSoup, bi
 def process_paragraph(
         sp: BeautifulSoup,
         para_el: bs4.element.Tag,
-        section_name: str,
+        section_names: List[Tuple],
         bib_dict: Dict,
         ref_dict: Dict,
         bracket: bool
@@ -382,20 +410,20 @@ def process_paragraph(
     Process one paragraph
     :param sp:
     :param para_el:
-    :param section_name:
+    :param section_names:
     :param bib_dict:
     :param ref_dict:
     :param bracket: if bracket style, expand and clean up citations
     :return:
     """
-    # return empty paragraph if section header available
+    # return empty paragraph if no text
     if not para_el.text:
         return {
             'text': "",
             'cite_spans': [],
             'ref_spans': [],
             'eq_spans': [],
-            'section': section_name
+            'section': section_names
         }
 
     # replace formulas with formula text
@@ -460,7 +488,7 @@ def process_paragraph(
         'cite_spans': cite_span_blobs,
         'ref_spans': ref_span_blobs,
         'eq_spans': [],
-        'section': section_name
+        'section': section_names
     }
 
 
@@ -480,19 +508,117 @@ def extract_abstract_from_tei_xml(
     """
     abstract_text = []
     if sp.abstract:
-        for div in sp.abstract.find_all('div'):
-            if div.text:
-                if div.p:
-                    for para in div.find_all('p'):
-                        abstract_text.append(
-                            process_paragraph(sp, para, "Abstract", bib_dict, ref_dict, cleanup_bracket)
-                        )
-                else:
+        # process all divs
+        if sp.abstract.div:
+            for div in sp.abstract.find_all('div'):
+                if div.text:
+                    if div.p:
+                        for para in div.find_all('p'):
+                            if para.text:
+                                abstract_text.append(
+                                    process_paragraph(sp, para, [(None, "Abstract")], bib_dict, ref_dict, cleanup_bracket)
+                                )
+                    else:
+                        if div.text:
+                            abstract_text.append(
+                                process_paragraph(sp, div, [(None, "Abstract")], bib_dict, ref_dict, cleanup_bracket)
+                            )
+        # process all paragraphs
+        elif sp.abstract.p:
+            for para in sp.abstract.find_all('p'):
+                if para.text:
                     abstract_text.append(
-                        process_paragraph(sp, div, "Abstract", bib_dict, ref_dict, cleanup_bracket)
+                        process_paragraph(sp, para, [(None, "Abstract")], bib_dict, ref_dict, cleanup_bracket)
                     )
+        # else just try to get the text
+        else:
+            if sp.abstract.text:
+                abstract_text.append(
+                    process_paragraph(sp, sp.abstract, [(None, "Abstract")], bib_dict, ref_dict, cleanup_bracket)
+                )
         sp.abstract.decompose()
     return abstract_text
+
+
+def extract_body_text_from_div(
+        sp: BeautifulSoup,
+        div: bs4.element.Tag,
+        sections: List[Tuple],
+        bib_dict: Dict,
+        ref_dict: Dict,
+        cleanup_bracket: bool
+) -> List[Dict]:
+    """
+    Parse body text from soup
+    :param sp:
+    :param div:
+    :param sections:
+    :param bib_dict:
+    :param ref_dict:
+    :param cleanup_bracket:
+    :return:
+    """
+    chunks = []
+    # check if nested divs; recursively process
+    if div.div:
+        for subdiv in div.find_all('div'):
+            # has header, add to section list and process
+            if subdiv.head:
+                chunks += extract_body_text_from_div(
+                    sp,
+                    subdiv,
+                    sections + [(subdiv.head.get('n', None), subdiv.head.text.strip())],
+                    bib_dict,
+                    ref_dict,
+                    cleanup_bracket
+                )
+                subdiv.head.decompose()
+            # no header, process with same section list
+            else:
+                chunks += extract_body_text_from_div(
+                    sp,
+                    subdiv,
+                    sections,
+                    bib_dict,
+                    ref_dict,
+                    cleanup_bracket
+                )
+    # process tags individuals
+    for tag in div:
+        try:
+            if tag.name == 'p':
+                if tag.text:
+                    chunks.append(process_paragraph(
+                        sp, tag, sections, bib_dict, ref_dict, cleanup_bracket
+                    ))
+            elif tag.name == 'formula':
+                # e.g. <formula xml:id="formula_0">Y = W T X.<label>(1)</label></formula>
+                label = tag.label.text
+                tag.label.decompose()
+                eq_text = tag.text
+                chunks.append({
+                    'text': 'EQUATION',
+                    'cite_spans': [],
+                    'ref_spans': [],
+                    'eq_spans': [
+                        {
+                            "start": 0,
+                            "end": 8,
+                            "text": "EQUATION",
+                            "ref_id": "EQREF",
+                            "raw_str": eq_text,
+                            "eq_num": label
+                        }
+                    ],
+                    'section': sections
+                })
+        except AttributeError:
+            if tag.text:
+                chunks.append(process_paragraph(
+                    sp, tag, sections, bib_dict, ref_dict, cleanup_bracket
+                ))
+
+    return chunks
 
 
 def extract_body_text_from_tei_xml(
@@ -509,37 +635,9 @@ def extract_body_text_from_tei_xml(
     :param cleanup_bracket:
     :return:
     """
-    section_title = ''
     body_text = []
-    section_used = True
-
     if sp.body:
-        for div in sp.body.find_all('div'):
-            # section name
-            if div.head:
-                # create an empty paragraph with previous section header if no text associated with it
-                if section_title and not section_used:
-                    new_tag = sp.new_tag('div')
-                    body_text.append(
-                        process_paragraph(sp, new_tag, section_title, bib_dict, ref_dict, cleanup_bracket)
-                    )
-                # get new section name
-                section_title = div.head.text.strip()
-                section_used = False
-                div.head.decompose()
-            # body text
-            if div.p:
-                for para in div.find_all('p'):
-                    body_text.append(
-                        process_paragraph(sp, para, section_title, bib_dict, ref_dict, cleanup_bracket)
-                    )
-                    section_used = True
-            else:
-                body_text.append(
-                    process_paragraph(sp, div, section_title, bib_dict, ref_dict, cleanup_bracket)
-                )
-                section_used = True
-
+        body_text = extract_body_text_from_div(sp, sp.body, [], bib_dict, ref_dict, cleanup_bracket)
         sp.body.decompose()
     return body_text
 
@@ -574,9 +672,10 @@ def extract_back_matter_from_tei_xml(
                 else:
                     section_title = section_type
                 if child_div.text:
-                    back_text.append(
-                        process_paragraph(sp, child_div, section_title, bib_dict, ref_dict, cleanup_bracket)
-                    )
+                    if child_div.text:
+                        back_text.append(
+                            process_paragraph(sp, child_div, [section_title], bib_dict, ref_dict, cleanup_bracket)
+                        )
         sp.back.decompose()
     return back_text
 
@@ -600,8 +699,8 @@ def convert_tei_xml_soup_to_s2orc_json(soup: BeautifulSoup, paper_id: str, pdf_h
         normalize_grobid_id(bib['ref_id']): bib for bib in biblio_entries
     }
 
-    # process formulas and replace with text
-    extract_formulas_from_tei_xml(soup)
+    # # process formulas and replace with text
+    # extract_formulas_from_tei_xml(soup)
 
     # extract figure and table captions
     refkey_map = extract_figures_and_tables_from_tei_xml(soup)

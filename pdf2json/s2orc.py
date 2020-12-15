@@ -95,7 +95,8 @@ class BibliographyEntry:
             volume: Optional[str],
             issue: Optional[str],
             pages: Optional[str],
-            other_ids: Dict[str, List]
+            other_ids: Dict[str, List],
+            raw_text: Optional[str]
     ):
         self.bib_id = bib_id
         self.ref_id = ref_id
@@ -107,6 +108,7 @@ class BibliographyEntry:
         self.issue = issue
         self.pages = pages
         self.other_ids = other_ids
+        self.raw_text = raw_text
 
     def as_json(self):
         return {
@@ -118,7 +120,8 @@ class BibliographyEntry:
             "volume": self.volume,
             "issue": self.issue,
             "pages": self.pages,
-            "other_ids": self.other_ids
+            "other_ids": self.other_ids,
+            "raw_text": self.raw_text
         }
 
 
@@ -292,7 +295,7 @@ class Paragraph:
             cite_spans: List[Dict],
             ref_spans: List[Dict],
             eq_spans: List[Dict],
-            section: Optional[str]
+            section: Optional[List]
     ):
         self.text = text
         self.cite_spans = cite_spans
@@ -306,7 +309,8 @@ class Paragraph:
             "cite_spans": self.cite_spans,
             "ref_spans": self.ref_spans,
             "eq_spans": self.eq_spans,
-            "section": self.section
+            "section": '::'.join([sec[1] for sec in self.section]),
+            "sec_num": self.section[-1][0] if self.section else None
         }
 
 

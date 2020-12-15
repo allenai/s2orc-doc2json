@@ -17,3 +17,6 @@ cd $HOME/grobid-0.6.1
 # this isn't necessary but is nice to have if you are processing lots of files
 cp $PDF2JSON_HOME/pdf2json/grobid/config.yaml $HOME/grobid-0.6.1/grobid-service/config/config.yaml
 cp $PDF2JSON_HOME/pdf2json/grobid/grobid.properties $HOME/grobid-0.6.1/grobid-home/config/grobid.properties
+
+## Start Grobid
+./gradlew run
