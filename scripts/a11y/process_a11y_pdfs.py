@@ -65,10 +65,10 @@ if __name__ == '__main__':
     out_files = []
     os.makedirs('temp', exist_ok=True)
     os.makedirs('output', exist_ok=True)
+    print('processing pdfs...')
     for pdf_file in tqdm.tqdm(os.listdir('pdfs')):
         out_file = os.path.join('output', f"{pdf_file.split('.')[0]}.json")
         if os.path.exists(out_file):
-            print(f'skipping {pdf_file}')
             continue
         if pdf_file.endswith('.pdf'):
             out_file = process_pdf_file(os.path.join('pdfs', pdf_file), 'temp', 'output')
@@ -76,9 +76,12 @@ if __name__ == '__main__':
 
     # get deepfigs info
     fig_dir = 'figs'
+    print('getting figures and tables...')
     os.makedirs(fig_dir, exist_ok=True)
     for out_file in tqdm.tqdm(os.listdir('output')):
         fig_file = os.path.join(fig_dir, out_file)
+        if os.path.exists(fig_file):
+            continue
         with open(os.path.join('output', out_file), 'r') as f:
             contents = json.load(f)
         fig_tabs = get_figures_and_tables(contents['pdf_parse'])
@@ -91,6 +94,7 @@ if __name__ == '__main__':
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(S3_BUCKET)
     num_files = 0
+    print('uploading to s3')
     for fig_file in os.listdir(fig_dir):
         file_path = os.path.join(fig_dir, fig_file)
         prefix_for_upload = os.path.join(S3_PREFIX, fig_file)
