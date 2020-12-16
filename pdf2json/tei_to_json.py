@@ -668,13 +668,15 @@ def extract_back_matter_from_tei_xml(
             for child_div in div.find_all('div'):
                 if child_div.head:
                     section_title = child_div.head.text.strip()
+                    section_num = child_div.head.get('n', None)
                     child_div.head.decompose()
                 else:
                     section_title = section_type
+                    section_num = None
                 if child_div.text:
                     if child_div.text:
                         back_text.append(
-                            process_paragraph(sp, child_div, [section_title], bib_dict, ref_dict, cleanup_bracket)
+                            process_paragraph(sp, child_div, [(section_num, section_title)], bib_dict, ref_dict, cleanup_bracket)
                         )
         sp.back.decompose()
     return back_text

@@ -309,7 +309,7 @@ class Paragraph:
             "cite_spans": self.cite_spans,
             "ref_spans": self.ref_spans,
             "eq_spans": self.eq_spans,
-            "section": '::'.join([sec[1] for sec in self.section]),
+            "section": '::'.join([sec[1] for sec in self.section]) if self.section else "",
             "sec_num": self.section[-1][0] if self.section else None
         }
 

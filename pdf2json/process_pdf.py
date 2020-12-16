@@ -47,7 +47,7 @@ def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:
     if not os.path.exists(input_file):
         raise FileNotFoundError(f"{input_file} doesn't exist")
     if os.path.exists(output_file):
-        raise FileExistsError(f'{output_file} already exists!')
+        raise Warning(f'{output_file} already exists!')
 
     # process PDF through Grobid -> TEI.XML
     client = GrobidClient()
