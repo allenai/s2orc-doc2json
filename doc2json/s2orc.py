@@ -348,12 +348,16 @@ class Paper:
         self.body_text = [Paragraph(**para) for para in body_text]
         self.back_matter = [Paragraph(**para) for para in back_matter]
         self.bib_entries = [
-            BibliographyEntry(bib_id=key, **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in bib.items()})
-            for key, bib in bib_entries.items()
+            BibliographyEntry(
+                bib_id=key,
+                **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in bib.items() if k != 'bib_id'}
+            ) for key, bib in bib_entries.items()
         ]
         self.ref_entries = [
-            ReferenceEntry(ref_id=key, **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in ref.items()})
-            for key, ref in ref_entries.items()
+            ReferenceEntry(
+                ref_id=key,
+                **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in ref.items() if k != 'ref_id'}
+            ) for key, ref in ref_entries.items()
         ]
 
     def as_json(self):
