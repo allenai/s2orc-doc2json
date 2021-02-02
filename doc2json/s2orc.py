@@ -35,11 +35,11 @@ class ReferenceEntry:
             self,
             ref_id: str,
             text: str,
-            latex: Optional[str],
-            content: Optional[str],
-            uris: Optional[List[str]],
-            num: Optional[str],
-            type_str: str
+            type_str: str,
+            latex: Optional[str]=None,
+            content: Optional[str]=None,
+            uris: Optional[List[str]]=None,
+            num: Optional[str]=None
     ):
         self.ref_id = ref_id
         self.text = text
@@ -96,15 +96,15 @@ class BibliographyEntry:
             ref_id: str,
             title: str,
             authors: List[Dict[str, str]],
-            year: Optional[int],
-            venue: Optional[str],
-            volume: Optional[str],
-            issue: Optional[str],
-            pages: Optional[str],
-            other_ids: Dict[str, List],
-            num: Optional[int],
-            urls: Optional[List],
-            raw_text: Optional[str]
+            year: Optional[int]=None,
+            venue: Optional[str]=None,
+            volume: Optional[str]=None,
+            issue: Optional[str]=None,
+            pages: Optional[str]=None,
+            other_ids: Dict[str, List]=None,
+            num: Optional[int]=None,
+            urls: Optional[List]=None,
+            raw_text: Optional[str]=None
     ):
         self.bib_id = bib_id
         self.ref_id = ref_id
@@ -198,8 +198,8 @@ class Author:
             middle: List[str],
             last: str,
             suffix: str,
-            affiliation: Optional[Dict],
-            email: Optional[str]
+            affiliation: Optional[Dict]=None,
+            email: Optional[str]=None
     ):
         self.first = first
         self.middle = middle
@@ -251,7 +251,7 @@ class Metadata:
             self,
             title: str,
             authors: List[Dict],
-            year: Optional[str]
+            year: Optional[str]=None
     ):
         self.title = title
         self.authors = [Author(**author) for author in authors]
@@ -307,7 +307,7 @@ class Paragraph:
             cite_spans: List[Dict],
             ref_spans: List[Dict],
             eq_spans: List[Dict],
-            section: Optional[List]
+            section: Optional[List]=None
     ):
         self.text = text
         self.cite_spans = cite_spans
