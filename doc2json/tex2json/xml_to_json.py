@@ -12,6 +12,11 @@ from doc2json.utils.grobid_util import parse_bib_entry, get_author_data_from_gro
 from doc2json.s2orc import Paper, Paragraph
 
 
+SKIP_TAGS = {
+    'clearpage'
+}
+
+
 def normalize_latex_id(latex_id: str):
     str_norm = latex_id.upper().replace('_', '')
     if str_norm.startswith('BID'):
@@ -123,6 +128,90 @@ def replace_ref_tokens(sp: BeautifulSoup, el: bs4.element.Tag, ref_map: Dict):
     return el
 
 
+def process_list_el(sp: BeautifulSoup, list_el: bs4.element.Tag, section_info: List, bib_map: Dict, ref_map: Dict):
+    """
+    Process list element
+    :param sp:
+    :param list_el:
+    :param section_info:
+    :param bib_map:
+    :param ref_map:
+    :return:
+    """
+    # TODO: currently parsing list as a list of paragraphs (append numbers to start of each entry in ordered lists)
+    list_items = []
+    for item in list_el.find_all('item'):
+        item_as_para = process_paragraph(sp, item, section_info, bib_map, ref_map)
+        list_num = item.get('id-text', None)
+        if list_num:
+            list_num_str = f'{list_num}. '
+            item_as_para.text = list_num_str + item_as_para.text
+            for span in item_as_para.cite_spans:
+                span.start += len(list_num_str)
+                span.end += len(list_num_str)
+            for span in item_as_para.ref_spans:
+                span.start += len(list_num_str)
+                span.end += len(list_num_str)
+            for span in item_as_para.eq_spans:
+                span.start += len(list_num_str)
+                span.end += len(list_num_str)
+        list_items.append(item_as_para)
+    return list_items
+
+
+def process_navstring(str_el: NavigableString, section_info: List):
+    """
+    Process one NavigableString
+    :param sp:
+    :param str_el:
+    :param section_info:
+    :param bib_map:
+    :param ref_map:
+    :return:
+    """
+    # substitute space characters
+    text = re.sub(r'\s+', ' ', str_el)
+    text = re.sub(r'\s', ' ', text)
+
+    # get all cite spans
+    all_cite_spans = []
+    for span in re.finditer(r'(BIBREF\d+)', text):
+        all_cite_spans.append({
+            "start": span.start(),
+            "end": span.start() + len(span.group()),
+            "ref_id": span.group()
+        })
+
+    # get all ref spans
+    all_ref_spans = []
+    for span in itertools.chain(
+        re.finditer(r'(FIGREF\d+)', text),
+        re.finditer(r'(TABREF\d+)', text),
+        re.finditer(r'(EQREF\d+)', text),
+        re.finditer(r'(FOOTREF\d+)', text),
+        re.finditer(r'(SECREF\d+)', text),
+    ):
+        all_ref_spans.append({
+            "start": span.start(),
+            "end": span.start() + len(span.group()),
+            "ref_id": span.group()
+        })
+
+    # assert all align
+    for cite_span in all_cite_spans:
+        assert text[cite_span['start']:cite_span['end']] == cite_span['ref_id']
+    for ref_span in all_ref_spans:
+        assert text[ref_span['start']:ref_span['end']] == ref_span['ref_id']
+
+    return Paragraph(
+        text=text,
+        cite_spans=all_cite_spans,
+        ref_spans=all_ref_spans,
+        eq_spans=[],
+        section=section_info
+    )
+
+
 def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info: List, bib_map: Dict, ref_map: Dict):
     """
     Process one paragraph
@@ -228,6 +317,20 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info:
         eq_spans=all_eq_spans,
         section=section_info
     )
+
+
+def decompose_tags_before_title(sp: BeautifulSoup):
+    """
+    decompose all tags before title
+    :param sp:
+    :return:
+    """
+    for tag in sp.std:
+        if type(tag) == bs4.element.Tag:
+            if tag.name != 'maketitle' and tag.name != 'title':
+                tag.decompose()
+            else:
+                break
 
 
 def process_maketitle(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: str) -> Tuple[str, List]:
@@ -353,7 +456,6 @@ def get_section_name(sec):
     :param sec:
     :return:
     """
-    sec_text = ""
     if sec.head:
         sec_text = sec.head.text
     else:
@@ -381,6 +483,7 @@ def process_sections_from_text(sp: BeautifulSoup) -> Dict:
     :param sp:
     :return:
     """
+    # TODO: recursively process divs
     # initialize
     section_map = dict()
 
@@ -831,6 +934,16 @@ def combine_ref_maps(eq_map: Dict, fig_map: Dict, tab_map: Dict, foot_map: Dict,
     return ref_map
 
 
+def collapse_formatting_tags(sp: BeautifulSoup):
+    """
+    Collapse formatting tags like <hi>
+    :param sp:
+    :return:
+    """
+    for hi in sp.find_all('hi'):
+        hi.replace_with(f' {sp.new_string(hi.text.strip())} ')
+
+
 def process_abstract_from_tex(sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) -> List[Dict]:
     """
     Parse abstract from soup
@@ -857,66 +970,109 @@ def process_abstract_from_tex(sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) -
     return [para.as_json() for para in abstract_text]
 
 
-def process_body_text_from_tex(soup: BeautifulSoup, bib_map: Dict, ref_map: Dict) -> List[Dict]:
+def build_section_list(sec_id: str, ref_map: Dict) -> List[Tuple]:
     """
-    Parse body text from soup
-    :param soup:
+    Build list of sections from reference map from sec_id using parent entry recursively
+    :param sec_id:
+    :param ref_map:
+    :return:
+    """
+    if not sec_id:
+        return []
+    else:
+        sec_entry = [(ref_map[sec_id]['num'], ref_map[sec_id]['text'])]
+        return build_section_list(ref_map[sec_id]['parent'], ref_map) + sec_entry
+
+
+def get_seclist_for_el(el: bs4.element.Tag, ref_map: Dict, default_seclist: List) -> List[Tuple]:
+    """
+    Build sec_list for tag
+    :param el:
+    :param ref_map:
+    :param default_seclist:
+    :return:
+    """
+    sec_id = el.get('s2orc_id', None)
+    if sec_id:
+        return build_section_list(sec_id, ref_map)
+    else:
+        return default_seclist
+
+
+def process_div(tag: bs4.element.Tag, secs: List, sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) -> List[Dict]:
+    """
+    Process div recursively
+    :param tag:
+    :param secs:
+    :param sp:
     :param bib_map:
     :param ref_map:
     :return:
     """
-    # TODO FIX BODY TEXT PARAGRAPH PROCESSING
-    raise NotImplementedError
-    # section_title = ''
-    # body_text = []
-    #
-    # # check if any body divs
-    # div0s = soup.find_all('div0')
-    #
-    # if div0s:
-    #     # process all divs
-    #     for div in div0s:
-    #         for el in div:
-    #             try:
-    #                 if el.name == 'head':
-    #                     section_title = el.text
-    #                 # if paragraph treat as paragraph if any text
-    #                 elif el.name == 'p' or el.name == 'proof':
-    #                     if el.text:
-    #                         body_text.append(
-    #                             process_paragraph(soup, el, section_title, bib_map, ref_map)
-    #                         )
-    #                 # if subdivision, treat each paragraph unit separately
-    #                 elif el.name == 'div1':
-    #                     if el.head and el.head.text:
-    #                         section_title = el.head.text
-    #                     for p in itertools.chain(el.find_all('p'), el.find_all('proof')):
-    #                         body_text.append(
-    #                             process_paragraph(soup, p, section_title, bib_map, ref_map)
-    #                         )
-    #                         p.decompose()
-    #                 if el.name:
-    #                     el.decompose()
-    #             except AttributeError:
-    #                 continue
-    # else:
-    #     # get all paragraphs
-    #     paras = soup.find_all('p')
-    #
-    #     # figure out where to start processing
-    #     start_ind = 0
-    #     for p_ind, p in enumerate(paras):
-    #         start_ind = p_ind
-    #         break
-    #
-    #     # process all paragraphs
-    #     for p in paras[start_ind:]:
-    #         body_text.append(
-    #             process_paragraph(soup, p, "", bib_map, ref_map)
-    #         )
-    #         p.decompose()
-    #
-    # return [para.as_json() for para in body_text]
+    # iterate through children of this tag
+    body_text = []
+    for el in tag:
+        # process tags
+        if type(el) == bs4.element.Tag:
+            el_sec_list = get_seclist_for_el(el, ref_map, secs)
+            try:
+                # recursively process if has <p> children
+                if el.p:
+                    body_text += process_div(el, el_sec_list, sp, bib_map, ref_map)
+                # process <p> tags
+                elif el.name == 'p' or el.name == 'proof':
+                    if el.text:
+                        body_text.append(
+                            process_paragraph(sp, el, el_sec_list, bib_map, ref_map)
+                        )
+                # process proofs (TODO)
+                elif el.name == 'proof':
+                    if el.text:
+                        body_text.append(
+                            process_paragraph(sp, el, el_sec_list, bib_map, ref_map)
+                        )
+                # process lists
+                elif el.name == 'list':
+                    if el.text:
+                        body_text += process_list_el(sp, el, el_sec_list, bib_map, ref_map)
+                # skip these tags
+                elif el.name in SKIP_TAGS:
+                    continue
+                else:
+                    raise NotImplementedError(f'Unknown tag type: {el.name}')
+            except AttributeError:
+                print(f'Attribute error: {el}')
+                continue
+        # skip navigable strings (these are usually section headers)
+        elif type(el) == NavigableString:
+            continue
+
+    return body_text
+
+
+def process_body_text_from_tex(sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) -> List[Dict]:
+    """
+    Parse body text from tag recursively
+    :param sp:
+    :param bib_map:
+    :param ref_map:
+    :return:
+    """
+    body_text = []
+    for tag in sp.body:
+        if type(tag) == NavigableString:
+            continue
+        else:
+            sec_list = get_seclist_for_el(tag, ref_map, [])
+            for cld in tag:
+                sec_list = get_seclist_for_el(tag, ref_map, sec_list)
+                if type(cld) == bs4.element.Tag:
+                    body_text += process_div(cld, sec_list, sp, bib_map, ref_map)
+
+    # decompose everything
+    sp.body.decompose()
+
+    return [para.as_json() for para in body_text]
 
 
 def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_file: str) -> Paper:
@@ -928,28 +1084,21 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
     :param log_file:
     :return:
     """
-    def decompose_tags_before_title(some_soup):
-        # decompose all tags before title
-        for tag in some_soup.std:
-            if type(tag) == bs4.element.Tag:
-                if tag.name != 'maketitle' and tag.name != 'title':
-                    tag.decompose()
-                else:
-                    break
-        return some_soup
-
     # create grobid client
     client = GrobidClient()
 
     print('parsing xml to s2orc format...')
 
-    # replace unexpected tags with floats
-    for mn in sp.find_all("unexpected"):
-        mn.name = 'float'
+    # # replace unexpected tags with floats
+    # for mn in sp.find_all("unexpected"):
+    #     mn.name = 'float'
 
     # decompose tags before title (TODO: not sure why but have to run twice)
-    sp = decompose_tags_before_title(sp)
-    sp = decompose_tags_before_title(sp)
+    decompose_tags_before_title(sp)
+    decompose_tags_before_title(sp)
+
+    # collapse all hi tags
+    collapse_formatting_tags(sp)
 
     # process maketitle info
     title, authors = process_maketitle(sp, client, log_file)
@@ -986,10 +1135,6 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
 
     # process and replace tables
     refkey_map = process_tables_from_tex(sp, refkey_map)
-
-    # decompose all remaining floats
-    for flt in sp.find_all('float'):
-        flt.decompose()
 
     # process abstract if possible
     abstract = process_abstract_from_tex(sp, bibkey_map, refkey_map)
