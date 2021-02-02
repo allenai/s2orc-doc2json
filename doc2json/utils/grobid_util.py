@@ -5,6 +5,26 @@ import re
 from collections import defaultdict
 
 
+SUBSTITUTE_TAGS = {
+    'persName',
+    'orgName',
+    'publicationStmt',
+    'titleStmt',
+    'biblScope'
+}
+
+
+def clean_tags(el: bs4.element.Tag):
+    """
+    Replace all tags with lowercase version
+    :param el:
+    :return:
+    """
+    for sub_tag in SUBSTITUTE_TAGS:
+        for sub_el in el.find_all(sub_tag):
+            sub_el.name = sub_tag.lower()
+
+
 def soup_from_path(file_path: str):
     """
     Read XML file
@@ -14,7 +34,7 @@ def soup_from_path(file_path: str):
     return BeautifulSoup(open(file_path, "rb").read(), "xml")
 
 
-def get_title_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
+def get_title_from_grobid_xml(raw_xml: BeautifulSoup) -> str:
     """
     Returns title
     :return:
@@ -29,7 +49,7 @@ def get_title_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
         return ""
 
 
-def get_author_names_from_grobid_xml(raw_xml: bs4.element.Tag) -> List[Dict[str, str]]:
+def get_author_names_from_grobid_xml(raw_xml: BeautifulSoup) -> List[Dict[str, str]]:
     """
     Returns a list of dictionaries, one for each author,
     containing the first and last names.
@@ -45,17 +65,17 @@ def get_author_names_from_grobid_xml(raw_xml: bs4.element.Tag) -> List[Dict[str,
     names = []
 
     for author in raw_xml.find_all("author"):
-        if not author.persName:
+        if not author.persname:
             continue
 
         # forenames include first and middle names
-        forenames = author.persName.find_all("forename")
+        forenames = author.persname.find_all("forename")
 
         # surnames include last names
-        surnames = author.persName.find_all("surname")
+        surnames = author.persname.find_all("surname")
 
         # name suffixes
-        suffixes = author.persName.find_all("suffix")
+        suffixes = author.persname.find_all("suffix")
 
         first = ""
         middle = []
@@ -92,7 +112,7 @@ def get_author_names_from_grobid_xml(raw_xml: bs4.element.Tag) -> List[Dict[str,
     return names
 
 
-def get_affiliation_from_grobid_xml(raw_xml: bs4.element.Tag) -> Dict:
+def get_affiliation_from_grobid_xml(raw_xml: BeautifulSoup) -> Dict:
     """
     Get affiliation from grobid xml
     :param raw_xml:
@@ -104,7 +124,7 @@ def get_affiliation_from_grobid_xml(raw_xml: bs4.element.Tag) -> Dict:
 
     if raw_xml and raw_xml.affiliation:
         for child in raw_xml.affiliation:
-            if child.name == "orgName":
+            if child.name == "orgname":
                 if child.has_attr("type"):
                     if child["type"] == "laboratory":
                         laboratory_name = child.text
@@ -125,7 +145,7 @@ def get_affiliation_from_grobid_xml(raw_xml: bs4.element.Tag) -> Dict:
     return {}
 
 
-def get_author_data_from_grobid_xml(raw_xml: bs4.element.Tag) -> List[Dict]:
+def get_author_data_from_grobid_xml(raw_xml: BeautifulSoup) -> List[Dict]:
     """
     Returns a list of dictionaries, one for each author,
     containing the first and last names.
@@ -153,15 +173,15 @@ def get_author_data_from_grobid_xml(raw_xml: bs4.element.Tag) -> List[Dict]:
         last = ""
         suffix = ""
 
-        if author.persName:
+        if author.persname:
             # forenames include first and middle names
-            forenames = author.persName.find_all("forename")
+            forenames = author.persname.find_all("forename")
 
             # surnames include last names
-            surnames = author.persName.find_all("surname")
+            surnames = author.persname.find_all("surname")
 
             # name suffixes
-            suffixes = author.persName.find_all("suffix")
+            suffixes = author.persname.find_all("suffix")
 
             for forename in forenames:
                 if forename.has_attr("type"):
@@ -203,7 +223,7 @@ def get_author_data_from_grobid_xml(raw_xml: bs4.element.Tag) -> List[Dict]:
     return authors
 
 
-def get_year_from_grobid_xml(raw_xml: bs4.element.Tag) -> Optional[int]:
+def get_year_from_grobid_xml(raw_xml: BeautifulSoup) -> Optional[int]:
     """
     Returns date published if exists
     :return:
@@ -218,7 +238,7 @@ def get_year_from_grobid_xml(raw_xml: bs4.element.Tag) -> Optional[int]:
     return None
 
 
-def get_venue_from_grobid_xml(raw_xml: bs4.element.Tag, title_text: str) -> str:
+def get_venue_from_grobid_xml(raw_xml: BeautifulSoup, title_text: str) -> str:
     """
     Returns venue/journal/publisher of bib entry
     Grobid ref documentation: https://grobid.readthedocs.io/en/latest/training/Bibliographical-references/
@@ -242,37 +262,37 @@ def get_venue_from_grobid_xml(raw_xml: bs4.element.Tag, title_text: str) -> str:
     return ""
 
 
-def get_volume_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
+def get_volume_from_grobid_xml(raw_xml: BeautifulSoup) -> str:
     """
     Returns the volume number of grobid bib entry
-    Grobid <biblScope unit="volume">
+    Grobid <biblscope unit="volume">
     :return:
     """
-    for bibl_entry in raw_xml.find_all("biblScope"):
+    for bibl_entry in raw_xml.find_all("biblscope"):
         if bibl_entry.has_attr("unit") and bibl_entry["unit"] == "volume":
             return bibl_entry.text
     return ""
 
 
-def get_issue_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
+def get_issue_from_grobid_xml(raw_xml: BeautifulSoup) -> str:
     """
     Returns the issue number of grobid bib entry
-    Grobid <biblScope unit="issue">
+    Grobid <biblscope unit="issue">
     :return:
     """
-    for bibl_entry in raw_xml.find_all("biblScope"):
+    for bibl_entry in raw_xml.find_all("biblscope"):
         if bibl_entry.has_attr("unit") and bibl_entry["unit"] == "issue":
             return bibl_entry.text
     return ""
 
 
-def get_pages_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
+def get_pages_from_grobid_xml(raw_xml: BeautifulSoup) -> str:
     """
     Returns the page numbers of grobid bib entry
-    Grobid <biblScope unit="page">
+    Grobid <biblscope unit="page">
     :return:
     """
-    for bibl_entry in raw_xml.find_all("biblScope"):
+    for bibl_entry in raw_xml.find_all("biblscope"):
         if bibl_entry.has_attr("unit") and bibl_entry["unit"] == "page" and bibl_entry.has_attr("from"):
             from_page = bibl_entry["from"]
             if bibl_entry.has_attr("to"):
@@ -283,7 +303,7 @@ def get_pages_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
     return ""
 
 
-def get_other_ids_from_grobid_xml(raw_xml: bs4.element.Tag) -> Dict[str, List]:
+def get_other_ids_from_grobid_xml(raw_xml: BeautifulSoup) -> Dict[str, List]:
     """
     Returns a dictionary of other identifiers from grobid bib entry (arxiv, pubmed, doi)
     :param raw_xml:
@@ -298,7 +318,7 @@ def get_other_ids_from_grobid_xml(raw_xml: bs4.element.Tag) -> Dict[str, List]:
     return other_ids
 
 
-def get_raw_bib_text_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
+def get_raw_bib_text_from_grobid_xml(raw_xml: BeautifulSoup) -> str:
     """
     Returns the raw bibiliography string
     :param raw_xml:
@@ -310,14 +330,14 @@ def get_raw_bib_text_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
     return ""
 
 
-def get_publication_datetime_from_grobid_xml(raw_xml: bs4.element.Tag) -> str:
+def get_publication_datetime_from_grobid_xml(raw_xml: BeautifulSoup) -> str:
     """
     Finds and returns the publication datetime if it exists
     :param raw_xml:
     :return:
     """
     if raw_xml.publicationStmt:
-        for child in raw_xml.publicationStmt:
+        for child in raw_xml.publicationstmt:
             if child.name == "date" \
                     and child.has_attr("type") \
                     and child["type"] == "published" \
@@ -332,6 +352,7 @@ def parse_bib_entry(bib_entry: BeautifulSoup) -> Dict:
     :param bib_entry:
     :return:
     """
+    clean_tags(bib_entry)
     title = get_title_from_grobid_xml(bib_entry)
     return {
         'ref_id': bib_entry.attrs.get("xml:id", None),
@@ -358,8 +379,9 @@ def extract_paper_metadata_from_grobid_xml(tag: bs4.element.Tag) -> Dict:
     :param tag:
     :return:
     """
+    clean_tags(tag)
     paper_metadata = {
-        "title": tag.titleStmt.title.text,
+        "title": tag.titlestmt.title.text,
         "authors": get_author_data_from_grobid_xml(tag),
         "year": get_publication_datetime_from_grobid_xml(tag)
     }
