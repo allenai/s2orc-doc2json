@@ -1014,7 +1014,7 @@ def process_abstract_from_tex(sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) -
                     process_paragraph(sp, p, [(None, "Abstract")], bib_map, ref_map)
                 )
                 p.decompose()
-    return [para.as_json() for para in abstract_text]
+    return [para.__dict__ for para in abstract_text]
 
 
 def build_section_list(sec_id: str, ref_map: Dict) -> List[Tuple]:
@@ -1064,7 +1064,6 @@ def process_div(tag: bs4.element.Tag, secs: List, sp: BeautifulSoup, bib_map: Di
         # process tags
         if type(el) == bs4.element.Tag:
             el_sec_list = get_seclist_for_el(el, ref_map, secs)
-            print('\t', el.name, el_sec_list)
             try:
                 # recursively process if has <p> children
                 if el.p:
@@ -1122,13 +1121,12 @@ def process_body_text_from_tex(sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) 
                 else:
                     sec_list = get_seclist_for_el(cld, ref_map, sec_list)
                     if type(cld) == bs4.element.Tag:
-                        print(cld.name, sec_list)
                         body_text += process_div(cld, sec_list, sp, bib_map, ref_map)
 
     # decompose everything
     sp.body.decompose()
 
-    return [para.as_json() for para in body_text]
+    return [para.__dict__ for para in body_text]
 
 
 def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_file: str) -> Paper:
@@ -1198,8 +1196,6 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
     if not body_text:
         with open(log_file, 'a+') as body_f:
             body_f.write(f'{file_id},warn_no_body\n')
-
-    # abstract = [para.as_json() for para in abstract]
 
     metadata = {
         "title": title,

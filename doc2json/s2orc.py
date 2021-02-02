@@ -37,12 +37,16 @@ class ReferenceEntry:
             text: str,
             latex: Optional[str],
             content: Optional[str],
+            uris: Optional[List[str]],
+            num: Optional[str],
             type_str: str
     ):
         self.ref_id = ref_id
         self.text = text
         self.latex = latex
         self.content = content
+        self.uris = uris
+        self.num = num
         self.type_str = type_str
 
     def as_json(self):
@@ -50,6 +54,8 @@ class ReferenceEntry:
             "text": self.text,
             "latex": self.latex,
             "content": self.content,
+            "uris": self.uris,
+            "num": self.num,
             "type": self.type_str
         }
 
@@ -96,6 +102,8 @@ class BibliographyEntry:
             issue: Optional[str],
             pages: Optional[str],
             other_ids: Dict[str, List],
+            num: Optional[int],
+            urls: Optional[List],
             raw_text: Optional[str]
     ):
         self.bib_id = bib_id
@@ -108,6 +116,8 @@ class BibliographyEntry:
         self.issue = issue
         self.pages = pages
         self.other_ids = other_ids
+        self.num = num
+        self.urls = urls
         self.raw_text = raw_text
 
     def as_json(self):
@@ -121,6 +131,8 @@ class BibliographyEntry:
             "issue": self.issue,
             "pages": self.pages,
             "other_ids": self.other_ids,
+            "num": self.num,
+            "urls": self.urls,
             "raw_text": self.raw_text
         }
 
