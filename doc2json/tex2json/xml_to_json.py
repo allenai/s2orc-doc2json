@@ -648,6 +648,35 @@ def get_figure_map_from_tex(sp: BeautifulSoup) -> Dict:
     """
     figure_map = dict()
 
+    # get floats first because they are around figures
+    for flt in sp.find_all('float'):
+        try:
+            if flt.name and flt.get('name') == 'figure':
+
+                # get files
+                fig_files = []
+                for fig in flt.find_all('figure'):
+                    if fig.get('file'):
+                        fname = fig.get('file') + '.' + fig.get('extension')
+                        fig_files.append(os.path.join(fname))
+                    else:
+                        for subfig in fig.find_all('subfigure'):
+                            if subfig.get('file'):
+                                fig_files.append(subfig.get('file') + '.' + fig.get('extension'))
+
+                if flt.get('id'):
+                    ref_id = flt.get('id').replace('uid', 'FIGREF')
+                    # form figmap entry
+                    figure_map[ref_id] = {
+                        "num": flt.get('id-text', None),
+                        "text": None, # placeholder
+                        "uris": fig_files,
+                        "ref_id": ref_id
+                    }
+        except AttributeError:
+            print('Attribute error with figure float: ', flt.name)
+            continue
+
     for fig in sp.find_all('figure'):
         try:
             if fig.name and fig.get('id'):
@@ -670,26 +699,7 @@ def get_figure_map_from_tex(sp: BeautifulSoup) -> Dict:
                     "ref_id": ref_id
                 }
         except AttributeError:
-            continue
-
-    for flt in sp.find_all('float'):
-        try:
-            if flt.name and flt.get('name') == 'figure':
-
-                # todo: figure where file URIs are with floats
-                import pdb
-                pdb.set_trace()
-
-                if flt.get('id'):
-                    ref_id = flt.get('id').replace('uid', 'FIGREF')
-                    # form figmap entry
-                    figure_map[ref_id] = {
-                        "num": flt.get('id-text', None),
-                        "text": None, # placeholder
-                        "uris": [],
-                        "ref_id": ref_id
-                    }
-        except AttributeError:
+            print('Attribute error with figure: ', fig.name)
             continue
 
     return figure_map
@@ -702,27 +712,7 @@ def process_figures_from_tex(sp: BeautifulSoup, ref_map: Dict) -> Dict:
     :param ref_map:
     :return:
     """
-    for fig in sp.find_all('figure'):
-        try:
-            if fig.name and fig.get('id'):
-                # normalize figure id
-                ref_id = fig.get('id').replace('uid', 'FIGREF')
-                # remove equation tex
-                for eq in fig.find_all('texmath'):
-                    eq.decompose()
-                # clean caption text
-                caption_text = None
-                if fig.text:
-                    fig = replace_ref_tokens(sp, fig, ref_map)
-                    caption_text = fig.text.strip()
-                    caption_text = re.sub(r'\s+', ' ', caption_text)
-                    caption_text = re.sub(r'\s', ' ', caption_text)
-                # add text to figmap entry
-                ref_map[ref_id]["text"] = caption_text
-        except AttributeError:
-            continue
-        fig.decompose()
-
+    # process floats first because they are on the outside
     for flt in sp.find_all('float'):
         try:
             if flt.name and flt.get('name') == 'figure':
@@ -742,7 +732,30 @@ def process_figures_from_tex(sp: BeautifulSoup, ref_map: Dict) -> Dict:
                     ref_map[ref_id]['text'] = caption_text
                 flt.decompose()
         except AttributeError:
+            print('Attribute error with figure float: ', flt.name)
             continue
+
+    for fig in sp.find_all('figure'):
+        try:
+            if fig.name and fig.get('id'):
+                # normalize figure id
+                ref_id = fig.get('id').replace('uid', 'FIGREF')
+                # remove equation tex
+                for eq in fig.find_all('texmath'):
+                    eq.decompose()
+                # clean caption text
+                caption_text = None
+                if fig.text:
+                    fig = replace_ref_tokens(sp, fig, ref_map)
+                    caption_text = fig.text.strip()
+                    caption_text = re.sub(r'\s+', ' ', caption_text)
+                    caption_text = re.sub(r'\s', ' ', caption_text)
+                # add text to figmap entry
+                ref_map[ref_id]["text"] = caption_text
+        except AttributeError:
+            print('Attribute error with figure: ', fig.name)
+            continue
+        fig.decompose()
 
     return ref_map
 
@@ -806,6 +819,25 @@ def get_table_map_from_text(sp: BeautifulSoup, keep_table_contents=True) -> Dict
     """
     table_map = dict()
 
+    for flt in sp.find_all('float'):
+        try:
+            if flt.name and flt.get('name') == 'table':
+                if flt.get('id'):
+                    # normalize table id
+                    ref_id = flt.get('id').replace('uid', 'TABREF')
+                    # form tabmap entry
+                    table_map[ref_id] = {
+                        "num": flt.get('id-text', None),
+                        "text": None,   # placeholder
+                        "latex": extract_table(flt) if keep_table_contents else None,
+                        "ref_id": ref_id
+                    }
+                    for row in flt.find_all('row'):
+                        row.decompose()
+        except AttributeError:
+            print('Attribute error with table float: ', flt.name)
+            continue
+
     for tab in sp.find_all('table'):
         try:
             # skip inline tables
@@ -825,24 +857,7 @@ def get_table_map_from_text(sp: BeautifulSoup, keep_table_contents=True) -> Dict
                 for row in tab.find_all('row'):
                     row.decompose()
         except AttributeError:
-            continue
-
-    for flt in sp.find_all('float'):
-        try:
-            if flt.name and flt.get('name') == 'table':
-                if flt.get('id'):
-                    # normalize table id
-                    ref_id = flt.get('id').replace('uid', 'TABREF')
-                    # form tabmap entry
-                    table_map[ref_id] = {
-                        "num": flt.get('id-text', None),
-                        "text": None,   # placeholder
-                        "latex": extract_table(flt) if keep_table_contents else None,
-                        "ref_id": ref_id
-                    }
-                    for row in flt.find_all('row'):
-                        row.decompose()
-        except AttributeError:
+            print('Attribute error with table: ', tab.name)
             continue
 
     return table_map
@@ -855,6 +870,45 @@ def process_tables_from_tex(sp: BeautifulSoup, ref_map: Dict) -> Dict:
     :param ref_map:
     :return:
     """
+    # process floats first because they are on the outside
+    for flt in sp.find_all('float'):
+        try:
+            if flt.name and flt.get('name') == 'table':
+                if flt.get('id'):
+                    # normalize table id
+                    ref_id = flt.get('id').replace('uid', 'TABREF')
+                    # remove equation tex
+                    if flt.caption:
+                        caption_el = replace_ref_tokens(sp, flt.caption, ref_map)
+                        for eq in caption_el.find_all('texmath'):
+                            eq.decompose()
+                        caption_text = caption_el.text.strip()
+                    elif flt.head:
+                        head_el = replace_ref_tokens(sp, flt.head, ref_map)
+                        for eq in head_el.find_all('texmath'):
+                            eq.decompose()
+                        caption_text = head_el.text.strip()
+                    elif flt.p:
+                        caption_parts = []
+                        for tab_p in flt.find_all('p'):
+                            p_el = replace_ref_tokens(sp, tab_p, ref_map)
+                            for eq in p_el.find_all('texmath'):
+                                eq.decompose()
+                            caption_parts.append(p_el.text.strip())
+                        caption_text = ' '.join(caption_parts)
+                    else:
+                        tab_el = replace_ref_tokens(sp, flt, ref_map)
+                        caption_text = tab_el.text.strip()
+                    if caption_text:
+                        caption_text = re.sub(r'\s+', ' ', caption_text)
+                        caption_text = re.sub(r'\s', ' ', caption_text)
+                    # form tabmap entry
+                    ref_map[ref_id]['text'] = caption_text
+                flt.decompose()
+        except AttributeError:
+            print('Attribute error with table float: ', flt.name)
+            continue
+
     for tab in sp.find_all('table'):
         try:
             # skip inline tables
@@ -892,45 +946,9 @@ def process_tables_from_tex(sp: BeautifulSoup, ref_map: Dict) -> Dict:
                 # form tabmap entry
                 ref_map[ref_id]['text'] = caption_text
         except AttributeError:
+            print('Attribute error with table: ', tab.name)
             continue
         tab.decompose()
-
-    for flt in sp.find_all('float'):
-        try:
-            if flt.name and flt.get('name') == 'table':
-                if flt.get('id'):
-                    # normalize table id
-                    ref_id = flt.get('id').replace('uid', 'TABREF')
-                    # remove equation tex
-                    if flt.caption:
-                        caption_el = replace_ref_tokens(sp, flt.caption, ref_map)
-                        for eq in caption_el.find_all('texmath'):
-                            eq.decompose()
-                        caption_text = caption_el.text.strip()
-                    elif flt.head:
-                        head_el = replace_ref_tokens(sp, flt.head, ref_map)
-                        for eq in head_el.find_all('texmath'):
-                            eq.decompose()
-                        caption_text = head_el.text.strip()
-                    elif flt.p:
-                        caption_parts = []
-                        for tab_p in flt.find_all('p'):
-                            p_el = replace_ref_tokens(sp, tab_p, ref_map)
-                            for eq in p_el.find_all('texmath'):
-                                eq.decompose()
-                            caption_parts.append(p_el.text.strip())
-                        caption_text = ' '.join(caption_parts)
-                    else:
-                        tab_el = replace_ref_tokens(sp, flt, ref_map)
-                        caption_text = tab_el.text.strip()
-                    if caption_text:
-                        caption_text = re.sub(r'\s+', ' ', caption_text)
-                        caption_text = re.sub(r'\s', ' ', caption_text)
-                    # form tabmap entry
-                    ref_map[ref_id]['text'] = caption_text
-                flt.decompose()
-        except AttributeError:
-            continue
 
     return ref_map
 
