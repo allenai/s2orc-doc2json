@@ -3,7 +3,7 @@ import re
 import itertools
 import bs4
 from bs4 import BeautifulSoup, NavigableString
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 import copy
 import latex2mathml.converter
 
@@ -267,6 +267,7 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info:
         all_cite_spans.append({
             "start": span.start(),
             "end": span.start() + len(span.group()),
+            "text": bib_map[span.group()]['num'],
             "ref_id": span.group()
         })
 
@@ -282,6 +283,7 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info:
         all_ref_spans.append({
             "start": span.start(),
             "end": span.start() + len(span.group()),
+            "text": ref_map[span.group()]['num'],
             "ref_id": span.group()
         })
 
@@ -477,64 +479,91 @@ def get_section_name(sec):
     return sec_text
 
 
+def get_sections_from_div(el: bs4.element.Tag, sp: BeautifulSoup, parent: Optional[str], faux_max: int) -> Dict:
+    """
+    Process section headers for one div
+    :param el:
+    :param sp:
+    :return:
+    """
+    sec_map_dict = dict()
+    el_ref_id = None
+
+    # process divs with ids
+    if el.get('id', None):
+        sec_num = el.get('id-text', None)
+        if 'cid' in el.get('id'):
+            el_ref_id = el.get('id').replace('cid', 'SECREF')
+        elif 'uid' in el.get('id'):
+            el_ref_id = el.get('id').replace('uid', 'SECREF')
+        else:
+            print('Unknown ID type!', el.get('id'))
+            raise NotImplementedError
+        el['s2orc_id'] = el_ref_id
+        sec_map_dict[el_ref_id] = {
+            "num": sec_num,
+            "text": get_section_name(el),
+            "ref_id": el_ref_id,
+            "parent": parent
+        }
+    # process divs without section numbers
+    elif el.get('rend') == "nonumber":
+        el_ref_id = f'SECREF{faux_max}'
+        el['s2orc_id'] = el_ref_id
+        sec_map_dict[el_ref_id] = {
+            "num": None,
+            "text": get_section_name(el),
+            "ref_id": el_ref_id,
+            "parent": parent
+        }
+        print(f'Added {el_ref_id} for unspecified section')
+
+    # process sub elements
+    for sub_el in el.find_all(recursive=False):
+        if sub_el.name.startswith('div'):
+            # add any unspecified keys
+            sec_keys = [int(k.strip('SECREF')) for k in sec_map_dict.keys() if k]
+            faux_max = max(sec_keys + [faux_max]) + 1
+            sec_map_dict.update(
+                get_sections_from_div(sub_el, sp, el_ref_id if el_ref_id else parent, faux_max)
+            )
+        elif sub_el.name == 'p' or sub_el.name == 'proof':
+            if sub_el.get('id', None):
+                sec_num = sub_el.get('id-text', sub_el.hi.get('id-text', None))
+                if 'cid' in sub_el.get('id'):
+                    sub_el_ref_id = sub_el.get('id').replace('cid', 'SECREF')
+                elif 'uid' in sub_el.get('id'):
+                    sub_el_ref_id = sub_el.get('id').replace('uid', 'SECREF')
+                else:
+                    print('Unknown ID type!', sub_el.get('id'))
+                    raise NotImplementedError
+                sub_el['s2orc_id'] = sub_el_ref_id
+                sec_map_dict[el_ref_id] = {
+                    "num": sec_num,
+                    "text": sub_el.head.text if sub_el.head else sub_el.hi.text if sub_el.hi else "",
+                    "ref_id": sub_el_ref_id,
+                    "parent": el_ref_id if el_ref_id else parent
+                }
+    return sec_map_dict
+
+
 def process_sections_from_text(sp: BeautifulSoup) -> Dict:
     """
     Generate section dict and replace with id tokens
     :param sp:
     :return:
     """
-    # TODO: recursively process divs
     # initialize
     section_map = dict()
+    max_above_1000 = 999
 
     for div0 in sp.find_all('div0'):
         parent = None
-        if div0.get('id'):
-            sec_num = div0.get('id-text', None)
-            ref_id = div0.get('id').replace('cid', 'SECREF')
-            div0['s2orc_id'] = ref_id
-            section_map[ref_id] = {
-                "num": sec_num,
-                "text": get_section_name(div0),
-                "ref_id": ref_id,
-                "parent": None
-            }
-            parent = ref_id
-        if div0.div1:
-            for div1 in div0.find_all('div1'):
-                if div1.get('id'):
-                    sec_num = div1.get('id-text', None)
-                    ref_id = div1.get('id').replace('uid', 'SECREF')
-                    div1['s2orc_id'] = ref_id
-                    section_map[ref_id] = {
-                        "num": sec_num,
-                        "text": get_section_name(div1),
-                        "ref_id": ref_id,
-                        "parent": parent
-                    }
-                for p in itertools.chain(div1.find_all('p'), div1.find_all('proof')):
-                    if p.get('id'):
-                        sec_num = p.get('id-text', p.hi.get('id-text', None))
-                        ref_id = p.get('id').replace('uid', 'SECREF')
-                        p['s2orc_id'] = ref_id
-                        section_map[ref_id] = {
-                            "num": sec_num,
-                            "text": p.head.text if p.head else p.hi.text if p.hi else "",
-                            "ref_id": ref_id,
-                            "parent": parent
-                        }
-        else:
-            for p in itertools.chain(div0.find_all('p'), div0.find_all('proof')):
-                if p.get('id'):
-                    sec_num = p.get('id-text', p.hi.get('id-text', None))
-                    ref_id = p.get('id').replace('uid', 'SECREF')
-                    p['s2orc_id'] = ref_id
-                    section_map[ref_id] = {
-                        "num": sec_num,
-                        "text": p.head.text if p.head else p.hi.text if p.hi else "",
-                        "ref_id": ref_id,
-                        "parent": parent
-                    }
+        section_map.update(get_sections_from_div(div0, sp, parent, max_above_1000 + 1))
+        # add any unspecified keys
+        sec_keys = [int(k.strip('SECREF')) for k in section_map.keys() if k]
+        max_above_1000 = max(sec_keys + [max_above_1000]) + 1
+
     return section_map
 
 
@@ -992,6 +1021,8 @@ def get_seclist_for_el(el: bs4.element.Tag, ref_map: Dict, default_seclist: List
     :param default_seclist:
     :return:
     """
+    if type(el) == NavigableString:
+        return default_seclist
     sec_id = el.get('s2orc_id', None)
     if sec_id:
         return build_section_list(sec_id, ref_map)
@@ -1015,6 +1046,7 @@ def process_div(tag: bs4.element.Tag, secs: List, sp: BeautifulSoup, bib_map: Di
         # process tags
         if type(el) == bs4.element.Tag:
             el_sec_list = get_seclist_for_el(el, ref_map, secs)
+            print('\t', el.name, el_sec_list)
             try:
                 # recursively process if has <p> children
                 if el.p:
@@ -1060,14 +1092,20 @@ def process_body_text_from_tex(sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) 
     """
     body_text = []
     for tag in sp.body:
+        # skip navigable string
         if type(tag) == NavigableString:
             continue
         else:
             sec_list = get_seclist_for_el(tag, ref_map, [])
             for cld in tag:
-                sec_list = get_seclist_for_el(tag, ref_map, sec_list)
-                if type(cld) == bs4.element.Tag:
-                    body_text += process_div(cld, sec_list, sp, bib_map, ref_map)
+                # skip navigable string
+                if type(tag) == NavigableString:
+                    continue
+                else:
+                    sec_list = get_seclist_for_el(cld, ref_map, sec_list)
+                    if type(cld) == bs4.element.Tag:
+                        print(cld.name, sec_list)
+                        body_text += process_div(cld, sec_list, sp, bib_map, ref_map)
 
     # decompose everything
     sp.body.decompose()
@@ -1089,16 +1127,9 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
 
     print('parsing xml to s2orc format...')
 
-    # # replace unexpected tags with floats
-    # for mn in sp.find_all("unexpected"):
-    #     mn.name = 'float'
-
-    # decompose tags before title (TODO: not sure why but have to run twice)
+    # TODO: not sure why but have to run twice
     decompose_tags_before_title(sp)
     decompose_tags_before_title(sp)
-
-    # collapse all hi tags
-    collapse_formatting_tags(sp)
 
     # process maketitle info
     title, authors = process_maketitle(sp, client, log_file)
@@ -1135,6 +1166,9 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
 
     # process and replace tables
     refkey_map = process_tables_from_tex(sp, refkey_map)
+
+    # collapse all hi tags
+    collapse_formatting_tags(sp)
 
     # process abstract if possible
     abstract = process_abstract_from_tex(sp, bibkey_map, refkey_map)
