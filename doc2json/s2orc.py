@@ -39,24 +39,27 @@ class ReferenceEntry:
             latex: Optional[str]=None,
             content: Optional[str]=None,
             uris: Optional[List[str]]=None,
-            num: Optional[str]=None
+            num: Optional[str]=None,
+            parent: Optional[str]=None
     ):
         self.ref_id = ref_id
         self.text = text
+        self.type_str = type_str
         self.latex = latex
         self.content = content
         self.uris = uris
         self.num = num
-        self.type_str = type_str
+        self.parent = parent
 
     def as_json(self):
         return {
             "text": self.text,
+            "type": self.type_str,
             "latex": self.latex,
             "content": self.content,
             "uris": self.uris,
             "num": self.num,
-            "type": self.type_str
+            "parent": self.parent
         }
 
 
