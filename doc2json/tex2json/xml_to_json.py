@@ -1,11 +1,11 @@
 import os
-import shutil
 import re
 import itertools
 import bs4
 from bs4 import BeautifulSoup, NavigableString
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import copy
+import latex2mathml.converter
 
 from doc2json.pdf2json.grobid.grobid_client import GrobidClient
 from doc2json.utils.grobid_util import parse_bib_entry, get_author_data_from_grobid_xml
@@ -68,29 +68,75 @@ def process_bibentry(bib_text: str, grobid_client: GrobidClient, logfile: str):
     bib_string = ' '.join(bib_lines)
     xml_str = grobid_client.process_citation(bib_string, logfile)
     if xml_str:
-        soup = BeautifulSoup(xml_str, 'xml')
-        return parse_bib_entry(soup)
+        soup = BeautifulSoup(xml_str, 'lxml')
+        bib_entry = parse_bib_entry(soup)
+        if not bib_entry['raw_text']:
+            bib_entry['raw_text'] = bib_string
+        return bib_entry
     return None
 
 
-def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_name: str, ref_map: Dict):
+def replace_ref_tokens(sp: BeautifulSoup, el: bs4.element.Tag, ref_map: Dict):
     """
-    Process one paragraph
+    Replace all references in element with special tokens
     :param sp:
-    :param para_el:
-    :param section_name:
+    :param el:
     :param ref_map:
     :return:
     """
     # replace all citations with cite keyword
-    for cite in para_el.find_all('cit'):
+    for cite in el.find_all('cit'):
         try:
             target = cite.ref.get('target').replace('bid', 'BIBREF')
             cite.replace_with(sp.new_string(f" {target} "))
         except AttributeError:
+            print('Attribute error: ', cite)
             continue
 
-    # replace formulas with formula text and get corresponding spans
+    # replace all non citation references
+    for rtag in el.find_all('ref'):
+        try:
+            if rtag.get('target') and not rtag.get('target').startswith('bid'):
+                if rtag.get('target').startswith('cid'):
+                    target = rtag.get('target').replace('cid', 'SECREF')
+                elif rtag.get('target').startswith('uid'):
+                    if rtag.get('target').replace('uid', 'FIGREF') in ref_map:
+                        target = rtag.get('target').replace('uid', 'FIGREF')
+                    elif rtag.get('target').replace('uid', 'TABREF') in ref_map:
+                        target = rtag.get('target').replace('uid', 'TABREF')
+                    elif rtag.get('target').replace('uid', 'EQREF') in ref_map:
+                        target = rtag.get('target').replace('uid', 'EQREF')
+                    elif rtag.get('target').replace('uid', 'FOOTREF') in ref_map:
+                        target = rtag.get('target').replace('uid', 'FOOTREF')
+                    elif rtag.get('target').replace('uid', 'SECREF') in ref_map:
+                        target = rtag.get('target').replace('uid', 'SECREF')
+                    else:
+                        target = rtag.get('target').upper()
+                else:
+                    print('Weird ID!')
+                    target = rtag.get('target').upper()
+                rtag.replace_with(sp.new_string(f" {target} "))
+        except AttributeError:
+            print('Attribute error: ', rtag)
+            continue
+
+    return el
+
+
+def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info: List, bib_map: Dict, ref_map: Dict):
+    """
+    Process one paragraph
+    :param sp:
+    :param para_el:
+    :param section_info:
+    :param bib_map:
+    :param ref_map:
+    :return:
+    """
+    # replace all ref tokens with special tokens
+    para_el = replace_ref_tokens(sp, para_el, ref_map)
+
+    # sub and get corresponding spans of inline formulas
     formula_dict = dict()
     inline_key_ind = 0
     display_key_ind = 0
@@ -106,45 +152,20 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_name:
                 formula_key = f'INLINEFORM{inline_key_ind}'
                 ref_id = None
                 inline_key_ind += 1
-            formula_dict[formula_key] = (ftag.math.text, ftag.texmath.text, ref_id)
+            formula_mathml = latex2mathml.converter.convert(ftag.texmath.text)
+            formula_dict[formula_key] = (ftag.math.text, ftag.texmath.text, formula_mathml, ref_id)
             ftag.replace_with(sp.new_string(f" {formula_key} "))
-        except AttributeError:
-            continue
-
-    # replace all non citation references
-    ref_set = set([])
-    for rtag in para_el.find_all('ref'):
-        try:
-            if rtag.get('target') and not rtag.get('target').startswith('bid'):
-                if rtag.get('target').startswith('cid'):
-                    rtag_string = rtag.get('target').replace('cid', 'SECREF')
-                elif rtag.get('target').startswith('uid'):
-                    if rtag.get('target').replace('uid', 'FIGREF') in ref_map:
-                        rtag_string = rtag.get('target').replace('uid', 'FIGREF')
-                    elif rtag.get('target').replace('uid', 'TABREF') in ref_map:
-                        rtag_string = rtag.get('target').replace('uid', 'TABREF')
-                    elif rtag.get('target').replace('uid', 'EQREF') in ref_map:
-                        rtag_string = rtag.get('target').replace('uid', 'EQREF')
-                    elif rtag.get('target').replace('uid', 'FOOTREF') in ref_map:
-                        rtag_string = rtag.get('target').replace('uid', 'FOOTREF')
-                    elif rtag.get('target').replace('uid', 'SECREF') in ref_map:
-                        rtag_string = rtag.get('target').replace('uid', 'SECREF')
-                    else:
-                        rtag_string = rtag.get('target').upper()
-                else:
-                    print('Weird ID!')
-                    rtag_string = rtag.get('target').upper()
-                ref_set.add(rtag_string)
-                rtag.replace_with(sp.new_string(f" {rtag_string} "))
         except AttributeError:
             continue
 
     # remove floats
     for fl in para_el.find_all('float'):
+        print('Warning: still has <float/>!')
         fl.decompose()
 
     # remove notes
     for note in para_el.find_all('note'):
+        print('Warning: still has <note/>!')
         note.decompose()
 
     # substitute space characters
@@ -157,8 +178,6 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_name:
         all_cite_spans.append({
             "start": span.start(),
             "end": span.start() + len(span.group()),
-            "text": None,
-            "latex": None,
             "ref_id": span.group()
         })
 
@@ -174,8 +193,6 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_name:
         all_ref_spans.append({
             "start": span.start(),
             "end": span.start() + len(span.group()),
-            "text": None,
-            "latex": None,
             "ref_id": span.group()
         })
 
@@ -186,12 +203,14 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_name:
             re.finditer(r'(DISPLAYFORM\d+)', text)
     ):
         try:
+            matching_formula = formula_dict[span.group()]
             all_eq_spans.append({
                 "start": span.start(),
                 "end": span.start() + len(span.group()),
-                "text": formula_dict[span.group()][0],
-                "latex": formula_dict[span.group()][1],
-                "ref_id": formula_dict[span.group()][2]
+                "text": matching_formula[0],
+                "latex": matching_formula[1],
+                "mathml": matching_formula[2],
+                "ref_id": matching_formula[3]
             })
         except KeyError:
             continue
@@ -207,23 +226,60 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_name:
         cite_spans=all_cite_spans,
         ref_spans=all_ref_spans,
         eq_spans=all_eq_spans,
-        # TODO: get section number and section hierarchy
-        section=[(None, section_name)]
+        section=section_info
     )
 
 
-def process_bibliography_from_tex(soup, client, log_file) -> Dict:
+def process_maketitle(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: str) -> Tuple[str, List]:
+    """
+    Process maketitle section in soup
+    :param sp:
+    :param grobid_client:
+    :param log_file:
+    :return:
+    """
+    title = ""
+    authors = []
+
+    if not sp.maketitle:
+        return title, authors
+    else:
+        # process title
+        title = sp.maketitle.title.text
+        for formula in sp.author.find_all('formula'):
+            formula.decompose()
+        # process authors
+        author_parts = []
+        for tag in sp.author:
+            if type(tag) == NavigableString:
+                author_parts.append(tag.strip())
+            else:
+                author_parts.append(tag.text.strip())
+        author_parts = [re.sub(r'\s+', ' ', line) for line in author_parts]
+        author_parts = [re.sub(r'\s', ' ', line).strip() for line in author_parts]
+        author_parts = [part for part in author_parts if part.strip()]
+        author_string = ', '.join(author_parts)
+        authors = process_author(author_string, grobid_client, log_file)
+
+    sp.maketitle.decompose()
+    return title, authors
+
+
+def process_bibliography_from_tex(sp: BeautifulSoup, client, log_file) -> Dict:
     """
     Parse bibliography from latex
     :return:
     """
     bibkey_map = dict()
+    # replace Bibliography with bibliography if needed
+    for bibl in sp.find_all("Bibliography"):
+        bibl.name = 'bibliography'
     # construct bib map
-    if soup.Bibliography:
-        bib_items = soup.Bibliography.find_all('bibitem')
+    if sp.bibliography:
+        bib_items = sp.bibliography.find_all('bibitem')
         # map all bib entries
         if bib_items:
-            for bi in bib_items:
+            for bi_num, bi in enumerate(bib_items):
                 try:
                     if not bi.get('id'):
                         continue
@@ -239,16 +295,26 @@ def process_bibliography_from_tex(soup, client, log_file) -> Dict:
                             bib_entry = None
                     # if processed successfully, add to map
                     if bib_entry:
+                        # get URLs from bib entry
+                        urls = []
+                        for xref in bib_par.find_all('xref'):
+                            urls.append(xref.get('url'))
+                        bib_entry['urls'] = urls
+                        # map to ref id
                         ref_id = normalize_latex_id(bi.get('id'))
-                        bib_entry.ref_id = ref_id
-                        bibkey_map[ref_id] = bib_entry.as_json()
+                        bib_entry['ref_id'] = ref_id
+                        bib_entry['num'] = bi_num
+                        bibkey_map[ref_id] = bib_entry
                 except AttributeError:
+                    print('Attribute error in bib item!', bi)
                     continue
                 except TypeError:
+                    print('Type error in bib item!', bi)
                     continue
         else:
-            for p in soup.Bibliography.find_all('p'):
+            for bi_num, p in enumerate(sp.bibliography.find_all('p')):
                 try:
+                    bib_key, bib_entry = None, None
                     bib_text = p.text
                     bib_name = re.match(r'\[(.*?)\](.*)', bib_text)
                     if bib_name:
@@ -257,107 +323,146 @@ def process_bibliography_from_tex(soup, client, log_file) -> Dict:
                         if bib_name:
                             bib_key = bib_name.group(1)
                             bib_entry = process_bibentry(bib_name.group(2), client, log_file)
-                            if bib_entry:
-                                bib_entry.ref_id = bib_key
-                                bibkey_map[bib_key] = bib_entry.as_json()
                     else:
                         bib_lines = bib_text.split('\n')
                         bib_key = re.sub(r'\s', ' ', bib_lines[0])
                         bib_text = re.sub(r'\s', ' ', ' '.join(bib_lines[1:]))
                         bib_entry = process_bibentry(bib_text, client, log_file)
-                        if bib_entry:
-                            bibkey_map[bib_key] = bib_entry.as_json()
+                    if bib_key and bib_entry:
+                        # get URLs from bib entry
+                        urls = []
+                        for xref in p.find_all('xref'):
+                            urls.append(xref.get('url'))
+                        bib_entry['urls'] = urls
+                        bib_entry['num'] = bi_num
+                        # map to bib id
+                        bibkey_map[bib_key] = bib_entry
                 except AttributeError:
+                    print('Attribute error in bib item!', p)
                     continue
                 except TypeError:
+                    print('Type error in bib item!', p)
                     continue
-        soup.Bibliography.decompose()
+        sp.bibliography.decompose()
     return bibkey_map
 
 
-def process_sections_from_text(soup: BeautifulSoup) -> Dict:
+def get_section_name(sec):
     """
-    Generate section dict and replace with id tokens
-    :param soup:
+    Get section name from div tag
+    :param sec:
     :return:
     """
-    # TODO: get section hierarchy
+    sec_text = ""
+    if sec.head:
+        sec_text = sec.head.text
+    else:
+        sec_str = []
+        for tag in sec:
+            if type(tag) == NavigableString:
+                if len(tag.strip()) < 50:
+                    sec_str.append(tag.strip())
+                else:
+                    break
+            elif tag.name != 'p':
+                if len(tag.text.strip()) < 50:
+                    sec_str.append(tag.text.strip())
+                else:
+                    break
+            else:
+                break
+        sec_text = ' '.join(sec_str).strip()
+    return sec_text
+
+
+def process_sections_from_text(sp: BeautifulSoup) -> Dict:
+    """
+    Generate section dict and replace with id tokens
+    :param sp:
+    :return:
+    """
+    # initialize
     section_map = dict()
 
-    for div0 in soup.find_all('div0'):
+    for div0 in sp.find_all('div0'):
+        parent = None
         if div0.get('id'):
+            sec_num = div0.get('id-text', None)
             ref_id = div0.get('id').replace('cid', 'SECREF')
+            div0['s2orc_id'] = ref_id
             section_map[ref_id] = {
-                "text": div0.head.text if div0.head else "",
-                "latex": None,
-                "ref_id": ref_id
+                "num": sec_num,
+                "text": get_section_name(div0),
+                "ref_id": ref_id,
+                "parent": None
             }
+            parent = ref_id
         if div0.div1:
             for div1 in div0.find_all('div1'):
                 if div1.get('id'):
+                    sec_num = div1.get('id-text', None)
                     ref_id = div1.get('id').replace('uid', 'SECREF')
+                    div1['s2orc_id'] = ref_id
                     section_map[ref_id] = {
-                        "text": div1.head.text if div1.head else "",
-                        "latex": None,
-                        "ref_id": ref_id
+                        "num": sec_num,
+                        "text": get_section_name(div1),
+                        "ref_id": ref_id,
+                        "parent": parent
                     }
                 for p in itertools.chain(div1.find_all('p'), div1.find_all('proof')):
                     if p.get('id'):
+                        sec_num = p.get('id-text', p.hi.get('id-text', None))
                         ref_id = p.get('id').replace('uid', 'SECREF')
+                        p['s2orc_id'] = ref_id
                         section_map[ref_id] = {
+                            "num": sec_num,
                             "text": p.head.text if p.head else p.hi.text if p.hi else "",
-                            "latex": p.get('id-text') if p.get('id-text') else None,
-                            "ref_id": ref_id
+                            "ref_id": ref_id,
+                            "parent": parent
                         }
         else:
             for p in itertools.chain(div0.find_all('p'), div0.find_all('proof')):
                 if p.get('id'):
+                    sec_num = p.get('id-text', p.hi.get('id-text', None))
                     ref_id = p.get('id').replace('uid', 'SECREF')
+                    p['s2orc_id'] = ref_id
                     section_map[ref_id] = {
+                        "num": sec_num,
                         "text": p.head.text if p.head else p.hi.text if p.hi else "",
-                        "latex": p.get('id-text') if p.get('id-text') else None,
-                        "ref_id": ref_id
+                        "ref_id": ref_id,
+                        "parent": parent
                     }
     return section_map
 
 
-def process_equations_from_tex(soup: BeautifulSoup) -> Dict:
+def process_equations_from_tex(sp: BeautifulSoup) -> Dict:
     """
     Generate equation dict and replace with id tokens
-    :param soup:
+    :param sp:
     :return:
     """
     equation_map = dict()
 
-    for eq in soup.find_all('formula'):
+    for eq in sp.find_all('formula'):
         try:
             if eq.name and eq.get('type') == 'display':
-
                 if eq.get('id'):
                     ref_id = eq.get('id').replace('uid', 'EQREF')
+                    mathml = latex2mathml.converter.convert(eq.texmath.text.strip())
                     equation_map[ref_id] = {
+                        "num": eq.get('id-text', None),
                         "text": eq.math.text.strip(),
+                        "mathml": mathml,
                         "latex": eq.texmath.text.strip(),
                         "ref_id": ref_id
                     }
-                replace_item = copy.copy(eq)
-                replace_item['type'] = 'inline'
+                replace_item = sp.new_tag('p')
+                equation_copy = copy.copy(eq)
+                equation_copy['type'] = 'inline'
+                replace_item.insert(0, equation_copy)
 
-                # append formula keyword to previous <p>
-                cur_tag = eq
-                for _ in range(3):
-                    prev_tag = cur_tag.previous_sibling
-                    if not prev_tag:
-                        break
-                    if prev_tag.name == 'p':
-                        prev_tag.insert(len(prev_tag.contents), NavigableString(' '))
-                        prev_tag.insert(len(prev_tag.contents), replace_item)
-                        break
-                    else:
-                        cur_tag = prev_tag
-
-                # decompose quoted equations
-                eq.decompose()
+                # replace with <p> containing equation as inline
+                eq.replace_with(replace_item)
 
         except AttributeError:
             continue
@@ -365,15 +470,15 @@ def process_equations_from_tex(soup: BeautifulSoup) -> Dict:
     return equation_map
 
 
-def process_footnotes_from_text(soup: BeautifulSoup) -> Dict:
+def process_footnotes_from_text(sp: BeautifulSoup) -> Dict:
     """
     Process footnote marks
-    :param soup:
+    :param sp:
     :return:
     """
     footnote_map = dict()
 
-    for note in soup.find_all('note'):
+    for note in sp.find_all('note'):
         try:
             if note.name and note.get('id'):
                 # normalize footnote id
@@ -381,6 +486,9 @@ def process_footnotes_from_text(soup: BeautifulSoup) -> Dict:
                 # remove equation tex
                 for eq in note.find_all('texmath'):
                     eq.decompose()
+                # replace all xrefs with link
+                for xref in note.find_all('xref'):
+                    xref.replace_with(sp.new_string(f" {xref.get('url')} "))
                 # clean footnote text
                 footnote_text = None
                 if note.text:
@@ -389,61 +497,101 @@ def process_footnotes_from_text(soup: BeautifulSoup) -> Dict:
                     footnote_text = re.sub(r'\s', ' ', footnote_text)
                 # form footnote entry
                 footnote_map[ref_id] = {
-                    "text": note.get('id-text') if note.get('id-text') else None,
-                    "caption": footnote_text,
-                    "latex": None,
+                    "num": note.get('id-text', None),
+                    "text": footnote_text,
                     "ref_id": ref_id
                 }
-                note.replace_with(soup.new_string(f" {ref_id} "))
+                note.replace_with(sp.new_string(f" {ref_id} "))
         except AttributeError:
             continue
 
     return footnote_map
 
 
-def process_figures_from_tex(soup: BeautifulSoup) -> Dict:
+def get_figure_map_from_tex(sp: BeautifulSoup) -> Dict:
     """
-    Generate figure dict and replace with id tokens
-    :param soup:
+    Generate figure dict only
+    :param sp:
     :return:
     """
     figure_map = dict()
 
-    for fig in soup.find_all('figure'):
+    for fig in sp.find_all('figure'):
         try:
             if fig.name and fig.get('id'):
                 # normalize figure id
                 ref_id = fig.get('id').replace('uid', 'FIGREF')
                 # try to get filenames of figures
+                fig_files = []
                 if fig.get('file'):
-                    filename = fig.get('file')
+                    fname = fig.get('file') + '.' + fig.get('extension')
+                    fig_files.append(os.path.join(fname))
                 else:
-                    subfiles = []
                     for subfig in fig.find_all('subfigure'):
                         if subfig.get('file'):
-                            subfiles.append(subfig.get('file'))
-                    filename = '|'.join(subfiles)
+                            fig_files.append(subfig.get('file') + '.' + fig.get('extension'))
+                # form figmap entry
+                figure_map[ref_id] = {
+                    "num": fig.get('id-text', None),
+                    "text": None, # placeholder
+                    "uris": fig_files,
+                    "ref_id": ref_id
+                }
+        except AttributeError:
+            continue
+
+    for flt in sp.find_all('float'):
+        try:
+            if flt.name and flt.get('name') == 'figure':
+
+                # todo: figure where file URIs are with floats
+                import pdb
+                pdb.set_trace()
+
+                if flt.get('id'):
+                    ref_id = flt.get('id').replace('uid', 'FIGREF')
+                    # form figmap entry
+                    figure_map[ref_id] = {
+                        "num": flt.get('id-text', None),
+                        "text": None, # placeholder
+                        "uris": [],
+                        "ref_id": ref_id
+                    }
+        except AttributeError:
+            continue
+
+    return figure_map
+
+
+def process_figures_from_tex(sp: BeautifulSoup, ref_map: Dict) -> Dict:
+    """
+    Add figure captions to fig_map and decompose
+    :param sp:
+    :param ref_map:
+    :return:
+    """
+    for fig in sp.find_all('figure'):
+        try:
+            if fig.name and fig.get('id'):
+                # normalize figure id
+                ref_id = fig.get('id').replace('uid', 'FIGREF')
                 # remove equation tex
                 for eq in fig.find_all('texmath'):
                     eq.decompose()
                 # clean caption text
                 caption_text = None
                 if fig.text:
+                    fig = replace_ref_tokens(sp, fig, ref_map)
                     caption_text = fig.text.strip()
                     caption_text = re.sub(r'\s+', ' ', caption_text)
                     caption_text = re.sub(r'\s', ' ', caption_text)
-                # form figmap entry
-                figure_map[ref_id] = {
-                    "text": fig.get('id-text') if fig.get('id-text') else None,
-                    "caption": caption_text,
-                    "latex": filename,
-                    "ref_id": ref_id
-                }
+                # add text to figmap entry
+                ref_map[ref_id]["text"] = caption_text
         except AttributeError:
             continue
         fig.decompose()
 
-    for flt in soup.find_all('float'):
+    for flt in sp.find_all('float'):
         try:
             if flt.name and flt.get('name') == 'figure':
                 if flt.get('id'):
@@ -454,21 +602,17 @@ def process_figures_from_tex(soup: BeautifulSoup) -> Dict:
                     # clean caption text
                     caption_text = None
                     if flt.caption:
+                        flt = replace_ref_tokens(sp, flt, ref_map)
                         caption_text = flt.caption.text.strip()
                         caption_text = re.sub(r'\s+', ' ', caption_text)
                         caption_text = re.sub(r'\s', ' ', caption_text)
                     # form figmap entry
-                    figure_map[ref_id] = {
-                        "text": flt.get('id-text') if flt.get('id-text') else None,
-                        "caption": caption_text,
-                        "latex": None,
-                        "ref_id": ref_id
-                    }
+                    ref_map[ref_id]['text'] = caption_text
                 flt.decompose()
         except AttributeError:
             continue
 
-    return figure_map
+    return ref_map
 
 
 def extract_table(table: BeautifulSoup) -> List:
@@ -504,11 +648,13 @@ def extract_table(table: BeautifulSoup) -> List:
             latex = ' '.join(latex_items)
             latex = re.sub(r'\s+', ' ', latex)
 
+            mathml = latex2mathml.converter.convert(latex.strip())
             cells.append({
                 "alignment": cell.get('halign'),
                 "right-border": cell.get('right-border') == 'true',
                 "left-border": cell.get('left-border') == 'true',
                 "text": text,
+                "mathml": mathml,
                 "latex": latex
             })
         table_rep.append({
@@ -519,75 +665,142 @@ def extract_table(table: BeautifulSoup) -> List:
     return table_rep
 
 
-def process_tables_from_tex(soup: BeautifulSoup, keep_table_contents=True) -> Dict:
+def get_table_map_from_text(sp: BeautifulSoup, keep_table_contents=True) -> Dict:
     """
-    Generate table dict and replace with id tokens
-    :param soup:
+    Generate table dict only
+    :param sp:
     :param keep_table_contents:
     :return:
     """
     table_map = dict()
 
-    for tab in soup.find_all('table'):
+    for tab in sp.find_all('table'):
         try:
+            # skip inline tables
+            if tab.get('rend') == 'inline':
+                continue
+            # process them
             if tab.name and tab.get('id'):
                 # normalize table id
                 ref_id = tab.get('id').replace('uid', 'TABREF')
-                # remove equation tex from caption and clean
-                caption_text = None
+                # form tabmap entry
+                table_map[ref_id] = {
+                    "num": tab.get('id-text', None),
+                    "text": None,   # placeholder
+                    "latex": extract_table(tab) if keep_table_contents else None,
+                    "ref_id": ref_id
+                }
+                for row in tab.find_all('row'):
+                    row.decompose()
+        except AttributeError:
+            continue
+
+    for flt in sp.find_all('float'):
+        try:
+            if flt.name and flt.get('name') == 'table':
+                if flt.get('id'):
+                    # normalize table id
+                    ref_id = flt.get('id').replace('uid', 'TABREF')
+                    # form tabmap entry
+                    table_map[ref_id] = {
+                        "num": flt.get('id-text', None),
+                        "text": None,   # placeholder
+                        "latex": extract_table(flt) if keep_table_contents else None,
+                        "ref_id": ref_id
+                    }
+                    for row in flt.find_all('row'):
+                        row.decompose()
+        except AttributeError:
+            continue
+
+    return table_map
+
+
+def process_tables_from_tex(sp: BeautifulSoup, ref_map: Dict) -> Dict:
+    """
+    Generate table dict and replace with id tokens
+    :param sp:
+    :param ref_map:
+    :return:
+    """
+    for tab in sp.find_all('table'):
+        try:
+            # skip inline tables
+            if tab.get('rend') == 'inline':
+                continue
+            # process them
+            if tab.name and tab.get('id'):
+                # normalize table id
+                ref_id = tab.get('id').replace('uid', 'TABREF')
+                # remove equation tex from caption and clean and resolve refs
                 if tab.caption:
-                    for eq in tab.caption.find_all('texmath'):
+                    caption_el = replace_ref_tokens(sp, tab.caption, ref_map)
+                    for eq in caption_el.find_all('texmath'):
                         eq.decompose()
-                    caption_text = tab.caption.text.strip()
+                    caption_text = caption_el.text.strip()
                 elif tab.head:
-                    for eq in tab.head.find_all('texmath'):
+                    head_el = replace_ref_tokens(sp, tab.head, ref_map)
+                    for eq in head_el.find_all('texmath'):
                         eq.decompose()
-                    caption_text = tab.head.text.strip()
+                    caption_text = head_el.text.strip()
+                elif tab.p:
+                    caption_parts = []
+                    for tab_p in tab.find_all('p'):
+                        p_el = replace_ref_tokens(sp, tab_p, ref_map)
+                        for eq in p_el.find_all('texmath'):
+                            eq.decompose()
+                        caption_parts.append(p_el.text.strip())
+                    caption_text = ' '.join(caption_parts)
+                else:
+                    tab_el = replace_ref_tokens(sp, tab, ref_map)
+                    caption_text = tab_el.text.strip()
                 if caption_text:
                     caption_text = re.sub(r'\s+', ' ', caption_text)
                     caption_text = re.sub(r'\s', ' ', caption_text)
                 # form tabmap entry
-                table_map[ref_id] = {
-                    "text": tab.get('id-text') if tab.get('id-text') else None,
-                    "caption": caption_text,
-                    "latex": extract_table(tab) if keep_table_contents else None,
-                    "ref_id": ref_id
-                }
+                ref_map[ref_id]['text'] = caption_text
         except AttributeError:
             continue
         tab.decompose()
 
-    for flt in soup.find_all('float'):
+    for flt in sp.find_all('float'):
         try:
             if flt.name and flt.get('name') == 'table':
                 if flt.get('id'):
                     # normalize table id
                     ref_id = flt.get('id').replace('uid', 'TABREF')
                     # remove equation tex
-                    caption_text = None
                     if flt.caption:
-                        for eq in flt.caption.find_all('texmath'):
+                        caption_el = replace_ref_tokens(sp, flt.caption, ref_map)
+                        for eq in caption_el.find_all('texmath'):
                             eq.decompose()
-                        caption_text = flt.caption.text.strip()
+                        caption_text = caption_el.text.strip()
                     elif flt.head:
-                        for eq in flt.head.find_all('texmath'):
+                        head_el = replace_ref_tokens(sp, flt.head, ref_map)
+                        for eq in head_el.find_all('texmath'):
                             eq.decompose()
-                        caption_text = flt.head.text.strip()
+                        caption_text = head_el.text.strip()
+                    elif flt.p:
+                        caption_parts = []
+                        for tab_p in flt.find_all('p'):
+                            p_el = replace_ref_tokens(sp, tab_p, ref_map)
+                            for eq in p_el.find_all('texmath'):
+                                eq.decompose()
+                            caption_parts.append(p_el.text.strip())
+                        caption_text = ' '.join(caption_parts)
+                    else:
+                        tab_el = replace_ref_tokens(sp, flt, ref_map)
+                        caption_text = tab_el.text.strip()
                     if caption_text:
                         caption_text = re.sub(r'\s+', ' ', caption_text)
                         caption_text = re.sub(r'\s', ' ', caption_text)
                     # form tabmap entry
-                    table_map[ref_id] = {
-                        "text": flt.get('id-text') if flt.get('id-text') else None,
-                        "caption": caption_text,
-                        "latex": extract_table(flt) if keep_table_contents else None,
-                        "ref_id": ref_id
-                    }
+                    ref_map[ref_id]['text'] = caption_text
                 flt.decompose()
         except AttributeError:
             continue
 
-    return table_map
+    return ref_map
 
 
 def combine_ref_maps(eq_map: Dict, fig_map: Dict, tab_map: Dict, foot_map: Dict, sec_map: Dict):
@@ -618,80 +831,92 @@ def combine_ref_maps(eq_map: Dict, fig_map: Dict, tab_map: Dict, foot_map: Dict,
     return ref_map
 
 
-def process_abstract_from_tex(soup: BeautifulSoup, ref_map: Dict) -> List[Dict]:
+def process_abstract_from_tex(sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) -> List[Dict]:
     """
     Parse abstract from soup
-    :param soup:
+    :param sp:
+    :param bib_map:
     :param ref_map:
     :return:
     """
     abstract_text = []
-    if soup.abstract:
-        for p in soup.abstract.find_all('p'):
+    if sp.abstract:
+        for p in sp.abstract.find_all('p'):
             abstract_text.append(
-                process_paragraph(soup, p, "Abstract", ref_map)
+                process_paragraph(sp, p, [(None, "Abstract")], bib_map, ref_map)
             )
-        soup.abstract.decompose()
+        sp.abstract.decompose()
+    else:
+        p_tags = [tag for tag in sp.std if tag.name == 'p' and not tag.get('s2orc_id', None)]
+        if p_tags:
+            for p in p_tags:
+                abstract_text.append(
+                    process_paragraph(sp, p, [(None, "Abstract")], bib_map, ref_map)
+                )
+                p.decompose()
     return [para.as_json() for para in abstract_text]
 
 
-def process_body_text_from_tex(soup: BeautifulSoup, ref_map: Dict) -> List[Dict]:
+def process_body_text_from_tex(soup: BeautifulSoup, bib_map: Dict, ref_map: Dict) -> List[Dict]:
     """
     Parse body text from soup
     :param soup:
+    :param bib_map:
     :param ref_map:
     :return:
     """
-    section_title = ''
-    body_text = []
-
-    # check if any body divs
-    div0s = soup.find_all('div0')
-
-    if div0s:
-        # process all divs
-        for div in div0s:
-            for el in div:
-                try:
-                    if el.name == 'head':
-                        section_title = el.text
-                    # if paragraph treat as paragraph if any text
-                    elif el.name == 'p' or el.name == 'proof':
-                        if el.text:
-                            body_text.append(
-                                process_paragraph(soup, el, section_title, ref_map)
-                            )
-                    # if subdivision, treat each paragraph unit separately
-                    elif el.name == 'div1':
-                        if el.head and el.head.text:
-                            section_title = el.head.text
-                        for p in itertools.chain(el.find_all('p'), el.find_all('proof')):
-                            body_text.append(
-                                process_paragraph(soup, p, section_title, ref_map)
-                            )
-                            p.decompose()
-                    if el.name:
-                        el.decompose()
-                except AttributeError:
-                    continue
-    else:
-        # get all paragraphs
-        paras = soup.find_all('p')
-
-        # figure out where to start processing
-        start_ind = 0
-        for p_ind, p in enumerate(paras):
-            start_ind = p_ind
-            break
-
-        # process all paragraphs
-        for p in paras[start_ind:]:
-            body_text.append(
-                process_paragraph(soup, p, "", ref_map)
-            )
-            p.decompose()
-
-    return [para.as_json() for para in body_text]
+    # TODO FIX BODY TEXT PARAGRAPH PROCESSING
+    raise NotImplementedError
+    # section_title = ''
+    # body_text = []
+    #
+    # # check if any body divs
+    # div0s = soup.find_all('div0')
+    #
+    # if div0s:
+    #     # process all divs
+    #     for div in div0s:
+    #         for el in div:
+    #             try:
+    #                 if el.name == 'head':
+    #                     section_title = el.text
+    #                 # if paragraph treat as paragraph if any text
+    #                 elif el.name == 'p' or el.name == 'proof':
+    #                     if el.text:
+    #                         body_text.append(
+    #                             process_paragraph(soup, el, section_title, bib_map, ref_map)
+    #                         )
+    #                 # if subdivision, treat each paragraph unit separately
+    #                 elif el.name == 'div1':
+    #                     if el.head and el.head.text:
+    #                         section_title = el.head.text
+    #                     for p in itertools.chain(el.find_all('p'), el.find_all('proof')):
+    #                         body_text.append(
+    #                             process_paragraph(soup, p, section_title, bib_map, ref_map)
+    #                         )
+    #                         p.decompose()
+    #                 if el.name:
+    #                     el.decompose()
+    #             except AttributeError:
+    #                 continue
+    # else:
+    #     # get all paragraphs
+    #     paras = soup.find_all('p')
+    #
+    #     # figure out where to start processing
+    #     start_ind = 0
+    #     for p_ind, p in enumerate(paras):
+    #         start_ind = p_ind
+    #         break
+    #
+    #     # process all paragraphs
+    #     for p in paras[start_ind:]:
+    #         body_text.append(
+    #             process_paragraph(soup, p, "", bib_map, ref_map)
+    #         )
+    #         p.decompose()
+    #
+    # return [para.as_json() for para in body_text]
 
 
 def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_file: str) -> Paper:
@@ -703,19 +928,34 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
     :param log_file:
     :return:
     """
+    def decompose_tags_before_title(some_soup):
+        # decompose all tags before title
+        for tag in some_soup.std:
+            if type(tag) == bs4.element.Tag:
+                if tag.name != 'maketitle' and tag.name != 'title':
+                    tag.decompose()
+                else:
+                    break
+        return some_soup
+
     # create grobid client
     client = GrobidClient()
 
     print('parsing xml to s2orc format...')
 
-    import ipdb
-    ipdb.set_trace()
-
-    # remove what is most likely noise
+    # replace unexpected tags with floats
     for mn in sp.find_all("unexpected"):
-        mn.decompose()
+        mn.name = 'float'
+
+    # decompose tags before title (TODO: not sure why but have to run twice)
+    sp = decompose_tags_before_title(sp)
+    sp = decompose_tags_before_title(sp)
+
+    # process maketitle info
+    title, authors = process_maketitle(sp, client, log_file)
 
     # processing of bibliography entries
+    # TODO: look into why authors aren't processing
     bibkey_map = process_bibliography_from_tex(sp, client, log_file)
 
     # no bibliography entries
@@ -732,42 +972,30 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
     # process footnote markers
     footnote_map = process_footnotes_from_text(sp)
 
-    # process and replace figures
-    figure_map = process_figures_from_tex(sp)
+    # get figure map
+    figure_map = get_figure_map_from_tex(sp)
 
-    # process and replace tables
-    table_map = process_tables_from_tex(sp)
+    # get table_map
+    table_map = get_table_map_from_text(sp)
 
     # combine references in one dict
     refkey_map = combine_ref_maps(equation_map, figure_map, table_map, footnote_map, section_map)
+
+    # process and replace figures
+    refkey_map = process_figures_from_tex(sp, refkey_map)
+
+    # process and replace tables
+    refkey_map = process_tables_from_tex(sp, refkey_map)
 
     # decompose all remaining floats
     for flt in sp.find_all('float'):
         flt.decompose()
 
-    # try to get title/author if not exist
-    if sp.title:
-        title = sp.title.text.strip()
-    else:
-        title = ""
-
-    # try to get authors
-    authors = []
-    for author in sp.find_all('author'):
-        authors.append({
-            "first": "",
-            "middle": [],
-            "last": author.text.strip(),
-            "suffix": "",
-            "affiliation": {},
-            "email": ""
-        })
-
     # process abstract if possible
-    abstract = process_abstract_from_tex(sp, refkey_map)
+    abstract = process_abstract_from_tex(sp, bibkey_map, refkey_map)
 
     # process body text
-    body_text = process_body_text_from_tex(sp, refkey_map)
+    body_text = process_body_text_from_tex(sp, bibkey_map, refkey_map)
 
     # skip if no body text parsed
     if not body_text:
@@ -823,7 +1051,7 @@ def convert_latex_xml_to_s2orc_json(xml_fpath: str, log_dir: str) -> Paper:
     with open(xml_fpath, 'r') as f:
         try:
             xml = f.read()
-            soup = BeautifulSoup(xml, "xml")
+            soup = BeautifulSoup(xml, "lxml")
             paper = convert_xml_to_s2orc(soup, file_id, year, log_file)
             return paper
         except UnicodeDecodeError:

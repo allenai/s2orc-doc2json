@@ -192,3 +192,6 @@ def latex_to_xml(tex_file: str, out_dir: str, out_file: str, err_file: str, log_
         # if no output, skip
         if not os.path.exists(out_file):
             skip_f.write(f'{tex_file}\n')
+
+    if os.path.exists(out_file):
+        return out_file

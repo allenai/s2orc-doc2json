@@ -56,6 +56,9 @@ def extract_latex(zip_file: str, latex_dir: str, cleanup=True):
     if cleanup:
         os.remove(zip_file)
 
+    if os.path.exists(tar_dir):
+        return tar_dir
+
 
 def normalize_latex(latex_dir: str, norm_dir: str, norm_log_file: str, cleanup=True) -> Optional[str]:
     """
@@ -98,11 +101,12 @@ def norm_latex_to_xml(norm_dir: str, xml_dir: str, xml_err_file: str, xml_log_fi
     """
     file_id = norm_dir.strip('/').split('/')[-1]
     norm_tex_file = os.path.join(norm_dir, f'{file_id}.tex')
-    xml_file = os.path.join(xml_dir, f'{file_id}.tex')
+    xml_output_dir = os.path.join(xml_dir, file_id)
+    xml_file = os.path.join(xml_output_dir, f'{file_id}.xml')
 
-    latex_to_xml(
+    xml_output_file = latex_to_xml(
         tex_file=norm_tex_file,
-        out_dir=xml_dir,
+        out_dir=xml_output_dir,
         out_file=xml_file,
         err_file=xml_err_file,
         log_file=xml_log_file
@@ -130,16 +134,16 @@ def convert_latex_to_xml(
     :return:
     """
     # extract zip file
-    extract_latex(zip_file, latex_dir, cleanup)
+    latex_output_dir = extract_latex(zip_file, latex_dir, cleanup)
 
     # normalize latex
     norm_log_file = os.path.join(log_dir, 'norm_error.log')
-    normalize_latex(latex_dir, norm_dir, norm_log_file, cleanup)
+    norm_output_dir = normalize_latex(latex_output_dir, norm_dir, norm_log_file, cleanup)
 
     # convert to xml
     xml_error_file = os.path.join(log_dir, 'xml_error.log')
     xml_log_file = os.path.join(log_dir, 'xml_skip.log')
-    xml_output_file = norm_latex_to_xml(norm_dir, xml_dir, xml_error_file, xml_log_file, cleanup)
+    xml_output_file = norm_latex_to_xml(norm_output_dir, xml_dir, xml_error_file, xml_log_file, cleanup)
 
     return xml_output_file
 

@@ -343,7 +343,8 @@ def parse_bib_entry(bib_entry: BeautifulSoup) -> Dict:
         'issue': get_issue_from_grobid_xml(bib_entry),
         'pages': get_pages_from_grobid_xml(bib_entry),
         'other_ids': get_other_ids_from_grobid_xml(bib_entry),
-        'raw_text': get_raw_bib_text_from_grobid_xml(bib_entry)
+        'raw_text': get_raw_bib_text_from_grobid_xml(bib_entry),
+        'urls': []
     }
 
 
