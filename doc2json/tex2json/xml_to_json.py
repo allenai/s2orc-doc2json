@@ -661,7 +661,10 @@ def process_equations_from_tex(sp: BeautifulSoup) -> Dict:
             if eq.get('type', None) == 'display':
                 if eq.get('id', None):
                     ref_id = eq.get('id').replace('uid', 'EQREF')
-                    mathml = latex2mathml.converter.convert(eq.texmath.text.strip())
+                    try:
+                        mathml = latex2mathml.converter.convert(eq.texmath.text.strip())
+                    except Exception:
+                        mathml = ""
                     equation_map[ref_id] = {
                         "num": eq.get('id-text', None),
                         "text": eq.math.text.strip(),
