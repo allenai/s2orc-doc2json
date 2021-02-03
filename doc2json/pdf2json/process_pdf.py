@@ -9,7 +9,7 @@ from doc2json.pdf2json.grobid.grobid_client import GrobidClient
 from doc2json.pdf2json.tei_to_json import convert_tei_xml_file_to_s2orc_json, convert_tei_xml_soup_to_s2orc_json
 
 
-def process_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
+def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
     """
     Process PDF stream
     :param input_file:

@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>S2ORC pdf2json</title>
+    <title>S2ORC doc2json</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>S2ORC pdf2json utility</h1>
-    <p>Upload a scientific PDF and get back a JSON:</p>
+    <h1>S2ORC doc2json utility</h1>
+    <p>Upload a scientific PDF or LaTeX zip file and get back a JSON:</p>
     <form method=post enctype=multipart/form-data>
-        <p><input type="file" name="file" accept=".pdf"></p>
+        <p><input type="file" name="file" accept=".pdf,.gz"></p>
         <p><input type="submit" value="Upload"></p>
-        <p>Please wait a few seconds, it takes time to process PDFs.</p>
     </form>
+    <p>Please wait, processing takes time...</p>
 </body>
 </html>

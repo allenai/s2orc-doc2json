@@ -12,6 +12,37 @@ BASE_OUTPUT_DIR = 'output'
 BASE_LOG_DIR = 'log'
 
 
+def process_tex_stream(
+        fname: str,
+        stream: bytes,
+        temp_dir: str=BASE_TEMP_DIR
+):
+    """
+    Process a gz file stream
+    :param fname:
+    :param stream:
+    :param temp_dir:
+    :return:
+    """
+    temp_input_dir = os.path.join(temp_dir, 'input')
+    temp_input_file = os.path.join(temp_input_dir, fname)
+
+    os.makedirs(temp_dir, exist_ok=True)
+    os.makedirs(temp_input_dir, exist_ok=True)
+
+    with open(temp_input_file, 'wb') as outf:
+        outf.write(stream)
+
+    output_file = process_tex_file(temp_input_file)
+
+    if os.path.exists(output_file):
+        with open(output_file, 'r') as f:
+            contents = json.load(f)
+            return contents
+    else:
+        return []
+
+
 def process_tex_file(
         input_file: str,
         temp_dir: str=BASE_TEMP_DIR,
