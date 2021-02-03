@@ -105,7 +105,7 @@ def norm_latex_to_xml(norm_dir: str, xml_dir: str, xml_err_file: str, xml_log_fi
     xml_file = os.path.join(xml_output_dir, f'{file_id}.xml')
     os.makedirs(xml_output_dir, exist_ok=True)
 
-    xml_output_file = latex_to_xml(
+    latex_to_xml(
         tex_file=norm_tex_file,
         out_dir=xml_output_dir,
         out_file=xml_file,
@@ -117,8 +117,8 @@ def norm_latex_to_xml(norm_dir: str, xml_dir: str, xml_err_file: str, xml_log_fi
     if cleanup:
         shutil.rmtree(norm_dir)
 
-    if os.path.exists(xml_output_file):
-        return xml_output_file
+    if os.path.exists(xml_file):
+        return xml_file
 
 
 def convert_latex_to_xml(

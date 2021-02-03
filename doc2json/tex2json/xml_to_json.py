@@ -14,7 +14,15 @@ from doc2json.s2orc import Paper, Paragraph
 
 SKIP_TAGS = {
     'clearpage',
-    'colorpool'
+    'colorpool',
+    'newpage',
+    'tableofcontents'
+}
+
+TEXT_TAGS = {
+    'p',
+    'proof',
+    'caption'
 }
 
 
@@ -1168,12 +1176,8 @@ def process_div(tag: bs4.element.Tag, secs: List, sp: BeautifulSoup, bib_map: Di
     # skip these tags
     elif tag.name in SKIP_TAGS:
         return []
-    # process p tags
-    elif tag.name == 'p':
-        if tag.text:
-            body_text.append(process_paragraph(sp, tag, secs, bib_map, ref_map))
-    # process proofs
-    elif tag.name == 'proof':
+    # process normal tags
+    elif tag.name in TEXT_TAGS:
         if tag.text:
             body_text.append(process_paragraph(sp, tag, secs, bib_map, ref_map))
     # process lists
