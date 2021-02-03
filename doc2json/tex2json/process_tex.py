@@ -2,6 +2,7 @@ import os
 import json
 import argparse
 import time
+from typing import Optional
 
 from doc2json.tex2json.tex_to_xml import convert_latex_to_s2orc_json
 from doc2json.tex2json.xml_to_json import convert_latex_xml_to_s2orc_json
@@ -49,7 +50,7 @@ def process_tex_file(
         output_dir: str=BASE_OUTPUT_DIR,
         log_dir: str=BASE_LOG_DIR,
         keep_flag: bool=False,
-) -> str:
+) -> Optional[str]:
     """
     Process files in a TEX zip and get JSON representation
     :param input_file:
@@ -73,10 +74,12 @@ def process_tex_file(
     if not os.path.exists(input_file):
         raise FileNotFoundError(f"{input_file} doesn't exist")
     if os.path.exists(output_file):
-        raise Warning(f'{output_file} already exists!')
+        print(f'{output_file} already exists!')
 
     # process LaTeX
     xml_file = convert_latex_to_s2orc_json(input_file, temp_dir, cleanup_flag)
+    if not xml_file:
+        return None
 
     # convert to S2ORC
     paper = convert_latex_xml_to_s2orc_json(xml_file, log_dir)
