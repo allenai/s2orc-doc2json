@@ -388,7 +388,8 @@ def decompose_tags_before_title(sp: BeautifulSoup):
                     else:
                         break
     else:
-        raise NotImplementedError(f"Unknown inner tag: {sp.body.next.name}")
+        print(f"Unknown inner tag: {sp.body.next.name}")
+        return
 
 
 def process_metadata(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: str) -> Tuple[str, List]:
@@ -1199,9 +1200,10 @@ def process_div(tag: bs4.element.Tag, secs: List, sp: BeautifulSoup, bib_map: Di
             if type(el) == bs4.element.Tag:
                 el_sec_list = get_seclist_for_el(el, ref_map, secs)
                 body_text += process_div(el, el_sec_list, sp, bib_map, ref_map)
-    # unknown tag type
+    # unknown tag type, skip for now
     else:
-        raise NotImplementedError(f'Unknown tag type: {tag.name}')
+        print(f'Unknown tag type: {tag.name}')
+        return []
 
     return body_text
 
