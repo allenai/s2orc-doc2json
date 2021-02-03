@@ -605,7 +605,6 @@ def get_sections_from_div(el: bs4.element.Tag, sp: BeautifulSoup, parent: Option
             "ref_id": el_ref_id,
             "parent": parent
         }
-        print(f'Added {el_ref_id} for unspecified section')
 
     # process sub elements
     for sub_el in el.find_all(recursive=False):
@@ -1248,8 +1247,6 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
     """
     # create grobid client
     client = GrobidClient()
-
-    print('parsing xml to s2orc format...')
 
     # TODO: not sure why but have to run twice
     decompose_tags_before_title(sp)
