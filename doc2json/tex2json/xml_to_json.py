@@ -814,7 +814,7 @@ def extract_table(table: BeautifulSoup) -> List:
                     latex_items.append(child.texmath.text)
                 else:
                     text_items.append(child.text)
-                    latex_items.append(None)
+                    latex_items.append(child.text)
 
             text = ' '.join(text_items)
             text = re.sub(r'\s+', ' ', text)
@@ -828,7 +828,7 @@ def extract_table(table: BeautifulSoup) -> List:
                 "right-border": cell.get('right-border') == 'true',
                 "left-border": cell.get('left-border') == 'true',
                 "text": text.strip(),
-                "latex": latex.strip()
+                "latex": latex.strip() if latex.strip() != text.strip() else None
             })
         table_rep.append({
             "top-border": row.get('top-border') == "true",
