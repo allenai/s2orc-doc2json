@@ -357,12 +357,26 @@ def decompose_tags_before_title(sp: BeautifulSoup):
     :param sp:
     :return:
     """
-    for tag in sp.std:
-        if type(tag) == bs4.element.Tag:
-            if tag.name != 'maketitle' and tag.name != 'title':
-                tag.decompose()
-            else:
-                break
+    if sp.body.next.name == 'std':
+        cld_tags = sp.std.find_all(recursive=False)
+        if any([tag.name == 'maketitle' or tag.name == 'title' for tag in cld_tags]):
+            for tag in sp.std:
+                if type(tag) == bs4.element.Tag:
+                    if tag.name != 'maketitle' and tag.name != 'title':
+                        tag.decompose()
+                    else:
+                        break
+    elif sp.body.next.name == 'unknown':
+        cld_tags = sp.unknown.find_all(recursive=False)
+        if any([tag.name == 'maketitle' or tag.name == 'title' for tag in cld_tags]):
+            for tag in sp.std:
+                if type(tag) == bs4.element.Tag:
+                    if tag.name != 'maketitle' and tag.name != 'title':
+                        tag.decompose()
+                    else:
+                        break
+    else:
+        raise NotImplementedError(f"Unknown inner tag: {sp.body.next.name}")
 
 
 def process_maketitle(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: str) -> Tuple[str, List]:
@@ -377,7 +391,11 @@ def process_maketitle(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: 
     authors = []
 
     if not sp.maketitle:
-        return title, authors
+        if not sp.title:
+            return title, authors
+        else:
+            title = sp.title.text
+            return title, authors
     else:
         # process title
         title = sp.maketitle.title.text
@@ -1035,7 +1053,12 @@ def process_abstract_from_tex(sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) -
             )
         sp.abstract.decompose()
     else:
-        p_tags = [tag for tag in sp.std if tag.name == 'p' and not tag.get('s2orc_id', None)]
+        if sp.std:
+            p_tags = [tag for tag in sp.std if tag.name == 'p' and not tag.get('s2orc_id', None)]
+        elif sp.unknown:
+            p_tags = [tag for tag in sp.unknown if tag.name == 'p' and not tag.get('s2orc_id', None)]
+        else:
+            p_tags = None
         if p_tags:
             for p in p_tags:
                 abstract_text.append(
@@ -1056,7 +1079,10 @@ def build_section_list(sec_id: str, ref_map: Dict) -> List[Tuple]:
         return []
     else:
         sec_entry = [(ref_map[sec_id]['num'], ref_map[sec_id]['text'])]
-        return build_section_list(ref_map[sec_id]['parent'], ref_map) + sec_entry
+        if ref_map[sec_id]['parent'] == sec_id:
+            return sec_entry
+        else:
+            return build_section_list(ref_map[sec_id]['parent'], ref_map) + sec_entry
 
 
 def get_seclist_for_el(el: bs4.element.Tag, ref_map: Dict, default_seclist: List) -> List[Tuple]:
