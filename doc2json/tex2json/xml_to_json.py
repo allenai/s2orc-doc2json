@@ -737,20 +737,25 @@ def get_figure_map_from_tex(sp: BeautifulSoup) -> Dict:
                 # get files
                 fig_files = []
                 for fig in flt.find_all('figure'):
-                    if fig.get('file'):
+                    if fig.get('file') and fig.get('extension'):
                         fname = fig.get('file') + '.' + fig.get('extension')
-                        fig_files.append(os.path.join(fname))
+                        fig_files.append(fname)
+                    elif fig.get('file'):
+                        fname = fig.get('file')
+                        fig_files.append(fname)
                     else:
                         for subfig in fig.find_all('subfigure'):
-                            if subfig.get('file'):
+                            if subfig.get('file') and subfig.get('extension'):
                                 fig_files.append(subfig.get('file') + '.' + fig.get('extension'))
+                            elif subfig.get('file'):
+                                fig_files.append(subfig.get('file'))
 
                 if flt.get('id'):
                     ref_id = flt.get('id').replace('uid', 'FIGREF')
                     # form figmap entry
                     figure_map[ref_id] = {
                         "num": flt.get('id-text', None),
-                        "text": None, # placeholder
+                        "text": None,   # placeholder
                         "uris": fig_files,
                         "ref_id": ref_id
                     }
@@ -765,17 +770,21 @@ def get_figure_map_from_tex(sp: BeautifulSoup) -> Dict:
                 ref_id = fig.get('id').replace('uid', 'FIGREF')
                 # try to get filenames of figures
                 fig_files = []
-                if fig.get('file'):
+                if fig.get('file') and fig.get('extension'):
                     fname = fig.get('file') + '.' + fig.get('extension')
-                    fig_files.append(os.path.join(fname))
+                    fig_files.append(fname)
+                elif fig.get('file'):
+                    fig_files.append(fig.get('file'))
                 else:
                     for subfig in fig.find_all('subfigure'):
-                        if subfig.get('file'):
+                        if subfig.get('file') and subfig.get('extension'):
                             fig_files.append(subfig.get('file') + '.' + fig.get('extension'))
+                        elif subfig.get('file'):
+                            fig_files.append(subfig.get('file'))
                 # form figmap entry
                 figure_map[ref_id] = {
                     "num": fig.get('id-text', None),
-                    "text": None, # placeholder
+                    "text": None,   # placeholder
                     "uris": fig_files,
                     "ref_id": ref_id
                 }
