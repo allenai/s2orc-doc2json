@@ -141,8 +141,13 @@ def process_list_el(sp: BeautifulSoup, list_el: bs4.element.Tag, section_info: L
     # TODO: currently parsing list as a list of paragraphs (append numbers to start of each entry in ordered lists)
     list_items = []
     for item in list_el.find_all('item'):
-        item_as_para = process_paragraph(sp, item, section_info, bib_map, ref_map)
+        # skip itemize settings
+        if item.text.strip().startswith('[') and item.text.strip().endswith(']'):
+            continue
+        # try processing as paragraph
         list_num = item.get('id-text', None)
+        item_as_para = process_paragraph(sp, item, section_info, bib_map, ref_map)
+        # append list number if ordered
         if list_num:
             list_num_str = f'{list_num}. '
             # iterate cite spans
@@ -326,7 +331,7 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info:
                 "text": matching_formula[0],
                 "latex": matching_formula[1],
                 "mathml": matching_formula[2],
-                "ref_id": matching_formula[3]
+                "ref_id": span
             })
         except KeyError:
             continue
@@ -809,7 +814,7 @@ def extract_table(table: BeautifulSoup) -> List:
                     latex_items.append(child.texmath.text)
                 else:
                     text_items.append(child.text)
-                    latex_items.append(child.text)
+                    latex_items.append(None)
 
             text = ' '.join(text_items)
             text = re.sub(r'\s+', ' ', text)
@@ -1253,7 +1258,7 @@ def convert_latex_xml_to_s2orc_json(xml_fpath: str, log_dir: str) -> Paper:
     year = file_id.split('.')[0][:2]
     if year.isdigit():
         year = int(year)
-        if year < 20:
+        if year < 40:
             year += 2000
         else:
             year += 1900
