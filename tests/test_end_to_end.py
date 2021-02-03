@@ -65,7 +65,7 @@ class TestS2ORC(unittest.TestCase):
                 expand_dir = os.path.join(TEST_LATEX_EXPAND_DATA, pid)
                 norm_file_name = os.path.join(TEST_LATEX_NORM_DATA, pid, f'{pid}.tex')
                 xml_file_name = os.path.join(TEST_LATEX_XML_DATA, pid, f'{pid}.xml')
-                output_file_name = os.path.join(TEST_LATEX_OUTPUT_DATA, pid, f'{pid}.json')
+                output_file_name = os.path.join(TEST_LATEX_OUTPUT_DATA, f'{pid}.json')
                 if os.path.exists(TEST_LATEX_TEMP_DIR):
                     shutil.rmtree(TEST_LATEX_TEMP_DIR)
                 if os.path.exists(output_file_name):
