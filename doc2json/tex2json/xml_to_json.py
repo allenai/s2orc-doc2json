@@ -357,12 +357,19 @@ def decompose_tags_before_title(sp: BeautifulSoup):
     :param sp:
     :return:
     """
-    for tag in sp.std:
-        if type(tag) == bs4.element.Tag:
-            if tag.name != 'maketitle' and tag.name != 'title':
-                tag.decompose()
-            else:
-                break
+    if sp.std:
+        cld_tags = sp.std.find_all(recursive=False)
+        if any([tag.name == 'maketitle' or tag.name == 'title' for tag in cld_tags]):
+            for tag in sp.std:
+                if type(tag) == bs4.element.Tag:
+                    if tag.name != 'maketitle' and tag.name != 'title':
+                        tag.decompose()
+                    else:
+                        break
+    else:
+        # TODO: figure out what happens if this is not the structure
+        import pdb
+        pdb.set_trace()
 
 
 def process_maketitle(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: str) -> Tuple[str, List]:
