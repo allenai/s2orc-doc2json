@@ -4,7 +4,7 @@ import json
 import argparse
 import time
 import glob
-from pdf2json.grobid.client import ApiClient
+from doc2json.pdf2json.grobid.client import ApiClient
 import ntpath
 from typing import List
 

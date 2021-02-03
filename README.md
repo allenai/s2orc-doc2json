@@ -1,14 +1,14 @@
-# Convert scientific PDFs to S2ORC JSON
+# Convert scientific papers to S2ORC JSON
 
-This project is a part of [S2ORC](https://github.com/allenai/s2orc). For S2ORC, we convert PDFs to JSON using Grobid and a custom TEI.XML to JSON parser. That TEI.XML to JSON parser is being made available here on its own.
+This project is a part of [S2ORC](https://github.com/allenai/s2orc). For S2ORC, we convert PDFs to JSON using Grobid and a custom TEI.XML to JSON parser. That TEI.XML to JSON parser (`pdf2json`) is made available here. We additionally process LaTeX dumps from arXiv. That parser (`tex2json`) is also made available here.
 
-The S2ORC github page includes a JSON schema, but it may be easier to understand that schema based on the python classes in `pdf2json/s2orc.py`.
+The S2ORC github page includes a JSON schema, but it may be easier to understand that schema based on the python classes in `doc2json/s2orc.py`.
 
 This custom JSON schema is also used for the [CORD-19](https://github.com/allenai/cord19) project, so those who have interacted with CORD-19 may find this format familiar.
 
-Note: in S2ORC, we also do several other things which are *not* included in this utility:
+Note: in S2ORC and CORD-19, we also do several other things which are *not* included in this utility:
 - Linking bibliography entries to other papers in S2ORC
-- Provide LaTeX parses for select arXiv papers
+- Parse JATS XML files (format used by PubMed Central and others)
 
 We may eventually make these components available as well, but no promises.
 
@@ -17,13 +17,17 @@ We may eventually make these components available as well, but no promises.
 NOTE: Conda is shown but any other python env manager should be fine
 
 ```console
-conda create -n s2orc_grobid python=3.8 pytest
-source activate s2orc_grobid
+conda create -n doc2json python=3.8 pytest
+source activate doc2json
 pip install -r requirements.txt
 python setup.py develop
 ```
 
-## Install Grobid
+## PDF Processing
+
+The current `pdf2json` tool uses Grobid to first process each PDF into XML, then extracts paper components from the XML.
+
+### Install Grobid
 
 You can install your own version of Grobid and get it running, or you can run the following script:
 
@@ -41,28 +45,35 @@ to start the Grobid server. Don't worry if it gets stuck at 87%; this is normal 
 
 The expected port for the Grobid service is 8070, but you can change this as well. Make sure to edit the port in both the Grobid config file as well as `grobid/grobid_client.py`.
 
-
-## Process a PDF
+### Process a PDF
 
 To process a PDF, try:
 
 ```console
-python pdf2json/process_pdf.py -i input.pdf -t temp_dir/ -o output_dir/
+python doc2json/pdf2json/process_pdf.py -i input.pdf -t temp_dir/ -o output_dir/
 ```
 
 There are a couple of test PDFs in `tests/input/` if you'd like to try with that.
 
+## LaTeX Processing
 
-## Run a Flask app and process PDFs through a web service
 
-First, start Grobid and the Flask app (Grobid is on 8070 and the Flask app on 8080)
+
+## Run a Flask app and process documents through a web service
+
+To process PDFs, you will first need to start Grobid (defaults to port 8070). If you are processing LaTeX, no need for this step.
 
 ```console
 bash scripts/run_grobid.sh
-python pdf2json/flask/app.py
 ```
 
-Go to [localhost:8080](localhost:8080) to upload and process PDFs.
+Then, start the Flask app (defaults to port 8080).
+
+```console
+python doc2json/flask/app.py
+```
+
+Go to [localhost:8080](localhost:8080) to upload and process papers.
 
 Or alternatively, you can do things like:
 
@@ -70,7 +81,8 @@ Or alternatively, you can do things like:
 curl localhost:8080/ -F file=@tests/input/5cd28c171f9f3b6a8bcebe246159c464980c.pdf
 ```
 
-### Contact
+
+## Contact
 
 Contributions are welcome. Note the embarassingly poor test coverage. Also, please note this pipeline is not perfect. It will miss text or make errors on most PDFs.
 

@@ -11,6 +11,15 @@ CORRECT_KEYS = {
 }
 
 
+REFERENCE_OUTPUT_KEYS = {
+    'figure': {'text', 'type_str', 'uris', 'num'},
+    'table': {'text', 'type_str', 'content', 'num'},
+    'footnote': {'text', 'type_str', 'num'},
+    'section': {'text', 'type_str', 'num', 'parent'},
+    'equation': {'text', 'type_str', 'latex', 'mathml', 'num'}
+}
+
+
 class ReferenceEntry:
     """
     Class for representing S2ORC figure and table references
@@ -35,23 +44,41 @@ class ReferenceEntry:
             self,
             ref_id: str,
             text: str,
-            latex: Optional[str],
-            content: Optional[str],
-            type_str: str
+            type_str: str,
+            latex: Optional[str]=None,
+            mathml: Optional[str]=None,
+            content: Optional[str]=None,
+            uris: Optional[List[str]]=None,
+            num: Optional[str]=None,
+            parent: Optional[str]=None
     ):
         self.ref_id = ref_id
         self.text = text
-        self.latex = latex
-        self.content = content
         self.type_str = type_str
+        self.latex = latex
+        self.mathml = mathml
+        self.content = content
+        self.uris = uris
+        self.num = num
+        self.parent = parent
 
     def as_json(self):
-        return {
-            "text": self.text,
-            "latex": self.latex,
-            "content": self.content,
-            "type": self.type_str
-        }
+        keep_keys = REFERENCE_OUTPUT_KEYS.get(self.type_str, None)
+        if keep_keys:
+            return {
+                k: self.__getattribute__(k) for k in keep_keys
+            }
+        else:
+            return {
+                "text": self.text,
+                "type": self.type_str,
+                "latex": self.latex,
+                "mathml": self.mathml,
+                "content": self.content,
+                "uris": self.uris,
+                "num": self.num,
+                "parent": self.parent
+            }
 
 
 class BibliographyEntry:
@@ -90,13 +117,15 @@ class BibliographyEntry:
             ref_id: str,
             title: str,
             authors: List[Dict[str, str]],
-            year: Optional[int],
-            venue: Optional[str],
-            volume: Optional[str],
-            issue: Optional[str],
-            pages: Optional[str],
-            other_ids: Dict[str, List],
-            raw_text: Optional[str]
+            year: Optional[int]=None,
+            venue: Optional[str]=None,
+            volume: Optional[str]=None,
+            issue: Optional[str]=None,
+            pages: Optional[str]=None,
+            other_ids: Dict[str, List]=None,
+            num: Optional[int]=None,
+            urls: Optional[List]=None,
+            raw_text: Optional[str]=None
     ):
         self.bib_id = bib_id
         self.ref_id = ref_id
@@ -108,6 +137,8 @@ class BibliographyEntry:
         self.issue = issue
         self.pages = pages
         self.other_ids = other_ids
+        self.num = num
+        self.urls = urls
         self.raw_text = raw_text
 
     def as_json(self):
@@ -121,6 +152,8 @@ class BibliographyEntry:
             "issue": self.issue,
             "pages": self.pages,
             "other_ids": self.other_ids,
+            "num": self.num,
+            "urls": self.urls,
             "raw_text": self.raw_text
         }
 
@@ -186,8 +219,8 @@ class Author:
             middle: List[str],
             last: str,
             suffix: str,
-            affiliation: Optional[Dict],
-            email: Optional[str]
+            affiliation: Optional[Dict]=None,
+            email: Optional[str]=None
     ):
         self.first = first
         self.middle = middle
@@ -239,7 +272,7 @@ class Metadata:
             self,
             title: str,
             authors: List[Dict],
-            year: Optional[str]
+            year: Optional[str]=None
     ):
         self.title = title
         self.authors = [Author(**author) for author in authors]
@@ -295,7 +328,7 @@ class Paragraph:
             cite_spans: List[Dict],
             ref_spans: List[Dict],
             eq_spans: List[Dict],
-            section: Optional[List]
+            section: Optional[List]=None
     ):
         self.text = text
         self.cite_spans = cite_spans
@@ -336,12 +369,16 @@ class Paper:
         self.body_text = [Paragraph(**para) for para in body_text]
         self.back_matter = [Paragraph(**para) for para in back_matter]
         self.bib_entries = [
-            BibliographyEntry(bib_id=key, **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in bib.items()})
-            for key, bib in bib_entries.items()
+            BibliographyEntry(
+                bib_id=key,
+                **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in bib.items() if k != 'bib_id'}
+            ) for key, bib in bib_entries.items()
         ]
         self.ref_entries = [
-            ReferenceEntry(ref_id=key, **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in ref.items()})
-            for key, ref in ref_entries.items()
+            ReferenceEntry(
+                ref_id=key,
+                **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in ref.items() if k != 'ref_id'}
+            ) for key, ref in ref_entries.items()
         ]
 
     def as_json(self):
@@ -372,7 +409,7 @@ class Paper:
         """
         return '\n'.join([para.text for para in self.body_text])
 
-    def release_json(self):
+    def release_json(self, doc_type: str="pdf"):
         """
         Return in release JSON format
         :return:
@@ -382,7 +419,7 @@ class Paper:
         release_dict.update(self.metadata.as_json())
         release_dict.update({"abstract": self.raw_abstract_text})
         release_dict.update({
-            "pdf_parse": {
+            f"{doc_type}_parse": {
                 "paper_id": self.paper_id,
                 "_pdf_hash": self.pdf_hash,
                 "abstract": [para.as_json() for para in self.abstract],
@@ -390,7 +427,6 @@ class Paper:
                 "back_matter": [para.as_json() for para in self.back_matter],
                 "bib_entries": {bib.bib_id: bib.as_json() for bib in self.bib_entries},
                 "ref_entries": {ref.ref_id: ref.as_json() for ref in self.ref_entries}
-            },
-            "latex_parse": None
+            }
         })
         return release_dict
