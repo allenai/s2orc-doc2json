@@ -145,17 +145,42 @@ def process_list_el(sp: BeautifulSoup, list_el: bs4.element.Tag, section_info: L
         list_num = item.get('id-text', None)
         if list_num:
             list_num_str = f'{list_num}. '
-            item_as_para.text = list_num_str + item_as_para.text
+            # iterate cite spans
+            new_cite_spans = []
             for span in item_as_para.cite_spans:
-                span.start += len(list_num_str)
-                span.end += len(list_num_str)
+                new_cite_spans.append({
+                    "start": span.start + len(list_num_str),
+                    "end": span.end + len(list_num_str),
+                    "text": span.text
+                })
+            # iterate ref spans
+            new_ref_spans = []
             for span in item_as_para.ref_spans:
-                span.start += len(list_num_str)
-                span.end += len(list_num_str)
+                new_ref_spans.append({
+                    "start": span.start + len(list_num_str),
+                    "end": span.end + len(list_num_str),
+                    "text": span.text
+                })
+            # iterate equation spans
+            new_eq_spans = []
             for span in item_as_para.eq_spans:
-                span.start += len(list_num_str)
-                span.end += len(list_num_str)
-        list_items.append(item_as_para)
+                new_eq_spans.append({
+                    "start": span.start + len(list_num_str),
+                    "end": span.end + len(list_num_str),
+                    "text": span.text,
+                    "latex": span.latex,
+                    "ref_id": span.ref_id
+                })
+            new_para = Paragraph(
+                text=list_num_str + item_as_para.text,
+                cite_spans=new_cite_spans,
+                ref_spans=new_ref_spans,
+                eq_spans=new_eq_spans,
+                section=item_as_para.section
+            )
+        else:
+            new_para = item_as_para
+        list_items.append(new_para)
     return list_items
 
 
