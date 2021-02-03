@@ -154,27 +154,27 @@ def process_list_el(sp: BeautifulSoup, list_el: bs4.element.Tag, section_info: L
             new_cite_spans = []
             for span in item_as_para.cite_spans:
                 new_cite_spans.append({
-                    "start": span.start + len(list_num_str),
-                    "end": span.end + len(list_num_str),
-                    "text": span.text
+                    "start": span['start'] + len(list_num_str),
+                    "end": span['end'] + len(list_num_str),
+                    "text": span['text']
                 })
             # iterate ref spans
             new_ref_spans = []
             for span in item_as_para.ref_spans:
                 new_ref_spans.append({
-                    "start": span.start + len(list_num_str),
-                    "end": span.end + len(list_num_str),
-                    "text": span.text
+                    "start": span['start'] + len(list_num_str),
+                    "end": span['end'] + len(list_num_str),
+                    "text": span['text']
                 })
             # iterate equation spans
             new_eq_spans = []
             for span in item_as_para.eq_spans:
                 new_eq_spans.append({
-                    "start": span.start + len(list_num_str),
-                    "end": span.end + len(list_num_str),
-                    "text": span.text,
-                    "latex": span.latex,
-                    "ref_id": span.ref_id
+                    "start": span['start'] + len(list_num_str),
+                    "end": span['end'] + len(list_num_str),
+                    "text": span['text'],
+                    "latex": span['latex'],
+                    "ref_id": span['ref_id']
                 })
             new_para = Paragraph(
                 text=list_num_str + item_as_para.text,
@@ -271,7 +271,10 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info:
                 formula_key = f'INLINEFORM{inline_key_ind}'
                 ref_id = None
                 inline_key_ind += 1
-            formula_mathml = latex2mathml.converter.convert(ftag.texmath.text)
+            try:
+                formula_mathml = latex2mathml.converter.convert(ftag.texmath.text)
+            except Exception:
+                formula_mathml = ""
             formula_dict[formula_key] = (ftag.math.text, ftag.texmath.text, formula_mathml, ref_id)
             ftag.replace_with(sp.new_string(f" {formula_key} "))
         except AttributeError:
@@ -297,7 +300,7 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info:
         all_cite_spans.append({
             "start": span.start(),
             "end": span.start() + len(span.group()),
-            "text": bib_map[span.group()]['num'],
+            "text": bib_map[span.group()]['num'] if span.group() in bib_map else None,
             "ref_id": span.group()
         })
 
@@ -313,7 +316,7 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info:
         all_ref_spans.append({
             "start": span.start(),
             "end": span.start() + len(span.group()),
-            "text": ref_map[span.group()]['num'],
+            "text": ref_map[span.group()]['num'] if span.group() in ref_map else None,
             "ref_id": span.group()
         })
 
@@ -379,9 +382,9 @@ def decompose_tags_before_title(sp: BeautifulSoup):
         raise NotImplementedError(f"Unknown inner tag: {sp.body.next.name}")
 
 
-def process_maketitle(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: str) -> Tuple[str, List]:
+def process_metadata(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: str) -> Tuple[str, List]:
     """
-    Process maketitle section in soup
+    Process metadata section in soup
     :param sp:
     :param grobid_client:
     :param log_file:
@@ -390,31 +393,59 @@ def process_maketitle(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: 
     title = ""
     authors = []
 
-    if not sp.maketitle:
-        if not sp.title:
-            return title, authors
-        else:
+    if not sp.maketitle and not sp.metadata:
+        if sp.title:
             title = sp.title.text
             return title, authors
-    else:
-        # process title
-        title = sp.maketitle.title.text
-        for formula in sp.author.find_all('formula'):
-            formula.decompose()
-        # process authors
-        author_parts = []
-        for tag in sp.author:
-            if type(tag) == NavigableString:
-                author_parts.append(tag.strip())
-            else:
-                author_parts.append(tag.text.strip())
-        author_parts = [re.sub(r'\s+', ' ', line) for line in author_parts]
-        author_parts = [re.sub(r'\s', ' ', line).strip() for line in author_parts]
-        author_parts = [part for part in author_parts if part.strip()]
-        author_string = ', '.join(author_parts)
-        authors = process_author(author_string, grobid_client, log_file)
+        else:
+            return title, authors
+    elif sp.maketitle:
+        try:
+            # process title
+            title = sp.maketitle.title.text
+            for formula in sp.author.find_all('formula'):
+                formula.decompose()
+            # process authors
+            author_parts = []
+            for tag in sp.author:
+                if type(tag) == NavigableString:
+                    author_parts.append(tag.strip())
+                else:
+                    author_parts.append(tag.text.strip())
+            author_parts = [re.sub(r'\s+', ' ', line) for line in author_parts]
+            author_parts = [re.sub(r'\s', ' ', line).strip() for line in author_parts]
+            author_parts = [part for part in author_parts if part.strip()]
+            author_string = ', '.join(author_parts)
+            authors = process_author(author_string, grobid_client, log_file)
+            sp.maketitle.decompose()
+        except AttributeError:
+            sp.maketitle.decompose()
+            return title, authors
+    elif sp.metadata:
+        try:
+            # process title and authors from metadata
+            title = sp.metadata.title.text
+            # get authors
+            for author in sp.authors:
+                for subtag in author:
+                    subtag.decompose()
+                if author.text.strip():
+                    author_parts = author.text.strip().split()
+                    authors.append({
+                        "first": author_parts[0] if len(author_parts) > 1 else "",
+                        "last": author_parts[-1]
+                            if author_parts[-1].lower() not in {"jr", "jr.", "iii", "iv", "v"}
+                            else author_parts[-2] if len(author_parts) > 1 else author_parts[-1],
+                        "middle": author_parts[1:-1],
+                        "suffix": "",
+                        "affiliation": {},
+                        "email": ""
+                    })
+            sp.metadata.decompose()
+        except AttributeError:
+            sp.metadata.decompose()
+            return title, authors
 
-    sp.maketitle.decompose()
     return title, authors
 
 
@@ -1077,6 +1108,8 @@ def build_section_list(sec_id: str, ref_map: Dict) -> List[Tuple]:
     """
     if not sec_id:
         return []
+    elif sec_id not in ref_map:
+        return []
     else:
         sec_entry = [(ref_map[sec_id]['num'], ref_map[sec_id]['text'])]
         if ref_map[sec_id]['parent'] == sec_id:
@@ -1115,61 +1148,43 @@ def process_div(tag: bs4.element.Tag, secs: List, sp: BeautifulSoup, bib_map: Di
     # iterate through children of this tag
     body_text = []
 
-    # process paragraphs and proofs
-    if tag.name in {'p', 'proof'}:
-        body_text.append(
-            process_paragraph(sp, tag, [], bib_map, ref_map)
-        )
-    # process other individual tags by first inserting into <p> and treating as normal paragraph
-    elif tag.name in {'formula'}:
+    # navigable strings
+    if type(tag) == NavigableString:
+        return []
+    # skip these tags
+    elif tag.name in SKIP_TAGS:
+        return []
+    # process p tags
+    elif tag.name == 'p':
+        if tag.text:
+            body_text.append(process_paragraph(sp, tag, secs, bib_map, ref_map))
+    # process proofs
+    elif tag.name == 'proof':
+        if tag.text:
+            body_text.append(process_paragraph(sp, tag, secs, bib_map, ref_map))
+    # process lists
+    elif tag.name == 'list':
+        if tag.text:
+            body_text += process_list_el(sp, tag, secs, bib_map, ref_map)
+    # process formula
+    elif tag.name == 'formula':
         replace_item = sp.new_tag('p')
         tag_copy = copy.copy(tag)
         tag_copy['type'] = 'inline'
         replace_item.insert(0, tag_copy)
         tag.replace_with(replace_item)
-        body_text.append(
-            process_paragraph(sp, tag, [], bib_map, ref_map)
-        )
+        if tag.text:
+            body_text.append(process_paragraph(sp, tag, secs, bib_map, ref_map))
     # process divs
     elif tag.name.startswith('div'):
         for el in tag:
             # process tags
             if type(el) == bs4.element.Tag:
                 el_sec_list = get_seclist_for_el(el, ref_map, secs)
-                try:
-                    # recursively process if has <p> children
-                    if el.p:
-                        body_text += process_div(el, el_sec_list, sp, bib_map, ref_map)
-                    # process <p> tags
-                    elif el.name == 'p' or el.name == 'proof':
-                        if el.text:
-                            body_text.append(
-                                process_paragraph(sp, el, el_sec_list, bib_map, ref_map)
-                            )
-                    # process proofs (TODO)
-                    elif el.name == 'proof':
-                        if el.text:
-                            body_text.append(
-                                process_paragraph(sp, el, el_sec_list, bib_map, ref_map)
-                            )
-                    # process lists
-                    elif el.name == 'list':
-                        if el.text:
-                            body_text += process_list_el(sp, el, el_sec_list, bib_map, ref_map)
-                    # skip these tags
-                    elif el.name in SKIP_TAGS:
-                        continue
-                    else:
-                        raise NotImplementedError(f'Unknown tag type: {el.name}')
-                except AttributeError:
-                    print(f'Attribute error: {el}')
-                    continue
-            # skip navigable strings (these are usually section headers)
-            elif type(el) == NavigableString:
-                continue
-    # no divs?
+                body_text += process_div(el, el_sec_list, sp, bib_map, ref_map)
+    # unknown tag type
     else:
-        raise NotImplementedError(f"Unknown tag type: {tag.name}")
+        raise NotImplementedError(f'Unknown tag type: {tag.name}')
 
     return body_text
 
@@ -1223,7 +1238,7 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
     decompose_tags_before_title(sp)
 
     # process maketitle info
-    title, authors = process_maketitle(sp, client, log_file)
+    title, authors = process_metadata(sp, client, log_file)
 
     # processing of bibliography entries
     # TODO: look into why authors aren't processing

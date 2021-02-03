@@ -73,7 +73,7 @@ def process_tex_file(
     if not os.path.exists(input_file):
         raise FileNotFoundError(f"{input_file} doesn't exist")
     if os.path.exists(output_file):
-        raise Warning(f'{output_file} already exists!')
+        print(f'{output_file} already exists!')
 
     # process LaTeX
     xml_file = convert_latex_to_s2orc_json(input_file, temp_dir, cleanup_flag)
