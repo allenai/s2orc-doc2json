@@ -357,7 +357,7 @@ def decompose_tags_before_title(sp: BeautifulSoup):
     :param sp:
     :return:
     """
-    if sp.std:
+    if sp.body.next.name == 'std':
         cld_tags = sp.std.find_all(recursive=False)
         if any([tag.name == 'maketitle' or tag.name == 'title' for tag in cld_tags]):
             for tag in sp.std:
@@ -366,10 +366,17 @@ def decompose_tags_before_title(sp: BeautifulSoup):
                         tag.decompose()
                     else:
                         break
+    elif sp.body.next.name == 'unknown':
+        cld_tags = sp.unknown.find_all(recursive=False)
+        if any([tag.name == 'maketitle' or tag.name == 'title' for tag in cld_tags]):
+            for tag in sp.std:
+                if type(tag) == bs4.element.Tag:
+                    if tag.name != 'maketitle' and tag.name != 'title':
+                        tag.decompose()
+                    else:
+                        break
     else:
-        # TODO: figure out what happens if this is not the structure
-        import pdb
-        pdb.set_trace()
+        raise NotImplementedError(f"Unknown inner tag: {sp.body.next.name}")
 
 
 def process_maketitle(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: str) -> Tuple[str, List]:
@@ -384,7 +391,11 @@ def process_maketitle(sp: BeautifulSoup, grobid_client: GrobidClient, log_file: 
     authors = []
 
     if not sp.maketitle:
-        return title, authors
+        if not sp.title:
+            return title, authors
+        else:
+            title = sp.title.text
+            return title, authors
     else:
         # process title
         title = sp.maketitle.title.text
@@ -1042,7 +1053,12 @@ def process_abstract_from_tex(sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) -
             )
         sp.abstract.decompose()
     else:
-        p_tags = [tag for tag in sp.std if tag.name == 'p' and not tag.get('s2orc_id', None)]
+        if sp.std:
+            p_tags = [tag for tag in sp.std if tag.name == 'p' and not tag.get('s2orc_id', None)]
+        elif sp.unknown:
+            p_tags = [tag for tag in sp.unknown if tag.name == 'p' and not tag.get('s2orc_id', None)]
+        else:
+            p_tags = None
         if p_tags:
             for p in p_tags:
                 abstract_text.append(
