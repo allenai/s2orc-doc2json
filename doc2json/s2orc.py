@@ -11,6 +11,15 @@ CORRECT_KEYS = {
 }
 
 
+REFERENCE_OUTPUT_KEYS = {
+    'figure': {'text', 'type_str', 'uris', 'num'},
+    'table': {'text', 'type_str', 'content', 'num'},
+    'footnote': {'text', 'type_str', 'num'},
+    'section': {'text', 'type_str', 'num', 'parent'},
+    'equation': {'text', 'type_str', 'latex', 'mathml', 'num'}
+}
+
+
 class ReferenceEntry:
     """
     Class for representing S2ORC figure and table references
@@ -37,6 +46,7 @@ class ReferenceEntry:
             text: str,
             type_str: str,
             latex: Optional[str]=None,
+            mathml: Optional[str]=None,
             content: Optional[str]=None,
             uris: Optional[List[str]]=None,
             num: Optional[str]=None,
@@ -46,21 +56,29 @@ class ReferenceEntry:
         self.text = text
         self.type_str = type_str
         self.latex = latex
+        self.mathml = mathml
         self.content = content
         self.uris = uris
         self.num = num
         self.parent = parent
 
     def as_json(self):
-        return {
-            "text": self.text,
-            "type": self.type_str,
-            "latex": self.latex,
-            "content": self.content,
-            "uris": self.uris,
-            "num": self.num,
-            "parent": self.parent
-        }
+        keep_keys = REFERENCE_OUTPUT_KEYS.get(self.type_str, None)
+        if keep_keys:
+            return {
+                k: self.__getattribute__(k) for k in keep_keys
+            }
+        else:
+            return {
+                "text": self.text,
+                "type": self.type_str,
+                "latex": self.latex,
+                "mathml": self.mathml,
+                "content": self.content,
+                "uris": self.uris,
+                "num": self.num,
+                "parent": self.parent
+            }
 
 
 class BibliographyEntry:
@@ -391,7 +409,7 @@ class Paper:
         """
         return '\n'.join([para.text for para in self.body_text])
 
-    def release_json(self):
+    def release_json(self, doc_type: str="pdf"):
         """
         Return in release JSON format
         :return:
@@ -401,7 +419,7 @@ class Paper:
         release_dict.update(self.metadata.as_json())
         release_dict.update({"abstract": self.raw_abstract_text})
         release_dict.update({
-            "pdf_parse": {
+            f"{doc_type}_parse": {
                 "paper_id": self.paper_id,
                 "_pdf_hash": self.pdf_hash,
                 "abstract": [para.as_json() for para in self.abstract],
@@ -409,7 +427,6 @@ class Paper:
                 "back_matter": [para.as_json() for para in self.back_matter],
                 "bib_entries": {bib.bib_id: bib.as_json() for bib in self.bib_entries},
                 "ref_entries": {ref.ref_id: ref.as_json() for ref in self.ref_entries}
-            },
-            "latex_parse": None
+            }
         })
         return release_dict

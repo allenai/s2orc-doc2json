@@ -51,7 +51,7 @@ def process_tex_dir(
 
     # write to file
     with open(output_file, 'w') as outf:
-        json.dump(paper.release_json(), outf, indent=4)
+        json.dump(paper.release_json("latex"), outf, indent=4)
 
     return output_file
 

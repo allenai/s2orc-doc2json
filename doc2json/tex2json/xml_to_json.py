@@ -793,14 +793,12 @@ def extract_table(table: BeautifulSoup) -> List:
             latex = ' '.join(latex_items)
             latex = re.sub(r'\s+', ' ', latex)
 
-            mathml = latex2mathml.converter.convert(latex.strip())
             cells.append({
                 "alignment": cell.get('halign'),
                 "right-border": cell.get('right-border') == 'true',
                 "left-border": cell.get('left-border') == 'true',
-                "text": text,
-                "mathml": mathml,
-                "latex": latex
+                "text": text.strip(),
+                "latex": latex.strip()
             })
         table_rep.append({
             "top-border": row.get('top-border') == "true",
@@ -829,7 +827,7 @@ def get_table_map_from_text(sp: BeautifulSoup, keep_table_contents=True) -> Dict
                     table_map[ref_id] = {
                         "num": flt.get('id-text', None),
                         "text": None,   # placeholder
-                        "latex": extract_table(flt) if keep_table_contents else None,
+                        "content": extract_table(flt) if keep_table_contents else None,
                         "ref_id": ref_id
                     }
                     for row in flt.find_all('row'):
@@ -851,7 +849,7 @@ def get_table_map_from_text(sp: BeautifulSoup, keep_table_contents=True) -> Dict
                 table_map[ref_id] = {
                     "num": tab.get('id-text', None),
                     "text": None,   # placeholder
-                    "latex": extract_table(tab) if keep_table_contents else None,
+                    "content": extract_table(tab) if keep_table_contents else None,
                     "ref_id": ref_id
                 }
                 for row in tab.find_all('row'):
