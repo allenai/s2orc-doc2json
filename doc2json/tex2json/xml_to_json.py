@@ -1079,7 +1079,10 @@ def build_section_list(sec_id: str, ref_map: Dict) -> List[Tuple]:
         return []
     else:
         sec_entry = [(ref_map[sec_id]['num'], ref_map[sec_id]['text'])]
-        return build_section_list(ref_map[sec_id]['parent'], ref_map) + sec_entry
+        if ref_map[sec_id]['parent'] == sec_id:
+            return sec_entry
+        else:
+            return build_section_list(ref_map[sec_id]['parent'], ref_map) + sec_entry
 
 
 def get_seclist_for_el(el: bs4.element.Tag, ref_map: Dict, default_seclist: List) -> List[Tuple]:
