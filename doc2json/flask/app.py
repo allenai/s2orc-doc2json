@@ -8,7 +8,7 @@ from doc2json.tex2json.process_tex import process_tex_stream
 
 app = Flask(__name__)
 
-ALLOWED_EXTENSIONS = {'pdf'}
+ALLOWED_EXTENSIONS = {'pdf', 'gz'}
 
 
 @app.route('/')
@@ -31,7 +31,7 @@ def upload_file():
             return jsonify(results)
         # read latex file
         elif filename.endswith('gz'):
-            zip_stream = upload_file.stream
+            zip_stream = uploaded_file.stream
             zip_content = zip_stream.read()
             # get results
             results = process_tex_stream(filename, zip_content)
