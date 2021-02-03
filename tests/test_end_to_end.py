@@ -17,14 +17,6 @@ TEST_LATEX_XML_DATA = os.path.join(TEST_LATEX_TEMP_DIR, 'xml')
 TEST_LATEX_LOG_DATA = os.path.join(TEST_LATEX_TEMP_DIR, 'log')
 TEST_LATEX_OUTPUT_DATA = os.path.join('tests', 'latex_output')
 
-assert os.path.exists(TEST_PDF_INPUT_DATA)
-os.makedirs(TEST_PDF_TEMP_DATA, exist_ok=True)
-os.makedirs(TEST_PDF_OUTPUT_DATA, exist_ok=True)
-
-assert os.path.exists(TEST_LATEX_INPUT_DATA)
-os.makedirs(TEST_LATEX_TEMP_DIR, exist_ok=True)
-os.makedirs(TEST_LATEX_OUTPUT_DATA, exist_ok=True)
-
 
 class TestS2ORC(unittest.TestCase):
 
@@ -45,6 +37,10 @@ class TestS2ORC(unittest.TestCase):
                     os.remove(temp_file_name)
                 if os.path.exists(output_file_name):
                     os.remove(output_file_name)
+                # create directories
+                assert os.path.exists(TEST_PDF_INPUT_DATA)
+                os.makedirs(TEST_PDF_TEMP_DATA, exist_ok=True)
+                os.makedirs(TEST_PDF_OUTPUT_DATA, exist_ok=True)
                 # process pdf
                 process_pdf_file(
                     os.path.join(TEST_PDF_INPUT_DATA, fname),
@@ -74,6 +70,10 @@ class TestS2ORC(unittest.TestCase):
                     shutil.rmtree(TEST_LATEX_TEMP_DIR)
                 if os.path.exists(output_file_name):
                     os.remove(output_file_name)
+                # create directories
+                assert os.path.exists(TEST_LATEX_INPUT_DATA)
+                os.makedirs(TEST_LATEX_TEMP_DIR, exist_ok=True)
+                os.makedirs(TEST_LATEX_OUTPUT_DATA, exist_ok=True)
                 # process pdf
                 process_tex_file(
                     os.path.join(TEST_LATEX_INPUT_DATA, fname),
