@@ -828,7 +828,7 @@ def extract_table(table: BeautifulSoup) -> List:
                 "right-border": cell.get('right-border') == 'true',
                 "left-border": cell.get('left-border') == 'true',
                 "text": text.strip(),
-                "latex": latex.strip() if latex.strip() != text.strip() else None
+                "latex": latex.strip()
             })
         table_rep.append({
             "top-border": row.get('top-border') == "true",
