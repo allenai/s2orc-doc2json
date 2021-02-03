@@ -16,7 +16,7 @@ os.makedirs(BASE_OUTPUT_DIR, exist_ok=True)
 os.makedirs(BASE_LOG_DIR, exist_ok=True)
 
 
-def process_tex_dir(
+def process_tex_file(
         input_file: str,
         temp_dir: str=BASE_TEMP_DIR,
         output_dir: str=BASE_OUTPUT_DIR,
