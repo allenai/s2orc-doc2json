@@ -625,8 +625,8 @@ def process_equations_from_tex(sp: BeautifulSoup) -> Dict:
 
     for eq in sp.find_all('formula'):
         try:
-            if eq.name and eq.get('type') == 'display':
-                if eq.get('id'):
+            if eq.get('type', None) == 'display':
+                if eq.get('id', None):
                     ref_id = eq.get('id').replace('uid', 'EQREF')
                     mathml = latex2mathml.converter.convert(eq.texmath.text.strip())
                     equation_map[ref_id] = {
@@ -1114,41 +1114,62 @@ def process_div(tag: bs4.element.Tag, secs: List, sp: BeautifulSoup, bib_map: Di
     """
     # iterate through children of this tag
     body_text = []
-    for el in tag:
-        # process tags
-        if type(el) == bs4.element.Tag:
-            el_sec_list = get_seclist_for_el(el, ref_map, secs)
-            try:
-                # recursively process if has <p> children
-                if el.p:
-                    body_text += process_div(el, el_sec_list, sp, bib_map, ref_map)
-                # process <p> tags
-                elif el.name == 'p' or el.name == 'proof':
-                    if el.text:
-                        body_text.append(
-                            process_paragraph(sp, el, el_sec_list, bib_map, ref_map)
-                        )
-                # process proofs (TODO)
-                elif el.name == 'proof':
-                    if el.text:
-                        body_text.append(
-                            process_paragraph(sp, el, el_sec_list, bib_map, ref_map)
-                        )
-                # process lists
-                elif el.name == 'list':
-                    if el.text:
-                        body_text += process_list_el(sp, el, el_sec_list, bib_map, ref_map)
-                # skip these tags
-                elif el.name in SKIP_TAGS:
+
+    # process paragraphs and proofs
+    if tag.name in {'p', 'proof'}:
+        body_text.append(
+            process_paragraph(sp, tag, [], bib_map, ref_map)
+        )
+    # process other individual tags by first inserting into <p> and treating as normal paragraph
+    elif tag.name in {'formula'}:
+        replace_item = sp.new_tag('p')
+        tag_copy = copy.copy(tag)
+        tag_copy['type'] = 'inline'
+        replace_item.insert(0, tag_copy)
+        tag.replace_with(replace_item)
+        body_text.append(
+            process_paragraph(sp, tag, [], bib_map, ref_map)
+        )
+    # process divs
+    elif tag.name.startswith('div'):
+        for el in tag:
+            # process tags
+            if type(el) == bs4.element.Tag:
+                el_sec_list = get_seclist_for_el(el, ref_map, secs)
+                try:
+                    # recursively process if has <p> children
+                    if el.p:
+                        body_text += process_div(el, el_sec_list, sp, bib_map, ref_map)
+                    # process <p> tags
+                    elif el.name == 'p' or el.name == 'proof':
+                        if el.text:
+                            body_text.append(
+                                process_paragraph(sp, el, el_sec_list, bib_map, ref_map)
+                            )
+                    # process proofs (TODO)
+                    elif el.name == 'proof':
+                        if el.text:
+                            body_text.append(
+                                process_paragraph(sp, el, el_sec_list, bib_map, ref_map)
+                            )
+                    # process lists
+                    elif el.name == 'list':
+                        if el.text:
+                            body_text += process_list_el(sp, el, el_sec_list, bib_map, ref_map)
+                    # skip these tags
+                    elif el.name in SKIP_TAGS:
+                        continue
+                    else:
+                        raise NotImplementedError(f'Unknown tag type: {el.name}')
+                except AttributeError:
+                    print(f'Attribute error: {el}')
                     continue
-                else:
-                    raise NotImplementedError(f'Unknown tag type: {el.name}')
-            except AttributeError:
-                print(f'Attribute error: {el}')
+            # skip navigable strings (these are usually section headers)
+            elif type(el) == NavigableString:
                 continue
-        # skip navigable strings (these are usually section headers)
-        elif type(el) == NavigableString:
-            continue
+    # no divs?
+    else:
+        raise NotImplementedError(f"Unknown tag type: {tag.name}")
 
     return body_text
 
