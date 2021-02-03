@@ -13,7 +13,8 @@ from doc2json.s2orc import Paper, Paragraph
 
 
 SKIP_TAGS = {
-    'clearpage'
+    'clearpage',
+    'colorpool'
 }
 
 
@@ -459,8 +460,8 @@ def process_bibliography_from_tex(sp: BeautifulSoup, client, log_file) -> Dict:
     for bibl in sp.find_all("Bibliography"):
         bibl.name = 'bibliography'
     # construct bib map
-    if sp.bibliography:
-        bib_items = sp.bibliography.find_all('bibitem')
+    for bibliography in sp.find_all('bibliography'):
+        bib_items = bibliography.find_all('bibitem')
         # map all bib entries
         if bib_items:
             for bi_num, bi in enumerate(bib_items):
@@ -527,7 +528,8 @@ def process_bibliography_from_tex(sp: BeautifulSoup, client, log_file) -> Dict:
                 except TypeError:
                     print('Type error in bib item!', p)
                     continue
-        sp.bibliography.decompose()
+    for bibliography in sp.find_all('bibliography'):
+        bibliography.decompose()
     return bibkey_map
 
 
