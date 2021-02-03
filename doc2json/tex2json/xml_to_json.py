@@ -331,7 +331,7 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info:
                 "text": matching_formula[0],
                 "latex": matching_formula[1],
                 "mathml": matching_formula[2],
-                "ref_id": span
+                "ref_id": span.group()
             })
         except KeyError:
             continue
