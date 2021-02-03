@@ -749,7 +749,7 @@ def get_figure_map_from_tex(sp: BeautifulSoup) -> Dict:
                     else:
                         for subfig in fig.find_all('subfigure'):
                             if subfig.get('file') and subfig.get('extension'):
-                                fig_files.append(subfig.get('file') + '.' + fig.get('extension'))
+                                fig_files.append(subfig.get('file') + '.' + subfig.get('extension'))
                             elif subfig.get('file'):
                                 fig_files.append(subfig.get('file'))
 
@@ -781,7 +781,7 @@ def get_figure_map_from_tex(sp: BeautifulSoup) -> Dict:
                 else:
                     for subfig in fig.find_all('subfigure'):
                         if subfig.get('file') and subfig.get('extension'):
-                            fig_files.append(subfig.get('file') + '.' + fig.get('extension'))
+                            fig_files.append(subfig.get('file') + '.' + subfig.get('extension'))
                         elif subfig.get('file'):
                             fig_files.append(subfig.get('file'))
                 # form figmap entry
