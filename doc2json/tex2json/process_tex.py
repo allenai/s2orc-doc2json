@@ -11,10 +11,6 @@ BASE_TEMP_DIR = 'temp'
 BASE_OUTPUT_DIR = 'output'
 BASE_LOG_DIR = 'log'
 
-os.makedirs(BASE_TEMP_DIR, exist_ok=True)
-os.makedirs(BASE_OUTPUT_DIR, exist_ok=True)
-os.makedirs(BASE_LOG_DIR, exist_ok=True)
-
 
 def process_tex_file(
         input_file: str,
@@ -32,6 +28,11 @@ def process_tex_file(
     :param keep_flag:
     :return:
     """
+    # create directories
+    os.makedirs(temp_dir, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(log_dir, exist_ok=True)
+
     # get paper id as the name of the file
     paper_id = os.path.splitext(input_file)[0].split('/')[-1]
     output_file = os.path.join(output_dir, f'{paper_id}.json')
@@ -77,7 +78,7 @@ if __name__ == '__main__':
     os.makedirs(temp_path, exist_ok=True)
     os.makedirs(output_path, exist_ok=True)
 
-    process_tex_dir(input_path, temp_path, output_path, log_path, keep_temp)
+    process_tex_file(input_path, temp_path, output_path, log_path, keep_temp)
 
     runtime = round(time.time() - start_time, 3)
     print("runtime: %s seconds " % (runtime))
