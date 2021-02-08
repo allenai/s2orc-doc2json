@@ -122,8 +122,8 @@ def replace_ref_tokens(sp: BeautifulSoup, el: bs4.element.Tag, ref_map: Dict):
                         target = rtag.get('target').replace('uid', 'EQREF')
                     elif rtag.get('target').replace('uid', 'FOOTREF') in ref_map:
                         target = rtag.get('target').replace('uid', 'FOOTREF')
-                    elif rtag.get('target').replace('uid', 'SECREF') in ref_map:
-                        target = rtag.get('target').replace('uid', 'SECREF')
+                    elif rtag.get('target').replace('uid', 'SECREFU') in ref_map:
+                        target = rtag.get('target').replace('uid', 'SECREFU')
                     else:
                         target = rtag.get('target').upper()
                 else:
@@ -229,6 +229,7 @@ def process_navstring(str_el: NavigableString, section_info: List):
         re.finditer(r'(EQREF\d+)', text),
         re.finditer(r'(FOOTREF\d+)', text),
         re.finditer(r'(SECREF\d+)', text),
+        re.finditer(r'(SECREFU\d+)', text),
     ):
         all_ref_spans.append({
             "start": span.start(),
@@ -321,6 +322,7 @@ def process_paragraph(sp: BeautifulSoup, para_el: bs4.element.Tag, section_info:
         re.finditer(r'(EQREF\d+)', text),
         re.finditer(r'(FOOTREF\d+)', text),
         re.finditer(r'(SECREF\d+)', text),
+        re.finditer(r'(SECREFU\d+)', text),
     ):
         all_ref_spans.append({
             "start": span.start(),
@@ -585,7 +587,7 @@ def get_sections_from_div(el: bs4.element.Tag, sp: BeautifulSoup, parent: Option
         if 'cid' in el.get('id'):
             el_ref_id = el.get('id').replace('cid', 'SECREF')
         elif 'uid' in el.get('id'):
-            el_ref_id = el.get('id').replace('uid', 'SECREF')
+            el_ref_id = el.get('id').replace('uid', 'SECREFU')
         else:
             print('Unknown ID type!', el.get('id'))
             raise NotImplementedError
@@ -611,7 +613,7 @@ def get_sections_from_div(el: bs4.element.Tag, sp: BeautifulSoup, parent: Option
     for sub_el in el.find_all(recursive=False):
         if sub_el.name.startswith('div'):
             # add any unspecified keys
-            sec_keys = [int(k.strip('SECREF')) for k in sec_map_dict.keys() if k]
+            sec_keys = [int(k.strip('SECREF')) for k in sec_map_dict.keys() if k and k.strip('SECREF').isdigit()]
             faux_max = max(sec_keys + [faux_max]) + 1
             sec_map_dict.update(
                 get_sections_from_div(sub_el, sp, el_ref_id if el_ref_id else parent, faux_max)
@@ -622,7 +624,7 @@ def get_sections_from_div(el: bs4.element.Tag, sp: BeautifulSoup, parent: Option
                 if 'cid' in sub_el.get('id'):
                     sub_el_ref_id = sub_el.get('id').replace('cid', 'SECREF')
                 elif 'uid' in sub_el.get('id'):
-                    sub_el_ref_id = sub_el.get('id').replace('uid', 'SECREF')
+                    sub_el_ref_id = sub_el.get('id').replace('uid', 'SECREFU')
                 else:
                     print('Unknown ID type!', sub_el.get('id'))
                     raise NotImplementedError
@@ -650,7 +652,7 @@ def process_sections_from_text(sp: BeautifulSoup) -> Dict:
         parent = None
         section_map.update(get_sections_from_div(div0, sp, parent, max_above_1000 + 1))
         # add any unspecified keys
-        sec_keys = [int(k.strip('SECREF')) for k in section_map.keys() if k]
+        sec_keys = [int(k.strip('SECREF')) for k in section_map.keys() if k and k.strip('SECREF').isdigit()]
         max_above_1000 = max(sec_keys + [max_above_1000]) + 1
 
     return section_map
