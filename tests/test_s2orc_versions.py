@@ -28,13 +28,12 @@ class TestS2ORC(unittest.TestCase):
                     data = json.load(f)
                 # load into s2orc class
                 paper = load_s2orc(data)
-                assert pid
-                assert paper.paper_id
-                assert paper.metadata
-                assert paper.abstract
-                assert paper.body_text
-                assert paper.bib_entries
-                assert paper.ref_entries
+                assert pid == paper.paper_id
+                assert paper.metadata == {} or paper.metadata
+                assert paper.abstract == [] or paper.abstract
+                assert paper.body_text == [] or paper.body_text
+                assert paper.bib_entries == {} or paper.bib_entries
+                assert paper.ref_entries == {} or paper.ref_entries
 
     def test_s2orc_2020(self):
         """
@@ -52,13 +51,12 @@ class TestS2ORC(unittest.TestCase):
                     data = json.load(f)
                 # load into s2orc class
                 paper = load_s2orc(data)
-                assert pid
-                assert paper.paper_id
-                assert paper.metadata
-                assert paper.abstract
-                assert paper.body_text
-                assert paper.bib_entries
-                assert paper.ref_entries
+                assert pid == paper.paper_id
+                assert paper.metadata == {} or paper.metadata
+                assert paper.abstract == [] or paper.abstract
+                assert paper.body_text == [] or paper.body_text
+                assert paper.bib_entries == {} or paper.bib_entries
+                assert paper.ref_entries == {} or paper.ref_entries
 
     def test_s2orc_2019(self):
         """
@@ -76,10 +74,9 @@ class TestS2ORC(unittest.TestCase):
                     data = json.load(f)
                 # load into s2orc class
                 paper = load_s2orc(data)
-                assert pid
-                assert paper.paper_id
-                assert paper.metadata
-                assert paper.abstract
-                assert paper.body_text
-                assert paper.bib_entries
-                assert paper.ref_entries
+                assert pid == paper.paper_id
+                assert paper.metadata == {} or paper.metadata
+                assert paper.abstract == [] or paper.abstract
+                assert paper.body_text == [] or paper.body_text
+                assert paper.bib_entries == {} or paper.bib_entries
+                assert paper.ref_entries == {} or paper.ref_entries
