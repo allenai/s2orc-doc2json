@@ -86,7 +86,7 @@ def process_tex_file(
 
     # write to file
     with open(output_file, 'w') as outf:
-        json.dump(paper.release_json("latex"), outf, indent=4)
+        json.dump(paper.release_json("latex"), outf, indent=4, sort_keys=False)
 
     return output_file
 
