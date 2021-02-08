@@ -19,6 +19,10 @@ REFERENCE_OUTPUT_KEYS = {
     'equation': {'text', 'type_str', 'latex', 'mathml', 'num'}
 }
 
+METADATA_KEYS = {
+    "title", "authors", "year"
+}
+
 
 class ReferenceEntry:
     """
@@ -430,3 +434,51 @@ class Paper:
             }
         })
         return release_dict
+
+
+def load_s2orc(paper_dict: Dict) -> Paper:
+    """
+    Load release S2ORC into Paper class
+    :param paper_dict:
+    :return:
+    """
+    paper_id = paper_dict['paper_id']
+    pdf_hash = paper_dict.get('_pdf_hash', paper_dict.get('s2_pdf_hash', None))
+
+    # 2019 gorc parses
+    if "grobid_parse" in paper_dict and paper_dict.get("grobid_parse"):
+        metadata = {k: v for k, v in paper_dict["metadata"] if k in METADATA_KEYS}
+        abstract = paper_dict.get("grobid_parse").get("abstract", [])
+        body_text = paper_dict.get("grobid_parse").get("body_text", [])
+        back_matter = paper_dict.get("grobid_parse").get("back_matter", [])
+        bib_entries = paper_dict.get("grobid_parse").get("bib_entries", {})
+        ref_entries = paper_dict.get("grobid_parse").get("ref_entries", {})
+    # current and 2020 s2orc releases
+    elif "body_text" in paper_dict and paper_dict.get("body_text"):
+        if paper_dict.get("metadata"):
+            metadata = {k: v for k, v in paper_dict.get("metadata") if k in METADATA_KEYS}
+        # 2020 s2orc releases (metadata is separate)
+        else:
+            metadata = {
+                "title": None,
+                "authors": [],
+                "year": None
+            }
+        abstract = paper_dict.get("abstract", [])
+        body_text = paper_dict.get("body_text", [])
+        back_matter = paper_dict.get("back_matter", [])
+        bib_entries = paper_dict.get("bib_entries", {})
+        ref_entries = paper_dict.get("ref_entries", {})
+    else:
+        raise NotImplementedError("Unknown S2ORC file type!")
+
+    return Paper(
+        paper_id=paper_id,
+        pdf_hash=pdf_hash,
+        metadata=metadata,
+        abstract=abstract,
+        body_text=body_text,
+        back_matter=back_matter,
+        bib_entries=bib_entries,
+        ref_entries=ref_entries
+    )
