@@ -10,6 +10,10 @@ CORRECT_KEYS = {
     "type": "type_str"
 }
 
+SKIP_KEYS = {
+    'link',
+    'bib_id'
+}
 
 REFERENCE_OUTPUT_KEYS = {
     'figure': {'text', 'type_str', 'uris', 'num'},
@@ -49,12 +53,12 @@ class ReferenceEntry:
             ref_id: str,
             text: str,
             type_str: str,
-            latex: Optional[str]=None,
-            mathml: Optional[str]=None,
-            content: Optional[str]=None,
-            uris: Optional[List[str]]=None,
-            num: Optional[str]=None,
-            parent: Optional[str]=None
+            latex: Optional[str] = None,
+            mathml: Optional[str] = None,
+            content: Optional[str] = None,
+            uris: Optional[List[str]] = None,
+            num: Optional[str] = None,
+            parent: Optional[str] = None
     ):
         self.ref_id = ref_id
         self.text = text
@@ -118,19 +122,19 @@ class BibliographyEntry:
     def __init__(
             self,
             bib_id: str,
-            ref_id: str,
             title: str,
             authors: List[Dict[str, str]],
-            year: Optional[int]=None,
-            venue: Optional[str]=None,
-            volume: Optional[str]=None,
-            issue: Optional[str]=None,
-            pages: Optional[str]=None,
-            other_ids: Dict[str, List]=None,
-            num: Optional[int]=None,
-            urls: Optional[List]=None,
-            raw_text: Optional[str]=None,
-            link: Optional[int]=None
+            ref_id: Optional[str] = None,
+            year: Optional[int] = None,
+            venue: Optional[str] = None,
+            volume: Optional[str] = None,
+            issue: Optional[str] = None,
+            pages: Optional[str] = None,
+            other_ids: Dict[str, List] = None,
+            num: Optional[int] = None,
+            urls: Optional[List] = None,
+            raw_text: Optional[str] = None,
+            links: Optional[List] = None
     ):
         self.bib_id = bib_id
         self.ref_id = ref_id
@@ -145,7 +149,7 @@ class BibliographyEntry:
         self.num = num
         self.urls = urls
         self.raw_text = raw_text
-        self.link = link
+        self.links = links
 
     def as_json(self):
         return {
@@ -161,7 +165,7 @@ class BibliographyEntry:
             "num": self.num,
             "urls": self.urls,
             "raw_text": self.raw_text,
-            "link": self.link
+            "links": self.links
         }
 
 
@@ -226,8 +230,8 @@ class Author:
             middle: List[str],
             last: str,
             suffix: str,
-            affiliation: Optional[Dict]=None,
-            email: Optional[str]=None
+            affiliation: Optional[Dict] = None,
+            email: Optional[str] = None
     ):
         self.first = first
         self.middle = middle
@@ -279,7 +283,7 @@ class Metadata:
             self,
             title: str,
             authors: List[Dict],
-            year: Optional[str]=None
+            year: Optional[str] = None
     ):
         self.title = title
         self.authors = [Author(**author) for author in authors]
@@ -378,7 +382,7 @@ class Paper:
         self.bib_entries = [
             BibliographyEntry(
                 bib_id=key,
-                **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in bib.items() if k != 'bib_id'}
+                **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in bib.items() if k not in SKIP_KEYS}
             ) for key, bib in bib_entries.items()
         ]
         self.ref_entries = [
@@ -455,6 +459,9 @@ def load_s2orc(paper_dict: Dict) -> Paper:
         body_text = paper_dict.get("grobid_parse").get("body_text", [])
         back_matter = paper_dict.get("grobid_parse").get("back_matter", [])
         bib_entries = paper_dict.get("grobid_parse").get("bib_entries", {})
+        for k, v in bib_entries.items():
+            if 'link' in v:
+                v['links'] = [v['link']]
         ref_entries = paper_dict.get("grobid_parse").get("ref_entries", {})
     # current and 2020 s2orc releases
     elif "body_text" in paper_dict and paper_dict.get("body_text"):
@@ -471,6 +478,9 @@ def load_s2orc(paper_dict: Dict) -> Paper:
         body_text = paper_dict.get("body_text", [])
         back_matter = paper_dict.get("back_matter", [])
         bib_entries = paper_dict.get("bib_entries", {})
+        for k, v in bib_entries.items():
+            if 'link' in v:
+                v['links'] = [v['link']]
         ref_entries = paper_dict.get("ref_entries", {})
     else:
         raise NotImplementedError("Unknown S2ORC file type!")
