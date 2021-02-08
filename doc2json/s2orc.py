@@ -447,7 +447,7 @@ def load_s2orc(paper_dict: Dict) -> Paper:
 
     # 2019 gorc parses
     if "grobid_parse" in paper_dict and paper_dict.get("grobid_parse"):
-        metadata = {k: v for k, v in paper_dict["metadata"] if k in METADATA_KEYS}
+        metadata = {k: v for k, v in paper_dict["metadata"].items() if k in METADATA_KEYS}
         abstract = paper_dict.get("grobid_parse").get("abstract", [])
         body_text = paper_dict.get("grobid_parse").get("body_text", [])
         back_matter = paper_dict.get("grobid_parse").get("back_matter", [])
@@ -456,7 +456,7 @@ def load_s2orc(paper_dict: Dict) -> Paper:
     # current and 2020 s2orc releases
     elif "body_text" in paper_dict and paper_dict.get("body_text"):
         if paper_dict.get("metadata"):
-            metadata = {k: v for k, v in paper_dict.get("metadata") if k in METADATA_KEYS}
+            metadata = {k: v for k, v in paper_dict.get("metadata").items() if k in METADATA_KEYS}
         # 2020 s2orc releases (metadata is separate)
         else:
             metadata = {
