@@ -339,13 +339,21 @@ class Paragraph:
             cite_spans: List[Dict],
             ref_spans: List[Dict],
             eq_spans: Optional[List[Dict]] = [],
-            section: Optional[List] = None
+            section: Optional = None,
+            sec_num: Optional = None
     ):
         self.text = text
         self.cite_spans = cite_spans
         self.ref_spans = ref_spans
         self.eq_spans = eq_spans
-        self.section = section
+        if section:
+            sec_parts = section.split('::')
+            section_list = [(None, sec_name) for sec_name in sec_parts]
+        else:
+            section_list = None
+        if section_list and sec_num:
+            section_list[-1][0] = sec_num
+        self.section = section_list
 
     def as_json(self):
         return {

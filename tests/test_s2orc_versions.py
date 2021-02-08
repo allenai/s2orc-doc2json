@@ -34,6 +34,8 @@ class TestS2ORC(unittest.TestCase):
                 assert paper.body_text == [] or paper.body_text
                 assert paper.bib_entries == {} or paper.bib_entries
                 assert paper.ref_entries == {} or paper.ref_entries
+                assert paper.as_json()
+                assert paper.release_json()
 
     def test_s2orc_2020(self):
         """
@@ -57,6 +59,8 @@ class TestS2ORC(unittest.TestCase):
                 assert paper.body_text == [] or paper.body_text
                 assert paper.bib_entries == {} or paper.bib_entries
                 assert paper.ref_entries == {} or paper.ref_entries
+                assert paper.as_json()
+                assert paper.release_json()
 
     def test_s2orc_2019(self):
         """
@@ -80,3 +84,5 @@ class TestS2ORC(unittest.TestCase):
                 assert paper.body_text == [] or paper.body_text
                 assert paper.bib_entries == {} or paper.bib_entries
                 assert paper.ref_entries == {} or paper.ref_entries
+                assert paper.as_json()
+                assert paper.release_json()
