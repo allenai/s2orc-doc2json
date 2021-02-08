@@ -65,6 +65,10 @@ A few examples are available under `tests/latex/`. For example, you can try:
 python doc2json/pdf2json/process_tex.py -i test/latex/1911.02782.gz -t temp_dir/ -o output_dir/
 ```
 
+## Loading a S2ORC JSON file
+
+The format of S2ORC releases have drifted over time. Use the `load_s2orc` function in `doc2json/s2orc.py` to try and load historic and currect S2ORC JSON.
+
 ## Run a Flask app and process documents through a web service
 
 To process PDFs, you will first need to start Grobid (defaults to port 8070). If you are processing LaTeX, no need for this step.

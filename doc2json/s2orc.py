@@ -2,7 +2,9 @@
 S2ORC classes
 """
 
+from datetime import datetime
 from typing import Dict, List, Optional
+from doc2json.config import *
 
 
 CORRECT_KEYS = {
@@ -435,6 +437,10 @@ class Paper:
         """
         # TODO: not fully implemented; metadata format is not right; extra keys in some places
         release_dict = {"paper_id": self.paper_id}
+        release_dict.update({"header": {
+            "generated_with": f'{S2ORC_NAME_STRING} {S2ORC_VERSION_STRING}',
+            "date_generated": datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        }})
         release_dict.update(self.metadata.as_json())
         release_dict.update({"abstract": self.raw_abstract_text})
         release_dict.update({
