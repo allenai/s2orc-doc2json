@@ -129,7 +129,8 @@ class BibliographyEntry:
             other_ids: Dict[str, List]=None,
             num: Optional[int]=None,
             urls: Optional[List]=None,
-            raw_text: Optional[str]=None
+            raw_text: Optional[str]=None,
+            link: Optional[int]=None
     ):
         self.bib_id = bib_id
         self.ref_id = ref_id
@@ -144,6 +145,7 @@ class BibliographyEntry:
         self.num = num
         self.urls = urls
         self.raw_text = raw_text
+        self.link = link
 
     def as_json(self):
         return {
@@ -158,7 +160,8 @@ class BibliographyEntry:
             "other_ids": self.other_ids,
             "num": self.num,
             "urls": self.urls,
-            "raw_text": self.raw_text
+            "raw_text": self.raw_text,
+            "link": self.link
         }
 
 
@@ -331,8 +334,8 @@ class Paragraph:
             text: str,
             cite_spans: List[Dict],
             ref_spans: List[Dict],
-            eq_spans: List[Dict],
-            section: Optional[List]=None
+            eq_spans: Optional[List[Dict]] = [],
+            section: Optional[List] = None
     ):
         self.text = text
         self.cite_spans = cite_spans
