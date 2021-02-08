@@ -348,13 +348,16 @@ class Paragraph:
         self.cite_spans = cite_spans
         self.ref_spans = ref_spans
         self.eq_spans = eq_spans
-        if section:
-            sec_parts = section.split('::')
-            section_list = [(None, sec_name) for sec_name in sec_parts]
+        if type(section) == str:
+            if section:
+                sec_parts = section.split('::')
+                section_list = [(None, sec_name) for sec_name in sec_parts]
+            else:
+                section_list = None
+            if section_list and sec_num:
+                section_list[-1][0] = sec_num
         else:
-            section_list = None
-        if section_list and sec_num:
-            section_list[-1][0] = sec_num
+            section_list = section
         self.section = section_list
 
     def as_json(self):
