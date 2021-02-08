@@ -18,7 +18,7 @@ TEST_LATEX_LOG_DATA = os.path.join(TEST_LATEX_TEMP_DIR, 'log')
 TEST_LATEX_OUTPUT_DATA = os.path.join('tests', 'latex_output')
 
 
-class TestS2ORC(unittest.TestCase):
+class TestE2E(unittest.TestCase):
 
     def test_pdf_e2e(self):
         """

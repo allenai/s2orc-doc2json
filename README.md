@@ -47,17 +47,27 @@ The expected port for the Grobid service is 8070, but you can change this as wel
 
 ### Process a PDF
 
-To process a PDF, try:
+There are a couple of test PDFs in `tests/input/` if you'd like to try with that.
+
+For example, you can try:
 
 ```console
-python doc2json/pdf2json/process_pdf.py -i input.pdf -t temp_dir/ -o output_dir/
+python doc2json/pdf2json/process_pdf.py -i tests/pdf/b80e338a4e543de6b49cada07156c9149d22.pdf -t temp_dir/ -o output_dir/
 ```
-
-There are a couple of test PDFs in `tests/input/` if you'd like to try with that.
 
 ## LaTeX Processing
 
+To process LaTeX, all files must be in a zip file, similar to the `*.gz` files you can download from arXiv. 
 
+A few examples are available under `tests/latex/`. For example, you can try:
+
+```console
+python doc2json/pdf2json/process_tex.py -i test/latex/1911.02782.gz -t temp_dir/ -o output_dir/
+```
+
+## Loading a S2ORC JSON file
+
+The format of S2ORC releases have drifted over time. Use the `load_s2orc` function in `doc2json/s2orc.py` to try and load historic and currect S2ORC JSON.
 
 ## Run a Flask app and process documents through a web service
 
@@ -81,10 +91,9 @@ Or alternatively, you can do things like:
 curl localhost:8080/ -F file=@tests/input/5cd28c171f9f3b6a8bcebe246159c464980c.pdf
 ```
 
-
 ## Contact
 
-Contributions are welcome. Note the embarassingly poor test coverage. Also, please note this pipeline is not perfect. It will miss text or make errors on most PDFs.
+Contributions are welcome. Note the embarassingly poor test coverage. Also, please note this pipeline is not perfect. It will miss text or make errors on most PDFs. The current PDF to JSON step uses Grobid; we may replace this with a different model in the future.
 
 Issues: contact `lucyw@allenai.org` or `kylel@allenai.org`
 

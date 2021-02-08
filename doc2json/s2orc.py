@@ -2,7 +2,9 @@
 S2ORC classes
 """
 
+from datetime import datetime
 from typing import Dict, List, Optional
+from doc2json.config import *
 
 
 CORRECT_KEYS = {
@@ -10,6 +12,10 @@ CORRECT_KEYS = {
     "type": "type_str"
 }
 
+SKIP_KEYS = {
+    'link',
+    'bib_id'
+}
 
 REFERENCE_OUTPUT_KEYS = {
     'figure': {'text', 'type_str', 'uris', 'num'},
@@ -17,6 +23,10 @@ REFERENCE_OUTPUT_KEYS = {
     'footnote': {'text', 'type_str', 'num'},
     'section': {'text', 'type_str', 'num', 'parent'},
     'equation': {'text', 'type_str', 'latex', 'mathml', 'num'}
+}
+
+METADATA_KEYS = {
+    "title", "authors", "year"
 }
 
 
@@ -45,12 +55,12 @@ class ReferenceEntry:
             ref_id: str,
             text: str,
             type_str: str,
-            latex: Optional[str]=None,
-            mathml: Optional[str]=None,
-            content: Optional[str]=None,
-            uris: Optional[List[str]]=None,
-            num: Optional[str]=None,
-            parent: Optional[str]=None
+            latex: Optional[str] = None,
+            mathml: Optional[str] = None,
+            content: Optional[str] = None,
+            uris: Optional[List[str]] = None,
+            num: Optional[str] = None,
+            parent: Optional[str] = None
     ):
         self.ref_id = ref_id
         self.text = text
@@ -114,18 +124,19 @@ class BibliographyEntry:
     def __init__(
             self,
             bib_id: str,
-            ref_id: str,
             title: str,
             authors: List[Dict[str, str]],
-            year: Optional[int]=None,
-            venue: Optional[str]=None,
-            volume: Optional[str]=None,
-            issue: Optional[str]=None,
-            pages: Optional[str]=None,
-            other_ids: Dict[str, List]=None,
-            num: Optional[int]=None,
-            urls: Optional[List]=None,
-            raw_text: Optional[str]=None
+            ref_id: Optional[str] = None,
+            year: Optional[int] = None,
+            venue: Optional[str] = None,
+            volume: Optional[str] = None,
+            issue: Optional[str] = None,
+            pages: Optional[str] = None,
+            other_ids: Dict[str, List] = None,
+            num: Optional[int] = None,
+            urls: Optional[List] = None,
+            raw_text: Optional[str] = None,
+            links: Optional[List] = None
     ):
         self.bib_id = bib_id
         self.ref_id = ref_id
@@ -140,6 +151,7 @@ class BibliographyEntry:
         self.num = num
         self.urls = urls
         self.raw_text = raw_text
+        self.links = links
 
     def as_json(self):
         return {
@@ -154,7 +166,8 @@ class BibliographyEntry:
             "other_ids": self.other_ids,
             "num": self.num,
             "urls": self.urls,
-            "raw_text": self.raw_text
+            "raw_text": self.raw_text,
+            "links": self.links
         }
 
 
@@ -219,8 +232,8 @@ class Author:
             middle: List[str],
             last: str,
             suffix: str,
-            affiliation: Optional[Dict]=None,
-            email: Optional[str]=None
+            affiliation: Optional[Dict] = None,
+            email: Optional[str] = None
     ):
         self.first = first
         self.middle = middle
@@ -272,7 +285,7 @@ class Metadata:
             self,
             title: str,
             authors: List[Dict],
-            year: Optional[str]=None
+            year: Optional[str] = None
     ):
         self.title = title
         self.authors = [Author(**author) for author in authors]
@@ -327,14 +340,25 @@ class Paragraph:
             text: str,
             cite_spans: List[Dict],
             ref_spans: List[Dict],
-            eq_spans: List[Dict],
-            section: Optional[List]=None
+            eq_spans: Optional[List[Dict]] = [],
+            section: Optional = None,
+            sec_num: Optional = None
     ):
         self.text = text
         self.cite_spans = cite_spans
         self.ref_spans = ref_spans
         self.eq_spans = eq_spans
-        self.section = section
+        if type(section) == str:
+            if section:
+                sec_parts = section.split('::')
+                section_list = [(None, sec_name) for sec_name in sec_parts]
+            else:
+                section_list = None
+            if section_list and sec_num:
+                section_list[-1][0] = sec_num
+        else:
+            section_list = section
+        self.section = section_list
 
     def as_json(self):
         return {
@@ -371,7 +395,7 @@ class Paper:
         self.bib_entries = [
             BibliographyEntry(
                 bib_id=key,
-                **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in bib.items() if k != 'bib_id'}
+                **{CORRECT_KEYS[k] if k in CORRECT_KEYS else k: v for k, v in bib.items() if k not in SKIP_KEYS}
             ) for key, bib in bib_entries.items()
         ]
         self.ref_entries = [
@@ -416,6 +440,10 @@ class Paper:
         """
         # TODO: not fully implemented; metadata format is not right; extra keys in some places
         release_dict = {"paper_id": self.paper_id}
+        release_dict.update({"header": {
+            "generated_with": f'{S2ORC_NAME_STRING} {S2ORC_VERSION_STRING}',
+            "date_generated": datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        }})
         release_dict.update(self.metadata.as_json())
         release_dict.update({"abstract": self.raw_abstract_text})
         release_dict.update({
@@ -430,3 +458,57 @@ class Paper:
             }
         })
         return release_dict
+
+
+def load_s2orc(paper_dict: Dict) -> Paper:
+    """
+    Load release S2ORC into Paper class
+    :param paper_dict:
+    :return:
+    """
+    paper_id = paper_dict['paper_id']
+    pdf_hash = paper_dict.get('_pdf_hash', paper_dict.get('s2_pdf_hash', None))
+
+    # 2019 gorc parses
+    if "grobid_parse" in paper_dict and paper_dict.get("grobid_parse"):
+        metadata = {k: v for k, v in paper_dict["metadata"].items() if k in METADATA_KEYS}
+        abstract = paper_dict.get("grobid_parse").get("abstract", [])
+        body_text = paper_dict.get("grobid_parse").get("body_text", [])
+        back_matter = paper_dict.get("grobid_parse").get("back_matter", [])
+        bib_entries = paper_dict.get("grobid_parse").get("bib_entries", {})
+        for k, v in bib_entries.items():
+            if 'link' in v:
+                v['links'] = [v['link']]
+        ref_entries = paper_dict.get("grobid_parse").get("ref_entries", {})
+    # current and 2020 s2orc releases
+    elif "body_text" in paper_dict and paper_dict.get("body_text"):
+        if paper_dict.get("metadata"):
+            metadata = {k: v for k, v in paper_dict.get("metadata").items() if k in METADATA_KEYS}
+        # 2020 s2orc releases (metadata is separate)
+        else:
+            metadata = {
+                "title": None,
+                "authors": [],
+                "year": None
+            }
+        abstract = paper_dict.get("abstract", [])
+        body_text = paper_dict.get("body_text", [])
+        back_matter = paper_dict.get("back_matter", [])
+        bib_entries = paper_dict.get("bib_entries", {})
+        for k, v in bib_entries.items():
+            if 'link' in v:
+                v['links'] = [v['link']]
+        ref_entries = paper_dict.get("ref_entries", {})
+    else:
+        raise NotImplementedError("Unknown S2ORC file type!")
+
+    return Paper(
+        paper_id=paper_id,
+        pdf_hash=pdf_hash,
+        metadata=metadata,
+        abstract=abstract,
+        body_text=body_text,
+        back_matter=back_matter,
+        bib_entries=bib_entries,
+        ref_entries=ref_entries
+    )
