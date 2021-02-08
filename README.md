@@ -16,9 +16,13 @@ We may eventually make these components available as well, but no promises.
 
 NOTE: Conda is shown but any other python env manager should be fine
 
+Go [here](https://docs.conda.io/en/latest/miniconda.html) to install the latest version of miniconda.
+
+Then, create an environment:
+
 ```console
 conda create -n doc2json python=3.8 pytest
-source activate doc2json
+conda activate doc2json
 pip install -r requirements.txt
 python setup.py develop
 ```
@@ -29,7 +33,7 @@ The current `pdf2json` tool uses Grobid to first process each PDF into XML, then
 
 ### Install Grobid
 
-You can install your own version of Grobid and get it running, or you can run the following script:
+You will need to have Java installed on your machine. Then, you can install your own version of Grobid and get it running, or you can run the following script:
 
 ```console
 bash scripts/setup_grobid.sh
@@ -56,6 +60,11 @@ python doc2json/pdf2json/process_pdf.py -i tests/pdf/b80e338a4e543de6b49cada0715
 ```
 
 ## LaTeX Processing
+
+If you want to process LaTeX, you also need to install the following libraries:
+
+- [latexpand](https://ctan.org/pkg/latexpand?lang=en) (`apt install texlive-extra-utils`)
+- [tralics](http://www-sop.inria.fr/marelle/tralics/) (`apt install tralics`)
 
 To process LaTeX, all files must be in a zip file, similar to the `*.gz` files you can download from arXiv. 
 
