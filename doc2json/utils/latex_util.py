@@ -1,3 +1,10 @@
+"""
+Many of the REGEX expressions and pipeline in this set of utilities are borrowed or extended from
+the unarXive project: https://github.com/IllDepence/unarXive
+
+Modifications have been made to better identify the primary latex file and expand all other latex
+files into the main file. Latexpand and tralics options have also been changed.
+"""
 import chardet
 import magic
 import os
