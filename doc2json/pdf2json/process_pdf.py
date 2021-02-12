@@ -39,7 +39,7 @@ def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:
     :return:
     """
     # get paper id as the name of the file
-    paper_id = input_file.split('/')[-1].split('.')[0]
+    paper_id = '.'.join(input_file.split('/')[-1].split('.')[:-1])
     tei_file = os.path.join(temp_dir, f'{paper_id}.tei.xml')
     output_file = os.path.join(output_dir, f'{paper_id}.json')
 
