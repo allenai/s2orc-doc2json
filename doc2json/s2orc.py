@@ -480,8 +480,10 @@ def load_s2orc(paper_dict: Dict) -> Paper:
             if 'link' in v:
                 v['links'] = [v['link']]
         ref_entries = paper_dict.get("grobid_parse").get("ref_entries", {})
-    # current and 2020 s2orc releases
-    elif "body_text" in paper_dict and paper_dict.get("body_text"):
+    # current and 2020 s2orc release_json
+    elif ("pdf_parse" in paper_dict and paper_dict.get("pdf_parse")) or ("body_text" in paper_dict and paper_dict.get("body_text")):
+        if "pdf_parse" in paper_dict:
+            paper_dict = paper_dict["pdf_parse"]
         if paper_dict.get("metadata"):
             metadata = {k: v for k, v in paper_dict.get("metadata").items() if k in METADATA_KEYS}
         # 2020 s2orc releases (metadata is separate)
@@ -500,6 +502,7 @@ def load_s2orc(paper_dict: Dict) -> Paper:
                 v['links'] = [v['link']]
         ref_entries = paper_dict.get("ref_entries", {})
     else:
+        print(paper_id)
         raise NotImplementedError("Unknown S2ORC file type!")
 
     return Paper(
