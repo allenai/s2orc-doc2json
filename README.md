@@ -101,7 +101,7 @@ Go to [localhost:8080](localhost:8080) to upload and process papers.
 Or alternatively, you can do things like:
 
 ```console
-curl localhost:8080/ -F file=@tests/input/5cd28c171f9f3b6a8bcebe246159c464980c.pdf
+curl localhost:8080/ -F file=@tests/pdf/N18-3011.pdf
 ```
 
 ## Contact
