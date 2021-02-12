@@ -1,0 +1,3723 @@
+{
+    "paper_id": "2020",
+    "header": {
+        "generated_with": "S2ORC 1.0.0",
+        "date_generated": "2021-02-12T10:05:38.729693Z"
+    },
+    "title": "SPECTER: Document-level Representation Learning using Citation-informed Transformers",
+    "authors": [
+        {
+            "first": "Arman",
+            "middle": [],
+            "last": "Cohan",
+            "suffix": "",
+            "affiliation": {
+                "laboratory": "",
+                "institution": "University of Washington",
+                "location": {}
+            },
+            "email": "armanc@allenai.org"
+        },
+        {
+            "first": "Sergey",
+            "middle": [],
+            "last": "Feldman",
+            "suffix": "",
+            "affiliation": {
+                "laboratory": "",
+                "institution": "University of Washington",
+                "location": {}
+            },
+            "email": "sergey@allenai.org"
+        },
+        {
+            "first": "Iz",
+            "middle": [],
+            "last": "Beltagy",
+            "suffix": "",
+            "affiliation": {
+                "laboratory": "",
+                "institution": "University of Washington",
+                "location": {}
+            },
+            "email": "beltagy@allenai.org"
+        },
+        {
+            "first": "Doug",
+            "middle": [],
+            "last": "Downey",
+            "suffix": "",
+            "affiliation": {
+                "laboratory": "",
+                "institution": "University of Washington",
+                "location": {}
+            },
+            "email": "dougd@allenai.org"
+        },
+        {
+            "first": "Daniel",
+            "middle": [
+                "S"
+            ],
+            "last": "Weld",
+            "suffix": "",
+            "affiliation": {
+                "laboratory": "",
+                "institution": "University of Washington",
+                "location": {}
+            },
+            "email": ""
+        }
+    ],
+    "year": "",
+    "abstract": "Representation learning is a critical ingredient for natural language processing systems. Recent Transformer language models like BERT learn powerful textual representations, but these models are targeted towards token-and sentence-level training objectives and do not leverage information on inter-document relatedness, which limits their document-level representation power. For applications on scientific documents, such as classification and recommendation, the embeddings power strong performance on end tasks. We propose SPECTER, a new method to generate document-level embedding of scientific documents based on pretraining a Transformer language model on a powerful signal of document-level relatedness: the citation graph. Unlike existing pretrained language models, SPECTER can be easily applied to downstream applications without task-specific fine-tuning. Additionally, to encourage further research on document-level models, we introduce SCIDOCS, a new evaluation benchmark consisting of seven document-level tasks ranging from citation prediction, to document classification and recommendation. We show that SPECTER outperforms a variety of competitive baselines on the benchmark. 1",
+    "pdf_parse": {
+        "paper_id": "2020",
+        "_pdf_hash": "",
+        "abstract": [
+            {
+                "text": "Representation learning is a critical ingredient for natural language processing systems. Recent Transformer language models like BERT learn powerful textual representations, but these models are targeted towards token-and sentence-level training objectives and do not leverage information on inter-document relatedness, which limits their document-level representation power. For applications on scientific documents, such as classification and recommendation, the embeddings power strong performance on end tasks. We propose SPECTER, a new method to generate document-level embedding of scientific documents based on pretraining a Transformer language model on a powerful signal of document-level relatedness: the citation graph. Unlike existing pretrained language models, SPECTER can be easily applied to downstream applications without task-specific fine-tuning. Additionally, to encourage further research on document-level models, we introduce SCIDOCS, a new evaluation benchmark consisting of seven document-level tasks ranging from citation prediction, to document classification and recommendation. We show that SPECTER outperforms a variety of competitive baselines on the benchmark. 1",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Abstract",
+                "sec_num": null
+            }
+        ],
+        "body_text": [
+            {
+                "text": "As the pace of scientific publication continues to increase, Natural Language Processing (NLP) tools that help users to search, discover and understand the scientific literature have become critical. In recent years, substantial improvements in NLP tools have been brought about by pretrained neural language models (LMs) (Radford et al., 2018; Devlin et al., 2019; . While such models are widely used for representing individual words or sentences, extensions to whole-document embeddings are relatively underexplored. Likewise, methods that do use inter-document signals to produce whole-document embeddings (Tu et al., 2017; ) have yet to incorporate stateof-the-art pretrained LMs. Here, we study how to leverage the power of pretrained language models to learn embeddings for scientific documents.",
+                "cite_spans": [
+                    {
+                        "start": 322,
+                        "end": 344,
+                        "text": "(Radford et al., 2018;",
+                        "ref_id": "BIBREF38"
+                    },
+                    {
+                        "start": 345,
+                        "end": 365,
+                        "text": "Devlin et al., 2019;",
+                        "ref_id": "BIBREF11"
+                    },
+                    {
+                        "start": 610,
+                        "end": 627,
+                        "text": "(Tu et al., 2017;",
+                        "ref_id": "BIBREF46"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "A paper's title and abstract provide rich semantic content about the paper, but, as we show in this work, simply passing these textual fields to an \"off-the-shelf\" pretrained language model-even a state-of-the-art model tailored to scientific text like the recent SciBERT (Beltagy et al., 2019) -does not result in accurate paper representations. The language modeling objectives used to pretrain the model do not lead it to output representations that are helpful for document-level tasks such as topic classification or recommendation.",
+                "cite_spans": [
+                    {
+                        "start": 272,
+                        "end": 294,
+                        "text": "(Beltagy et al., 2019)",
+                        "ref_id": "BIBREF3"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "In this paper, we introduce a new method for learning general-purpose vector representations of scientific documents. Our system, SPECTER, 2 incorporates inter-document context into the Transformer (Vaswani et al., 2017) language models (e.g., SciBERT (Beltagy et al., 2019) ) to learn document representations that are effective across a wide-variety of downstream tasks, without the need for any task-specific fine-tuning of the pretrained language model. We specifically use citations as a naturally occurring, inter-document incidental supervision signal indicating which documents are most related and formulate the signal into a triplet-loss pretraining objective. Unlike many prior works, at inference time, our model does not require any citation information. This is critical for embedding new papers that have not yet been cited. In experiments, we show that SPECTER's representations substantially outperform the state-SPECTER: Scientific Paper Embeddings using Citationinformed TransformERs of-the-art on a variety of document-level tasks, including topic classification, citation prediction, and recommendation.",
+                "cite_spans": [
+                    {
+                        "start": 198,
+                        "end": 220,
+                        "text": "(Vaswani et al., 2017)",
+                        "ref_id": "BIBREF47"
+                    },
+                    {
+                        "start": 252,
+                        "end": 274,
+                        "text": "(Beltagy et al., 2019)",
+                        "ref_id": "BIBREF3"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "As an additional contribution of this work, we introduce and release SCIDOCS 3 , a novel collection of data sets and an evaluation suite for documentlevel embeddings in the scientific domain. SCI-DOCS covers seven tasks, and includes tens of thousands of examples of anonymized user signals of document relatedness. We also release our training set (hundreds of thousands of paper titles, abstracts and citations), along with our trained embedding model and its associated code base.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "Our goal is to learn task-independent representations of academic papers. Inspired by the recent success of pretrained Transformer language models across various NLP tasks, we use the Transformer model architecture as basis of encoding the input paper. Existing LMs such as BERT, however, are primarily based on masked language modeling objective, only considering intra-document context and do not use any inter-document information. This limits their ability to learn optimal document representations. To learn high-quality documentlevel representations we propose using citations as an inter-document relatedness signal and formulate it as a triplet loss learning objective. We then pretrain the model on a large corpus of citations using this objective, encouraging it to output representations that are more similar for papers that share a citation link than for those that do not. We call our model SPECTER, which learns Scientific Paper Embeddings using Citation-informed Trans-formERs. With respect to the terminology used by Devlin et al. (2019) , unlike most existing LMs that are \"fine-tuning based\", our approach results in embeddings that can be applied to downstream tasks in a \"feature-based\" fashion, meaning the learned paper embeddings can be easily used as features, with no need for further task-specific fine-tuning. In the following, as background information, we briefly describe how pretrained LMs can be applied for document representation and then discuss the details of SPECTER.",
+                "cite_spans": [
+                    {
+                        "start": 1034,
+                        "end": 1054,
+                        "text": "Devlin et al. (2019)",
+                        "ref_id": "BIBREF11"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Model 2.1 Overview",
+                "sec_num": "2"
+            },
+            {
+                "text": "https://github.com/allenai/scidocs Transformer (initialized with SciBERT) Related paper (P + ) Query paper (P Q ) Unrelated paper (P \u2212 )",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Model 2.1 Overview",
+                "sec_num": "2"
+            },
+            {
+                "text": "Triplet loss =max d P Q , P + \u2212 d P Q , P \u2212 + m , 0",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Model 2.1 Overview",
+                "sec_num": "2"
+            },
+            {
+                "text": "Figure 1: Overview of SPECTER.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Model 2.1 Overview",
+                "sec_num": "2"
+            },
+            {
+                "text": "Recently, pretrained Transformer networks have demonstrated success on various NLP tasks (Radford et al., 2018; Devlin et al., 2019; Liu et al., 2019) ; we use these models as the foundation for SPECTER. Specifically, we use SciBERT (Beltagy et al., 2019) which is an adaptation of the original BERT (Devlin et al., 2019) architecture to the scientific domain. The BERT model architecture (Devlin et al., 2019) uses multiple layers of Transformers (Vaswani et al., 2017) to encode the tokens in a given input sequence. Each layer consists of a self-attention sublayer followed by a feedforward sublayer. The final hidden state associated with the special [CLS] token is usually called the \"pooled output\", and is commonly used as an aggregate representation of the sequence.",
+                "cite_spans": [
+                    {
+                        "start": 89,
+                        "end": 111,
+                        "text": "(Radford et al., 2018;",
+                        "ref_id": "BIBREF38"
+                    },
+                    {
+                        "start": 112,
+                        "end": 132,
+                        "text": "Devlin et al., 2019;",
+                        "ref_id": "BIBREF11"
+                    },
+                    {
+                        "start": 133,
+                        "end": 150,
+                        "text": "Liu et al., 2019)",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 233,
+                        "end": 255,
+                        "text": "(Beltagy et al., 2019)",
+                        "ref_id": "BIBREF3"
+                    },
+                    {
+                        "start": 300,
+                        "end": 321,
+                        "text": "(Devlin et al., 2019)",
+                        "ref_id": "BIBREF11"
+                    },
+                    {
+                        "start": 389,
+                        "end": 410,
+                        "text": "(Devlin et al., 2019)",
+                        "ref_id": "BIBREF11"
+                    },
+                    {
+                        "start": 448,
+                        "end": 470,
+                        "text": "(Vaswani et al., 2017)",
+                        "ref_id": "BIBREF47"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Background: Pretrained Transformers",
+                "sec_num": "2.2"
+            },
+            {
+                "text": "Our goal is to represent a given paper P as a dense vector v that best represents the paper and can be used in downstream tasks. SPECTER builds embeddings from the title and abstract of a paper. Intuitively, we would expect these fields to be sufficient to produce accurate embeddings, since they are written to provide a succinct and comprehensive summary of the paper. 4 As such, we encode the concatenated title and abstract using a Transformer LM (e.g., SciBERT) and take the final representation of the [CLS] token as the output representation of the paper:",
+                "cite_spans": [
+                    {
+                        "start": 371,
+                        "end": 372,
+                        "text": "4",
+                        "ref_id": null
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Document Representation",
+                "sec_num": null
+            },
+            {
+                "text": "EQUATION",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [
+                    {
+                        "start": 0,
+                        "end": 8,
+                        "text": "EQUATION",
+                        "ref_id": "EQREF",
+                        "raw_str": "5 v = Transformer(input) [CLS] ,",
+                        "eq_num": "(1)"
+                    }
+                ],
+                "section": "Document Representation",
+                "sec_num": null
+            },
+            {
+                "text": "where Transformer is the Transformer's forward function, and input is the concatenation of the [CLS] token and WordPieces (Wu et al., 2016) of the title and abstract of a paper, separated by the [SEP] token. We use SciBERT as our model initialization as it is optimized for scientific text, though our formulation is general and any Transformer language model instead of SciBERT. Using the above method with an \"off-the-shelf\" SciBERT does not take global inter-document information into account. This is because SciBERT, like other pretrained language models, is trained via language modeling objectives, which only predict words or sentences given their in-document, nearby textual context. In contrast, we propose to incorporate citations into the model as a signal of inter-document relatedness, while still leveraging the model's existing strength in modeling language.",
+                "cite_spans": [
+                    {
+                        "start": 122,
+                        "end": 139,
+                        "text": "(Wu et al., 2016)",
+                        "ref_id": "BIBREF52"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Document Representation",
+                "sec_num": null
+            },
+            {
+                "text": "A citation from one document to another suggests that the documents are related. To encode this relatedness signal into our representations, we design a loss function that trains the Transformer model to learn closer representations for papers when one cites the other, and more distant representations otherwise. The high-level overview of the model is shown in Figure 1 . In particular, each training instance is a triplet of papers: a query paper P Q , a positive paper P + and a negative paper P \u2212 . The positive paper is a paper that the query paper cites, and the negative paper is a paper that is not cited by the query paper (but that may be cited by P + ). We then train the model using the following triplet margin loss function:",
+                "cite_spans": [],
+                "ref_spans": [
+                    {
+                        "start": 363,
+                        "end": 371,
+                        "text": "Figure 1",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Citation-Based Pretraining Objective",
+                "sec_num": "2.3"
+            },
+            {
+                "text": "L = max d P Q , P + \u2212 d P Q , P \u2212 + m , 0 (2)",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Citation-Based Pretraining Objective",
+                "sec_num": "2.3"
+            },
+            {
+                "text": "where d is a distance function and m is the loss margin hyperparameter (we empirically choose m = 1). Here, we use the L2 norm distance:",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Citation-Based Pretraining Objective",
+                "sec_num": "2.3"
+            },
+            {
+                "text": "d(P A , P B ) = v A \u2212 v B 2 ,",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Citation-Based Pretraining Objective",
+                "sec_num": "2.3"
+            },
+            {
+                "text": "where v A is the vector corresponding to the pooled output of the Transformer run on paper A (Equation 1). 6 Starting from the trained SciBERT model, we pretrain the Transformer parameters on the citation objective to learn paper representations that capture document relatedness.",
+                "cite_spans": [
+                    {
+                        "start": 107,
+                        "end": 108,
+                        "text": "6",
+                        "ref_id": null
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Citation-Based Pretraining Objective",
+                "sec_num": "2.3"
+            },
+            {
+                "text": "The choice of negative example papers P \u2212 is important when training the model. We consider two sets of negative examples: the first set simply consists of randomly selected papers from the corpus.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Selecting Negative Distractors",
+                "sec_num": "2.4"
+            },
+            {
+                "text": "We also experimented with other distance functions (e..g, normalized cosine), but they underperformed the L2 loss.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Selecting Negative Distractors",
+                "sec_num": "2.4"
+            },
+            {
+                "text": "Given a query paper, intuitively we would expect the model to be able to distinguish between cited papers, and uncited papers sampled randomly from the entire corpus. This inductive bias has been also found to be effective in content-based citation recommendation applications . But, random negatives may be easy for the model to distinguish from the positives. To provide a more nuanced training signal, we augment the randomly drawn negatives with a more challenging second set of negative examples. We denote as \"hard negatives\" the papers that are not cited by the query paper, but are cited by a paper cited by the query paper, i.e. if P 1 cite \u2212 \u2212 \u2192 P 2 and P 2 cite \u2212 \u2212 \u2192 P 3",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Selecting Negative Distractors",
+                "sec_num": "2.4"
+            },
+            {
+                "text": "but P 1 cite \u2212 \u2212 \u2192 P 3 , then P 3 is a candidate hard negative example for P 1 . We expect the hard negatives to be somewhat related to the query paper, but typically less related than the cited papers. As we show in our experiments ( \u00a76), including hard negatives results in more accurate embeddings compared to using random negatives alone.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Selecting Negative Distractors",
+                "sec_num": "2.4"
+            },
+            {
+                "text": "At inference time, the model receives one paper, P, and it outputs the SPECTER's Transfomer pooled output activation as the paper representation for P (Equation 1). We note that for inference, SPECTER requires only the title and abstract of the given input paper; the model does not need any citation information about the input paper. This means that SPECTER can produce embeddings even for new papers that have yet to be cited, which is critical for applications that target recent scientific papers.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Inference",
+                "sec_num": "2.5"
+            },
+            {
+                "text": "Previous evaluations of scientific document representations in the literature tend to focus on small datasets over a limited set of tasks, and extremely high (99%+) AUC scores are already possible on these data for English documents . New, larger and more diverse benchmark datasets are necessary. Here, we introduce a new comprehensive evaluation framework to measure the effectiveness of scientific paper embeddings, which we call SCIDOCS. The framework consists of diverse tasks, ranging from citation prediction, to prediction of user activity, to document classification and paper recommendation. Note that SPECTER will not be further fine-tuned on any of the tasks; we simply plug in the embeddings as features for each task. Below, we describe each of the tasks in detail and the evaluation data associated with it. In addition to our training data, we release all the datasets associated with the evaluation tasks.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "SCIDOCS Evaluation Framework",
+                "sec_num": "3"
+            },
+            {
+                "text": "An important test of a document-level embedding is whether it is predictive of the class of the document. Here, we consider two classification tasks in the scientific domain: MeSH Classification In this task, the goals is to classify scientific papers according to their Medical Subject Headings (MeSH) (Lipscomb, 2000) . 7 We construct a dataset consisting of 23K academic medical papers, where each paper is assigned one of 11 top-level disease classes such as cardiovascular diseases, diabetes, digestive diseases derived from the MeSH vocabulary. The most populated category is Neoplasms (cancer) with 5.4K instances (23.3% of the total dataset) while the category with least number of samples is Hepatitis (1.7% of the total dataset). We follow the approach of Feldman et al. (2019) in mapping the MeSH vocabulary to the disease classes.",
+                "cite_spans": [
+                    {
+                        "start": 303,
+                        "end": 319,
+                        "text": "(Lipscomb, 2000)",
+                        "ref_id": "BIBREF30"
+                    },
+                    {
+                        "start": 322,
+                        "end": 323,
+                        "text": "7",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 766,
+                        "end": 787,
+                        "text": "Feldman et al. (2019)",
+                        "ref_id": "BIBREF13"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Document Classification",
+                "sec_num": "3.1"
+            },
+            {
+                "text": "Paper Topic Classification This task is predicting the topic associated with a paper using the predefined topic categories of the Microsoft Academic Graph (MAG) (Sinha et al., 2015) 8 . MAG provides a database of papers, each tagged with a list of topics. The topics are organized in a hierarchy of 5 levels, where level 1 is the most general and level 5 is the most specific. For our evaluation, we derive a document classification dataset from the level 1 topics, where a paper is labeled by its corresponding level 1 MAG topic. We construct a dataset of 25K papers, almost evenly split over the 19 different classes of level 1 categories in MAG.",
+                "cite_spans": [
+                    {
+                        "start": 161,
+                        "end": 181,
+                        "text": "(Sinha et al., 2015)",
+                        "ref_id": "BIBREF45"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Document Classification",
+                "sec_num": "3.1"
+            },
+            {
+                "text": "As argued above, citations are a key signal of relatedness between papers. We test how well different paper representations can reproduce this signal through citation prediction tasks. In particular, we focus on two sub-tasks: predicting direct citations, and predicting co-citations. We frame these as ranking tasks and evaluate performance using MAP and nDCG, standard ranking metrics. Direct Citations In this task, the model is asked to predict which papers are cited by a given query paper from a given set of candidate papers. The evaluation dataset includes approximately 30K total papers from a held-out pool of papers, consisting of 1K query papers and a candidate set of up to 5 cited papers and 25 (randomly selected) uncited papers. The task is to rank the cited papers higher than the uncited papers. For each embedding method, we require only comparing the L2 distance between the raw embeddings of the query and the candidates, without any additional trainable parameters.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Citation Prediction",
+                "sec_num": "3.2"
+            },
+            {
+                "text": "Co-Citations This task is similar to the direct citations but instead of predicting a cited paper, the goal is to predict a highly co-cited paper with a given paper. Intuitively, if papers A and B are cited frequently together by several papers, this shows that the papers are likely highly related and a good paper representation model should be able to identify these papers from a given candidate set. The dataset consists of 30K total papers and is constructed similar to the direct citations task.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Citation Prediction",
+                "sec_num": "3.2"
+            },
+            {
+                "text": "The embeddings for similar papers should be close to each other; we use user activity as a proxy for identifying similar papers and test the model's ability to recover this information. Multiple users consuming the same items as one another is a classic relatedness signal and forms the foundation for recommender systems and other applications (Schafer et al., 2007) . In our case, we would expect that when users look for academic papers, the papers they view in a single browsing session tend to be related. Thus, accurate paper embeddings should, all else being equal, be relatively more similar for papers that are frequently viewed in the same session than for other papers. To build benchmark datasets to test embeddings on user activity, we obtained logs of user sessions from a major academic search engine. We define the following two tasks on which we build benchmark datasets to test embeddings:",
+                "cite_spans": [
+                    {
+                        "start": 345,
+                        "end": 367,
+                        "text": "(Schafer et al., 2007)",
+                        "ref_id": "BIBREF42"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "User Activity",
+                "sec_num": "3.3"
+            },
+            {
+                "text": "Co-Views Our co-views dataset consists of approximately 30K papers. To construct it, we take 1K random papers that are not in our train or development set and associate with each one up to 5 frequently co-viewed papers and 25 randomly selected papers (similar to the approach for citations). Then, we require the embedding model to rank the co-viewed papers higher than the random papers by comparing the L2 distances of raw embeddings. We evaluate performance using standard ranking metrics, nDCG and MAP.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "User Activity",
+                "sec_num": "3.3"
+            },
+            {
+                "text": "Co-Reads If the user clicks to access the PDF of a paper from the paper description page, this is a potentially stronger sign of interest in the paper. In such a case we assume the user will read at least parts of the paper and refer to this as a \"read\" action. Accordingly, we define a \"co-reads\" task and dataset analogous to the co-views dataset described above. This dataset is also approximately 30K papers.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "User Activity",
+                "sec_num": "3.3"
+            },
+            {
+                "text": "In the recommendation task, we evaluate the ability of paper embeddings to boost performance in a production recommendation system. Our recommendation task aims to help users navigate the scientific literature by ranking a set of \"similar papers\" for a given paper. We use a dataset of user clickthrough data for this task which consists of 22K clickthrough events from a public scholarly search engine. We partitioned the examples temporally into train (20K examples), validation (1K), and test (1K) sets. As is typical in clickthrough data on ranked lists, the clicks are biased toward the top of original ranking presented to the user. To counteract this effect, we computed propensity scores using a swap experiment (Agarwal et al., 2019). The propensity scores give, for each position in the ranked list, the relative frequency that the position is over-represented in the data due to exposure bias. We can then compute de-biased evaluation metrics by dividing the score for each test example by the propensity score for the clicked position. We report propensity-adjusted versions of the standard ranking metrics Precision@1 (P @1) and Normalized Discounted Cumulative Gain (nDCG).",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Recommendation",
+                "sec_num": "3.4"
+            },
+            {
+                "text": "We test different embeddings on the recommendation task by including cosine embedding distance 9 as a feature within an existing recommendation system that includes several other informative features (title/author similarity, reference and citation overlap, etc.). Thus, the recommendation experiments measure whether the embeddings can boost the performance of a strong baseline system on an end task. For SPECTER, we also perform an online A/B test to measure whether its advantages on the offline dataset translate into improvements on the online recommendation task ( \u00a75).",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Recommendation",
+                "sec_num": "3.4"
+            },
+            {
+                "text": "Training Data To train our model, we use a subset of the Semantic Scholar corpus consisting of about 146K query papers (around 26.7M tokens) with their corresponding outgoing citations, and we use an additional 32K papers for validation. For each query paper we construct up to 5 training triples comprised of a query, a positive, and a negative paper. The positive papers are sampled from the direct citations of the query, while negative papers are chosen either randomly or from citations of citations (as discussed in \u00a72.4). We empirically found it helpful to use 2 hard negatives (citations of citations) and 3 easy negatives (randomly selected papers) for each query paper. This process results in about 684K training triples and 145K validation triples.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Experiments",
+                "sec_num": "4"
+            },
+            {
+                "text": "Training and Implementation We implement our model in AllenNLP . We initialize the model from SciBERT pretrained weights (Beltagy et al., 2019) since it is the stateof-the-art pretrained language model on scientific text. We continue training all model parameters on our training objective (Equation 2). We perform minimal tuning of our model's hyperparameters based on the performance on the validation set, while baselines are extensively tuned. Based on initial experiments, we use a margin m=1 for the triplet loss. For training, we use the Adam optimizer (Kingma and Ba, 2014) following the suggested hyperparameters in Devlin et al. (2019) (LR: 2e-5, Slanted Triangular LR scheduler 10 (Howard and Ruder, 2018) with number of train steps equal to training instances and cut fraction of 0.1). We train the model on a single Titan V GPU (12G memory) for 2 epochs, with batch size of 4 (the maximum that fit in our GPU memory) and use gradient accumulation for an effective batch size of 32. Each training epoch takes approximately 1-2 days to complete on the full dataset. We release our code and data to facilitate reproducibility. 11",
+                "cite_spans": [
+                    {
+                        "start": 121,
+                        "end": 143,
+                        "text": "(Beltagy et al., 2019)",
+                        "ref_id": "BIBREF3"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Experiments",
+                "sec_num": "4"
+            },
+            {
+                "text": "Task-Specific Model Details For the classification tasks, we used a linear SVM where embedding vectors were the only features. The C hyperparameter was tuned via a held-out validation set.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Experiments",
+                "sec_num": "4"
+            },
+            {
+                "text": "For the recommendation tasks, we use a feedforward ranking neural network that takes as input ten features designed to capture the similarity between each query and candidate paper, including the cosine similarity between the query and candidate embeddings and manually-designed features computed from the papers' citations, titles, authors, and publication dates.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Experiments",
+                "sec_num": "4"
+            },
+            {
+                "text": "Baseline Methods Our work falls into the intersection of textual representation, citation mining, and graph learning, and we evaluate against stateof-the-art baselines from each of these areas. We compare with several strong textual models: SIF (Arora et al., 2017) , a method for learning document representations by removing the first principal component of aggregated word-level embeddings which we pretrain on scientific text; SciBERT (Beltagy et al., 2019) a state-of-the-art pretrained Transformer LM for scientific text; and Sent-BERT (Reimers and Gurevych, 2019) , a model that uses negative sampling to tune BERT for producing optimal sentence embeddings. We also compare with Citeomatic , a closely related paper representation model for citation prediction which trains content-based representations with citation graph information via dynamically sampled triplets, and SGC (Wu et al., 2019a) , a state-of-the-art graph-convolutional approach. For completeness, additional baselines are also included; due to space constraints we refer to Appendix A for detailed discussion of all baselines. We tune hyperparameters of baselines to maximize performance on a separate validation set. Table 1 presents the main results corresponding to our evaluation tasks (described in \u00a73). Overall, we observe substantial improvements across all tasks with average performance of 80.0 across all metrics on all tasks which is a 3.1 point absolute improvement over the next-best baseline. We now discuss the results in detail.",
+                "cite_spans": [
+                    {
+                        "start": 245,
+                        "end": 265,
+                        "text": "(Arora et al., 2017)",
+                        "ref_id": "BIBREF2"
+                    },
+                    {
+                        "start": 542,
+                        "end": 570,
+                        "text": "(Reimers and Gurevych, 2019)",
+                        "ref_id": "BIBREF40"
+                    },
+                    {
+                        "start": 885,
+                        "end": 903,
+                        "text": "(Wu et al., 2019a)",
+                        "ref_id": "BIBREF50"
+                    }
+                ],
+                "ref_spans": [
+                    {
+                        "start": 1194,
+                        "end": 1201,
+                        "text": "Table 1",
+                        "ref_id": "TABREF1"
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Experiments",
+                "sec_num": "4"
+            },
+            {
+                "text": "For document classification, we report macro F1, a standard classification metric. We observe that the classifier performance when trained on our representations is better than when trained on any other baseline. Particularly, on the MeSH (MAG) dataset, we obtain an 86.4 (82.0) F1 score which is about a \u2206= + 2.3 (+1.5) point absolute increase over the best baseline on each dataset respectively. Our evaluation of the learned representations on predicting user activity is shown in the \"User activity\" columns of Table 1 . SPECTER achieves a MAP score of 83.8 on the co-view task, and 84.5 on coread, improving over the best baseline (Citeomatic in this case) by 2.7 and 4.0 points, respectively. We observe similar trends for the \"citation\" and \"co-citation\" tasks, with our model outperforming virtually all other baselines except for SGC, which has access to the citation graph at training and test time. 12 Note that methods like SGC cannot be used in real-world setting to embed new papers that are not cited yet. On the other hand, on cocitation data our method is able to achieve the best results with nDCG of 94.8, improving over SGC with 2.3 points. Citeomatic also performs well on the citation tasks, as expected given that its primary design goal was citation prediction. Nevertheless, our method slightly outperforms Citeomatic on the direct citation task, while substantially outperforming it on co-citations (+2.0 nDCG). Finally, for recommendation task, we observe that SPECTER outperforms all other models on this task as well, with nDCG of 53.9. On the recommendations task, as opposed to previous experiments, the differences in method scores are generally smaller. This is because for this task the embeddings are used along with several other informative features in the ranking model (described under task-specific models in \u00a74), meaning that embedding variants have less opportunity for impact on overall performance.",
+                "cite_spans": [],
+                "ref_spans": [
+                    {
+                        "start": 515,
+                        "end": 522,
+                        "text": "Table 1",
+                        "ref_id": "TABREF1"
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Results",
+                "sec_num": "5"
+            },
+            {
+                "text": "We also performed an online study to evaluate whether SPECTER embeddings offer similar advantages in a live application. We performed an online A/B test comparing our SPECTER-based recommender to an existing production recommender system for similar papers that ranks papers by a textual similarity measure. In a dataset of 4,113 clicks, we found that SPECTER ranker improved clickthrough rate over the baseline by 46.5%, demonstrating its superiority.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Results",
+                "sec_num": "5"
+            },
+            {
+                "text": "We emphasize that our citation-based pretraining objective is critical for the performance of SPECTER; removing this and using a vanilla SciB-ERT results in decreased performance on all tasks.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Results",
+                "sec_num": "5"
+            },
+            {
+                "text": "For SGC, we remove development and test set citations and co-citations during training. We also remove incoming citations from development and test set queries as these would not be available at test time in production. ",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Results",
+                "sec_num": "5"
+            },
+            {
+                "text": "In this section, we analyze several design decisions in SPECTER, provide a visualization of its embedding space, and experimentally compare SPECTER's use of fixed embeddings against a finetuning approach.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Analysis",
+                "sec_num": "6"
+            },
+            {
+                "text": "Ablation Study We start by analyzing how adding or removing metadata fields from the input to SPECTER alters performance. The results are shown in the top four rows of Table 2 (for brevity, here we only report the average of the metrics from each task). We observe that removing the abstract from the textual input and relying only on the title results in a substantial decrease in performance. More surprisingly, adding authors as an input (along with title and abstract) hurts performance. 13 One possible explanation is that author names are sparse in the corpus, making it difficult for the model to infer document-level relatedness from them. As another possible reason of this behavior, tokenization using Wordpieces might be suboptimal for author names. Many author names are out-of-vocabulary for SciBERT and thus, they might be split into sub-words and shared across names that are not semantically related, leading to noisy correlation. Finally, we find that adding venues slightly decreases performance, 14 except on document classification (which makes sense, as we would expect venues to have high correlation 13 We experimented with both concatenating authors with the title and abstract and also considering them as an additional field. Neither were helpful.",
+                "cite_spans": [
+                    {
+                        "start": 492,
+                        "end": 494,
+                        "text": "13",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 1123,
+                        "end": 1125,
+                        "text": "13",
+                        "ref_id": null
+                    }
+                ],
+                "ref_spans": [
+                    {
+                        "start": 168,
+                        "end": 175,
+                        "text": "Table 2",
+                        "ref_id": "TABREF3"
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Analysis",
+                "sec_num": "6"
+            },
+            {
+                "text": "14 Venue information in our data came directly from publisher provided metadata and thus was not normalized. Venue normalization could help improve results. with paper topics). The fact that SPECTER does not require inputs like authors or venues makes it applicable in situations where this metadata is not available, such as matching reviewers with anonymized submissions, or performing recommendations of anonymized preprints (e.g., on OpenReview). One design decision in SPECTER is to use a set of hard negative distractors in the citation-based finetuning objective. The fifth row of Table 2 shows that this is important-using only easy negatives reduces performance on all tasks. While there could be other potential ways to include hard negatives in the model, our simple approach of including citations of citations is effective. The sixth row of the table shows that using a strong general-domain language model (BERT-Large) instead of SciBERT in SPECTER reduces performance considerably. This is reasonable because unlike BERT-Large, SciB-ERT is pretrained on scientific text.",
+                "cite_spans": [],
+                "ref_spans": [
+                    {
+                        "start": 588,
+                        "end": 595,
+                        "text": "Table 2",
+                        "ref_id": "TABREF3"
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Analysis",
+                "sec_num": "6"
+            },
+            {
+                "text": "Visualization Figure 2 shows t-SNE (van der Maaten, 2014) projections of our embeddings (SPECTER) compared with the SciBERT baseline for a random set of papers. When comparing SPECTER embeddings with SciBERT, we observe that our embeddings are better at encoding topical information, as the clusters seem to be more compact. Further, we see some examples of crosstopic relatedness reflected in the embedding space (e.g., Engineering, Mathematics and Computer Science are close to each other, while Business and Economics are also close to each other). To quantify the comparison of visualized embeddings in Figure 2 , we use the DBScan clustering algorithm (Ester et al., 1996) on this 2D projection. We use the completeness and homogeneity clustering quality measures introduced by Rosenberg and Hirschberg (2007) . For the points corresponding to Figure 2 , the homogeneity and completeness values for SPECTER are respectively 0.41 and 0.72 compared with SciBERT's 0.19 and 0.63, a clear improvement on separating topics using the projected embeddings.",
+                "cite_spans": [
+                    {
+                        "start": 657,
+                        "end": 677,
+                        "text": "(Ester et al., 1996)",
+                        "ref_id": "BIBREF12"
+                    },
+                    {
+                        "start": 783,
+                        "end": 814,
+                        "text": "Rosenberg and Hirschberg (2007)",
+                        "ref_id": "BIBREF41"
+                    }
+                ],
+                "ref_spans": [
+                    {
+                        "start": 14,
+                        "end": 22,
+                        "text": "Figure 2",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 607,
+                        "end": 615,
+                        "text": "Figure 2",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 849,
+                        "end": 857,
+                        "text": "Figure 2",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Analysis",
+                "sec_num": "6"
+            },
+            {
+                "text": "Comparison with Task Specific Fine-Tuning While the fact that SPECTER does not require finetuning makes its paper embeddings less costly to use, often the best performance from pretrained Transformers is obtained when the models are finetuned directly on each end task. We experiment with fine-tuning SciBERT on our tasks, and find this to be generally inferior to using our fixed representations from SPECTER. Specifically, we finetune SciBERT directly on task-specific signals instead of citations. To fine-tune on task-specific data (e.g., user activity), we used a dataset of coviews with 65K query papers, co-reads with 14K query papers, and co-citations (instead of direct citations) with 83K query papers. As the end tasks are ranking tasks, for all datasets we construct up to 5 triplets and fine-tune the model using triplet ranking loss. The positive papers are sampled from the most co-viewed (co-read, or co-cited) papers corresponding to the query paper. We also include both easy and hard distractors as when training SPECTER (for hard negatives we choose the least non-zero co-viewed (co-read, or co-cited) papers). We also consider training jointly on all task-specific training data sources in a multitask training process, where the model samples training triplets from a distribution over the sources. As illustrated in Table 3, without any additional final task-specific fine-tuning, SPECTER still outperforms a SciBERT model fine-tuned on the end tasks as well as their multitask combination, further demonstrating the effectiveness and versatility of SPECTER embeddings. 15",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Analysis",
+                "sec_num": "6"
+            },
+            {
+                "text": "Recent representation learning methods in NLP rely on training large neural language models on unsupervised data Radford et al., 2018; Devlin et al., 2019; Beltagy et al., 2019; Liu et al., 2019) . While successful at many sentenceand token-level tasks, our focus is on using the models for document-level representation learning, which has remained relatively under-explored.",
+                "cite_spans": [
+                    {
+                        "start": 113,
+                        "end": 134,
+                        "text": "Radford et al., 2018;",
+                        "ref_id": "BIBREF38"
+                    },
+                    {
+                        "start": 135,
+                        "end": 155,
+                        "text": "Devlin et al., 2019;",
+                        "ref_id": "BIBREF11"
+                    },
+                    {
+                        "start": 156,
+                        "end": 177,
+                        "text": "Beltagy et al., 2019;",
+                        "ref_id": "BIBREF3"
+                    },
+                    {
+                        "start": 178,
+                        "end": 195,
+                        "text": "Liu et al., 2019)",
+                        "ref_id": null
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Related Work",
+                "sec_num": "7"
+            },
+            {
+                "text": "There have been other efforts in document representation learning such as extensions of word vectors to documents (Le and Mikolov, 2014; Ganesh et al., 2016; Wu et al., 2018; Gysel et al., 2017) , convolution-based methods Zamani et al., 2018) , and variational autoencoders (Holmer and Marfurt, 2018; . Relevant to document embedding, sentence embedding is a relatively well-studied area of research. Successful approaches include seq2seq models (Kiros et al., 2015) , BiLSTM Siamese networks (Williams et al., 2018) , leveraging supervised data from other corpora (Conneau et al., 2017) , and using discourse relations (Nie et al., 2019) , and BERT-based methods (Reimers and Gurevych, 2019) . Unlike our proposed method, the majority of these approaches do not consider any notion of inter-document relatedness when embedding documents.",
+                "cite_spans": [
+                    {
+                        "start": 114,
+                        "end": 136,
+                        "text": "(Le and Mikolov, 2014;",
+                        "ref_id": "BIBREF28"
+                    },
+                    {
+                        "start": 137,
+                        "end": 157,
+                        "text": "Ganesh et al., 2016;",
+                        "ref_id": "BIBREF14"
+                    },
+                    {
+                        "start": 158,
+                        "end": 174,
+                        "text": "Wu et al., 2018;",
+                        "ref_id": "BIBREF51"
+                    },
+                    {
+                        "start": 175,
+                        "end": 194,
+                        "text": "Gysel et al., 2017)",
+                        "ref_id": "BIBREF16"
+                    },
+                    {
+                        "start": 223,
+                        "end": 243,
+                        "text": "Zamani et al., 2018)",
+                        "ref_id": "BIBREF55"
+                    },
+                    {
+                        "start": 275,
+                        "end": 301,
+                        "text": "(Holmer and Marfurt, 2018;",
+                        "ref_id": "BIBREF19"
+                    },
+                    {
+                        "start": 447,
+                        "end": 467,
+                        "text": "(Kiros et al., 2015)",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 494,
+                        "end": 517,
+                        "text": "(Williams et al., 2018)",
+                        "ref_id": "BIBREF49"
+                    },
+                    {
+                        "start": 566,
+                        "end": 588,
+                        "text": "(Conneau et al., 2017)",
+                        "ref_id": "BIBREF10"
+                    },
+                    {
+                        "start": 621,
+                        "end": 639,
+                        "text": "(Nie et al., 2019)",
+                        "ref_id": "BIBREF35"
+                    },
+                    {
+                        "start": 665,
+                        "end": 693,
+                        "text": "(Reimers and Gurevych, 2019)",
+                        "ref_id": "BIBREF40"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Related Work",
+                "sec_num": "7"
+            },
+            {
+                "text": "Other relevant work combines textual features with network structure (Tu et al., 2017; . These works typically do not leverage the recent pretrained contextual representations and with a few exceptions such as the recent work by , they cannot generalize to unseen documents like our SPECTER approach. Context-based citation recommendation is another related application where models rely on citation contexts (Jeong et al., 2019) to make predictions. These works are orthogonal to ours as the input to our model is just paper title and abstract. Another related line of work is graphbased representation learning methods (Bruna et al., 2014; Kipf and Welling, 2017; Hamilton et al., 2017a,b; Wu et al., 2019a,b) . Here, we compare to a graph representation learning model, SGC (Simple Graph Convolution) (Wu et al., 2019a) , which is a state-of-the-art graph convolution approach for representation learning. SPECTER uses pretrained language models in combination with graph-based citation signals, which enables it to outperform the graph-based approaches in our experiments. SPECTER embeddings are based on only the title and abstract of the paper. Adding the full text of the paper would provide a more complete picture of the paper's content and could improve accuracy (Cohen et al., 2010; Lin, 2008; Schuemie et al., 2004) . However, the full text of many academic papers is not freely available. Further, modern language models have strict memory limits on input size, which means new techniques would be required in order to leverage the entirety of the paper within the models. Exploring how to use the full paper text within SPECTER is an item of future work.",
+                "cite_spans": [
+                    {
+                        "start": 69,
+                        "end": 86,
+                        "text": "(Tu et al., 2017;",
+                        "ref_id": "BIBREF46"
+                    },
+                    {
+                        "start": 409,
+                        "end": 429,
+                        "text": "(Jeong et al., 2019)",
+                        "ref_id": "BIBREF21"
+                    },
+                    {
+                        "start": 621,
+                        "end": 641,
+                        "text": "(Bruna et al., 2014;",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 642,
+                        "end": 665,
+                        "text": "Kipf and Welling, 2017;",
+                        "ref_id": "BIBREF24"
+                    },
+                    {
+                        "start": 666,
+                        "end": 691,
+                        "text": "Hamilton et al., 2017a,b;",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 692,
+                        "end": 711,
+                        "text": "Wu et al., 2019a,b)",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 804,
+                        "end": 822,
+                        "text": "(Wu et al., 2019a)",
+                        "ref_id": "BIBREF50"
+                    },
+                    {
+                        "start": 1273,
+                        "end": 1293,
+                        "text": "(Cohen et al., 2010;",
+                        "ref_id": "BIBREF9"
+                    },
+                    {
+                        "start": 1294,
+                        "end": 1304,
+                        "text": "Lin, 2008;",
+                        "ref_id": "BIBREF29"
+                    },
+                    {
+                        "start": 1305,
+                        "end": 1327,
+                        "text": "Schuemie et al., 2004)",
+                        "ref_id": "BIBREF43"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Related Work",
+                "sec_num": "7"
+            },
+            {
+                "text": "Finally, one pain point in academic paper recommendation research has been a lack of publicly available datasets (Chen and Lee, 2018; Kanakia et al., 2019) . To address this challenge, we release SCIDOCS, our evaluation benchmark which includes an anonymized clickthrough dataset from an online recommendations system.",
+                "cite_spans": [
+                    {
+                        "start": 113,
+                        "end": 133,
+                        "text": "(Chen and Lee, 2018;",
+                        "ref_id": "BIBREF8"
+                    },
+                    {
+                        "start": 134,
+                        "end": 155,
+                        "text": "Kanakia et al., 2019)",
+                        "ref_id": "BIBREF22"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Related Work",
+                "sec_num": "7"
+            },
+            {
+                "text": "We present SPECTER, a model for learning representations of scientific papers, based on a Transformer language model that is pretrained on cita-tions. We achieve substantial improvements over the strongest of a wide variety of baselines, demonstrating the effectiveness of our model. We additionally introduce SCIDOCS, a new evaluation suite consisting of seven document-level tasks and release the corresponding datasets to foster further research in this area.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Conclusions and Future Work",
+                "sec_num": "8"
+            },
+            {
+                "text": "The landscape of Transformer language models is rapidly changing and newer and larger models are frequently introduced. It would be interesting to initialize our model weights from more recent Transformer models to investigate if additional gains are possible. Another item of future work is to develop better multitask approaches to leverage multiple signals of relatedness information during training. We used citations to build triplets for our loss function, however there are other metrics that have good support from the bibliometrics literature (Klavans and Boyack, 2006) that warrant exploring as a way to create relatedness graphs. Including other information such as outgoing citations as additional input to the model would be yet another area to explore in future.",
+                "cite_spans": [
+                    {
+                        "start": 552,
+                        "end": 578,
+                        "text": "(Klavans and Boyack, 2006)",
+                        "ref_id": "BIBREF26"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Conclusions and Future Work",
+                "sec_num": "8"
+            },
+            {
+                "text": "4. SIF The SIF method of Arora et al. (2017) is a strong text representation baseline that takes a weighted sum of pretrained word vectors (we use fasttext embeddings described above), then computes the first principal component of the document embedding matrix and subtracts out each document embedding's projection to the first principal component.",
+                "cite_spans": [
+                    {
+                        "start": 25,
+                        "end": 44,
+                        "text": "Arora et al. (2017)",
+                        "ref_id": "BIBREF2"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Conclusions and Future Work",
+                "sec_num": "8"
+            },
+            {
+                "text": "We used a held-out validation set to choose a from the range [1.0e-5, 1.0e-3] spaced evenly on a log scale. The word probability p(w) was estimated on the training set only. When computing term-frequency values for SIF, we used scikit-learn's TfidfVectorizer with the same parameters as enumerated in the preceding section. sublinear_tf, binary, use_idf, smooth_idf were all set to False. Since SIF is a sum of pretrained fasttext vectors, the resulting dimensionality is 300. provides contextualized representations of tokens in a document. It can provide paragraph or document embeddings by averaging each token's representation for all 3 LSTM layers. We used the 768-dimensional pretrained ELMo model in AllenNLP .",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Conclusions and Future Work",
+                "sec_num": "8"
+            },
+            {
+                "text": "6. Citeomatic The most relevant baseline is Citeomatic , which is an academic paper representation model that is trained on the citation graph via sampled triplets. Citeomatic representations are an L2 normalized weighted sum of title and abstract embeddings, which are trained on the citation graph with dynamic negative sampling. Citeomatic embeddings are 75-dimensional. 7. SGC Since our algorithm is trained on data from the citation graph, we also compare to a state-ofthe-art graph representation learning model: SGC (Simple Graph Convolution) (Wu et al., 2019a) , which is a graph convolution network. An alternative comparison would have been Graph-SAGE (Hamilton et al., 2017b) , but SGC (with no learning) outperformed an unsupervised variant of GraphSAGE on the Reddit dataset 16 , Note that SGC with no learning boils down to graph propagation on node features (in our case nodes are academic documents). Following Hamilton et al. (2017a), we used SIF features as node representations, and applied SGC with a range of parameter k, which is the number of times the normalized adjacency is multiplied by the SIF feature matrix. Our range of k was 1 through 8 (inclusive), and was chosen with a validation set. For the node features, we chose the SIF model with a = 0.0001, as this model was observed to be a high-performing one. This baseline is also 300 dimensional.",
+                "cite_spans": [
+                    {
+                        "start": 550,
+                        "end": 568,
+                        "text": "(Wu et al., 2019a)",
+                        "ref_id": "BIBREF50"
+                    },
+                    {
+                        "start": 662,
+                        "end": 686,
+                        "text": "(Hamilton et al., 2017b)",
+                        "ref_id": "BIBREF18"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "ELMo ELMo",
+                "sec_num": "5."
+            },
+            {
+                "text": "8. SciBERT To isolate the advantage of SPECTER's citation-based fine-tuning objective, we add a controlled comparison with SciBERT (Beltagy et al., 2019) . Following Devlin et al. (2019) we take the last layer hidden state corresponding to the [CLS] token as the aggregate document representation. 17 There were no other direct comparisons in Wu et al. (2019a) 17 We also tried the alternative of averaging all token representations, but this resulted in a slight performance decrease compared with the [CLS] pooled token. 9. Sentence BERT Sentence BERT (Reimers and Gurevych, 2019 ) is a general-domain pretrained model aimed at embedding sentences. The authors fine-tuned BERT using a triplet loss, where positive sentences were from the same document section as the seed sentence, and distractor sentences came from other document sections. The model is designed to encode sentences as opposed to paragraphs, so we embed the title and each sentence in the abstract separately, sum the embeddings, and L2 normalize the result to produce a final 768-dimensional paper embedding. 18 During hyperparameter optimization we chose how to compute TF and IDF values weights by taking the following non-redundant combinations of scikit-learn's TfidfVectorizer (Pedregosa et al., 2011) parameters: sublinear_tf, binary, use_idf, smooth_idf. There were a total of 9 parameter combinations. The IDF values were estimated on the training set. The other parameters were set as follows: min_df=3, max_df=0.75, strip_accents='ascii', stop_words='english', norm=None, lowercase=True. For training of fasttext, we used all default parameters with the exception of setting dimension to 300 and minCount was set to 25 due to the large corpus.",
+                "cite_spans": [
+                    {
+                        "start": 131,
+                        "end": 153,
+                        "text": "(Beltagy et al., 2019)",
+                        "ref_id": "BIBREF3"
+                    },
+                    {
+                        "start": 166,
+                        "end": 186,
+                        "text": "Devlin et al. (2019)",
+                        "ref_id": "BIBREF11"
+                    },
+                    {
+                        "start": 298,
+                        "end": 300,
+                        "text": "17",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 343,
+                        "end": 360,
+                        "text": "Wu et al. (2019a)",
+                        "ref_id": "BIBREF50"
+                    },
+                    {
+                        "start": 554,
+                        "end": 581,
+                        "text": "(Reimers and Gurevych, 2019",
+                        "ref_id": "BIBREF40"
+                    },
+                    {
+                        "start": 1080,
+                        "end": 1082,
+                        "text": "18",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 1253,
+                        "end": 1277,
+                        "text": "(Pedregosa et al., 2011)",
+                        "ref_id": "BIBREF36"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "ELMo ELMo",
+                "sec_num": "5."
+            },
+            {
+                "text": "We used the 'bert-base-wikipedia-sections-mean-tokens' model released by the authors: https://github.com/ UKPLab/sentence-transformers",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "ELMo ELMo",
+                "sec_num": "5."
+            },
+            {
+                "text": "We also experimented with additional fields such as venues and authors but did not find any empirical advantage in using those (see \u00a76). See \u00a77 for a discussion of using the full text of the paper as input.5 It is also possible to encode title and abstracts individually and then concatenate or combine them to get the final embedding. However, in our experiments this resulted in sub-optimal performance.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "",
+                "sec_num": null
+            },
+            {
+                "text": "https://www.nlm.nih.gov/mesh/meshhome. html 8 https://academic.microsoft.com/",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "",
+                "sec_num": null
+            },
+            {
+                "text": "Embeddings are L2 normalized and in this case cosine distance is equivalent to L2 distance.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "",
+                "sec_num": null
+            },
+            {
+                "text": "Learning rate linear warmup followed by linear decay. 11 https://github.com/allenai/specter",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "",
+                "sec_num": null
+            },
+            {
+                "text": "We also experimented with further task-specific finetuning of our SPECTER on the end tasks but we did not observe additional improvements.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "",
+                "sec_num": null
+            }
+        ],
+        "back_matter": [
+            {
+                "text": "We thank Kyle Lo, Daniel King and Oren Etzioni for helpful research discussions, Russel Reas for setting up the public API, Field Cady for help in initial data collection and the anonymous reviewers (especially Reviewer 1) for comments and suggestions. This work was supported in part by NSF Convergence Accelerator award 1936940, ONR grant N00014-18-1-2193, and the University of Washington WRF/Cable Professorship.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Acknowledgements",
+                "sec_num": null
+            },
+            {
+                "text": "A Appendix A -Baseline Details 1. Random Zero-mean 25-dimensional vectors were used as representations for each document.2. Doc2Vec Doc2Vec is one of the earlier neural document/paragraph representation methods (Le and Mikolov, 2014) , and is a natural comparison. We trained Doc2Vec on our training subset using Gensim (\u0158eh\u016f\u0159ek and Sojka, 2010) , and chose the hyperparameter grid using suggestions from Lau and Baldwin (2016). The hyperparameter grid used:{'window': [5, 10, 15] , 'sample': [0, 10 ** -6, 10 ** -5], 'epochs': [50, 100, 200]}, for a total of 27 models. The other parameters were set as follows: vector_size=300, min_count=3, alpha=0.025, min_alpha=0.0001, negative=5, dm=0, dbow=1, dbow_words=0. 3. Fasttext-Sum This simple baseline is a weighted sum of pretrained word vectors. We trained our own 300 dimensional fasttext embeddings (Bojanowski et al., 2017) on a corpus of around 3.1B tokens from scientific papers which is similar in size to the SciBERT corpus (Beltagy et al., 2019) . We found that these pretrained embeddings substantially outperform alternative off-theshelf embeddings. We also use these embeddings in other baselines that require pretrained word vectors (i.e., SIF and SGC that are described below). The summed bag of words representation has a number of weighting options, which are extensively tuned on a validation set for best performance.",
+                "cite_spans": [
+                    {
+                        "start": 211,
+                        "end": 233,
+                        "text": "(Le and Mikolov, 2014)",
+                        "ref_id": "BIBREF28"
+                    },
+                    {
+                        "start": 320,
+                        "end": 345,
+                        "text": "(\u0158eh\u016f\u0159ek and Sojka, 2010)",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 469,
+                        "end": 472,
+                        "text": "[5,",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 473,
+                        "end": 476,
+                        "text": "10,",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 477,
+                        "end": 480,
+                        "text": "15]",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 852,
+                        "end": 877,
+                        "text": "(Bojanowski et al., 2017)",
+                        "ref_id": "BIBREF5"
+                    },
+                    {
+                        "start": 982,
+                        "end": 1004,
+                        "text": "(Beltagy et al., 2019)",
+                        "ref_id": "BIBREF3"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "annex",
+                "sec_num": null
+            }
+        ],
+        "bib_entries": {
+            "BIBREF0": {
+                "ref_id": "b0",
+                "title": "Estimating position bias without intrusive interventions",
+                "authors": [
+                    {
+                        "first": "K",
+                        "middle": [],
+                        "last": "Anant",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ivan",
+                        "middle": [],
+                        "last": "Agarwal",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Xuanhui",
+                        "middle": [],
+                        "last": "Zaitsev",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Wang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yen",
+                        "middle": [],
+                        "last": "Cheng",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Marc",
+                        "middle": [],
+                        "last": "Li",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Thorsten",
+                        "middle": [],
+                        "last": "Najork",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Joachims",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "WSDM",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Anant K. Agarwal, Ivan Zaitsev, Xuanhui Wang, Cheng Yen Li, Marc Najork, and Thorsten Joachims. 2019. Estimating position bias without intrusive in- terventions. In WSDM.",
+                "links": null
+            },
+            "BIBREF1": {
+                "ref_id": "b1",
+                "title": "Construction of the literature graph in semantic scholar",
+                "authors": [
+                    {
+                        "first": "Waleed",
+                        "middle": [],
+                        "last": "Ammar",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Dirk",
+                        "middle": [],
+                        "last": "Groeneveld",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Chandra",
+                        "middle": [],
+                        "last": "Bhagavatula",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Iz",
+                        "middle": [],
+                        "last": "Beltagy",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Miles",
+                        "middle": [],
+                        "last": "Crawford",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Doug",
+                        "middle": [],
+                        "last": "Downey",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jason",
+                        "middle": [],
+                        "last": "Dunkelberger",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ahmed",
+                        "middle": [],
+                        "last": "Elgohary",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Sergey",
+                        "middle": [],
+                        "last": "Feldman",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Vu",
+                        "middle": [],
+                        "last": "Ha",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Rodney",
+                        "middle": [],
+                        "last": "Kinney",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Sebastian",
+                        "middle": [],
+                        "last": "Kohlmeier",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kyle",
+                        "middle": [],
+                        "last": "Lo",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Tyler",
+                        "middle": [
+                            "C"
+                        ],
+                        "last": "Murray",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Hsu-Han",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Matthew",
+                        "middle": [
+                            "E"
+                        ],
+                        "last": "Ooi",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Joanna",
+                        "middle": [],
+                        "last": "Peters",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Sam",
+                        "middle": [],
+                        "last": "Power",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lucy",
+                        "middle": [
+                            "Lu"
+                        ],
+                        "last": "Skjonsberg",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Christopher",
+                        "middle": [],
+                        "last": "Wang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Zheng",
+                        "middle": [],
+                        "last": "Wilhelm",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Madeleine",
+                        "middle": [],
+                        "last": "Yuan",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Oren",
+                        "middle": [],
+                        "last": "Van Zuylen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Etzioni",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "NAACL-HLT",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Waleed Ammar, Dirk Groeneveld, Chandra Bha- gavatula, Iz Beltagy, Miles Crawford, Doug Downey, Jason Dunkelberger, Ahmed Elgohary, Sergey Feldman, Vu Ha, Rodney Kinney, Sebas- tian Kohlmeier, Kyle Lo, Tyler C. Murray, Hsu- Han Ooi, Matthew E. Peters, Joanna Power, Sam Skjonsberg, Lucy Lu Wang, Christopher Wilhelm, Zheng Yuan, Madeleine van Zuylen, and Oren Et- zioni. 2018. Construction of the literature graph in semantic scholar. In NAACL-HLT.",
+                "links": null
+            },
+            "BIBREF2": {
+                "ref_id": "b2",
+                "title": "A simple but tough-to-beat baseline for sentence embeddings",
+                "authors": [
+                    {
+                        "first": "Sanjeev",
+                        "middle": [],
+                        "last": "Arora",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yingyu",
+                        "middle": [],
+                        "last": "Liang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Tengyu",
+                        "middle": [],
+                        "last": "Ma",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "ICLR",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Sanjeev Arora, Yingyu Liang, and Tengyu Ma. 2017. A simple but tough-to-beat baseline for sentence em- beddings. In ICLR.",
+                "links": null
+            },
+            "BIBREF3": {
+                "ref_id": "b3",
+                "title": "SciB-ERT: A Pretrained Language Model for Scientific Text",
+                "authors": [
+                    {
+                        "first": "Iz",
+                        "middle": [],
+                        "last": "Beltagy",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kyle",
+                        "middle": [],
+                        "last": "Lo",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Arman",
+                        "middle": [],
+                        "last": "Cohan",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "EMNLP",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Iz Beltagy, Kyle Lo, and Arman Cohan. 2019. SciB- ERT: A Pretrained Language Model for Scientific Text. In EMNLP.",
+                "links": null
+            },
+            "BIBREF4": {
+                "ref_id": "b4",
+                "title": "Content-Based Citation Recommendation",
+                "authors": [
+                    {
+                        "first": "Chandra",
+                        "middle": [],
+                        "last": "Bhagavatula",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Sergey",
+                        "middle": [],
+                        "last": "Feldman",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Russell",
+                        "middle": [],
+                        "last": "Power",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Waleed",
+                        "middle": [],
+                        "last": "Ammar",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Chandra Bhagavatula, Sergey Feldman, Russell Power, and Waleed Ammar. 2018. Content-Based Citation Recommendation. In NAACL-HLT.",
+                "links": null
+            },
+            "BIBREF5": {
+                "ref_id": "b5",
+                "title": "Enriching word vectors with subword information",
+                "authors": [
+                    {
+                        "first": "Piotr",
+                        "middle": [],
+                        "last": "Bojanowski",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Edouard",
+                        "middle": [],
+                        "last": "Grave",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Armand",
+                        "middle": [],
+                        "last": "Joulin",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Tomas",
+                        "middle": [],
+                        "last": "Mikolov",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {
+                    "DOI": [
+                        "10.1162/tacl_a_00051"
+                    ]
+                },
+                "num": null,
+                "urls": [],
+                "raw_text": "Piotr Bojanowski, Edouard Grave, Armand Joulin, and Tomas Mikolov. 2017. Enriching word vectors with subword information. TACL.",
+                "links": null
+            },
+            "BIBREF7": {
+                "ref_id": "b7",
+                "title": "Improving textual network embedding with global attention via optimal transport",
+                "authors": [
+                    {
+                        "first": "Liqun",
+                        "middle": [],
+                        "last": "Chen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Guoyin",
+                        "middle": [],
+                        "last": "Wang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Chenyang",
+                        "middle": [],
+                        "last": "Tao",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Dinghan",
+                        "middle": [],
+                        "last": "Shen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Pengyu",
+                        "middle": [],
+                        "last": "Cheng",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Xinyuan",
+                        "middle": [],
+                        "last": "Zhang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Wenlin",
+                        "middle": [],
+                        "last": "Wang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yizhe",
+                        "middle": [],
+                        "last": "Zhang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lawrence",
+                        "middle": [],
+                        "last": "Carin",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "ACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Liqun Chen, Guoyin Wang, Chenyang Tao, Ding- han Shen, Pengyu Cheng, Xinyuan Zhang, Wenlin Wang, Yizhe Zhang, and Lawrence Carin. 2019. Im- proving textual network embedding with global at- tention via optimal transport. In ACL.",
+                "links": null
+            },
+            "BIBREF8": {
+                "ref_id": "b8",
+                "title": "Research Paper Recommender Systems on Big Scholarly Data",
+                "authors": [
+                    {
+                        "first": "Maria",
+                        "middle": [],
+                        "last": "Tsung Teng Chen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Lee",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "Knowledge Management and Acquisition for Intelligent Systems",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Tsung Teng Chen and Maria Lee. 2018. Research Pa- per Recommender Systems on Big Scholarly Data. In Knowledge Management and Acquisition for In- telligent Systems.",
+                "links": null
+            },
+            "BIBREF9": {
+                "ref_id": "b9",
+                "title": "The structural and content aspects of abstracts versus bodies of full text journal articles are different",
+                "authors": [
+                    {
+                        "first": "K",
+                        "middle": [],
+                        "last": "Cohen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Helen",
+                        "middle": [
+                            "L"
+                        ],
+                        "last": "Johnson",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Karin",
+                        "middle": [
+                            "M"
+                        ],
+                        "last": "Verspoor",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Christophe",
+                        "middle": [],
+                        "last": "Roeder",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lawrence",
+                        "middle": [],
+                        "last": "Hunter",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2010,
+                "venue": "BMC Bioinformatics",
+                "volume": "11",
+                "issue": "",
+                "pages": "492--492",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "K. Bretonnel Cohen, Helen L. Johnson, Karin M. Ver- spoor, Christophe Roeder, and Lawrence Hunter. 2010. The structural and content aspects of abstracts versus bodies of full text journal articles are different. BMC Bioinformatics, 11:492-492.",
+                "links": null
+            },
+            "BIBREF10": {
+                "ref_id": "b10",
+                "title": "Supervised Learning of Universal Sentence Representations from Natural Language Inference Data",
+                "authors": [
+                    {
+                        "first": "Alexis",
+                        "middle": [],
+                        "last": "Conneau",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Douwe",
+                        "middle": [],
+                        "last": "Kiela",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Holger",
+                        "middle": [],
+                        "last": "Schwenk",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lo\u00efc",
+                        "middle": [],
+                        "last": "Barrault",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Antoine",
+                        "middle": [],
+                        "last": "Bordes",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "EMNLP",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {
+                    "DOI": [
+                        "10.18653/v1/D17-1070"
+                    ]
+                },
+                "num": null,
+                "urls": [],
+                "raw_text": "Alexis Conneau, Douwe Kiela, Holger Schwenk, Lo\u00efc Barrault, and Antoine Bordes. 2017. Supervised Learning of Universal Sentence Representations from Natural Language Inference Data. In EMNLP.",
+                "links": null
+            },
+            "BIBREF11": {
+                "ref_id": "b11",
+                "title": "BERT: Pre-training of deep bidirectional transformers for language understanding",
+                "authors": [
+                    {
+                        "first": "Jacob",
+                        "middle": [],
+                        "last": "Devlin",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ming-Wei",
+                        "middle": [],
+                        "last": "Chang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kenton",
+                        "middle": [],
+                        "last": "Lee",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kristina",
+                        "middle": [],
+                        "last": "Toutanova",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "NAACL-HLT",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019. BERT: Pre-training of deep bidirectional transformers for language under- standing. In NAACL-HLT.",
+                "links": null
+            },
+            "BIBREF12": {
+                "ref_id": "b12",
+                "title": "A Density-based Algorithm for Discovering Clusters in Large Spatial Databases with Noise",
+                "authors": [
+                    {
+                        "first": "Martin",
+                        "middle": [],
+                        "last": "Ester",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Hans-Peter",
+                        "middle": [],
+                        "last": "Kriegel",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "J\u00f6rg",
+                        "middle": [],
+                        "last": "Sander",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Xiaowei",
+                        "middle": [],
+                        "last": "Xu",
+                        "suffix": ""
+                    }
+                ],
+                "year": 1996,
+                "venue": "KDD",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Martin Ester, Hans-Peter Kriegel, J\u00f6rg Sander, Xiaowei Xu, et al. 1996. A Density-based Algorithm for Dis- covering Clusters in Large Spatial Databases with Noise. In KDD.",
+                "links": null
+            },
+            "BIBREF13": {
+                "ref_id": "b13",
+                "title": "Quantifying Sex Bias in Clinical Studies at Scale With Automated Data Extraction",
+                "authors": [
+                    {
+                        "first": "Sergey",
+                        "middle": [],
+                        "last": "Feldman",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Waleed",
+                        "middle": [],
+                        "last": "Ammar",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kyle",
+                        "middle": [],
+                        "last": "Lo",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Elly",
+                        "middle": [],
+                        "last": "Trepman",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Madeleine",
+                        "middle": [],
+                        "last": "Van Zuylen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Oren",
+                        "middle": [],
+                        "last": "Etzioni",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "JAMA",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {
+                    "DOI": [
+                        "10.1001/jamanetworkopen.2019.6700"
+                    ]
+                },
+                "num": null,
+                "urls": [],
+                "raw_text": "Sergey Feldman, Waleed Ammar, Kyle Lo, Elly Trep- man, Madeleine van Zuylen, and Oren Etzioni. 2019. Quantifying Sex Bias in Clinical Studies at Scale With Automated Data Extraction. JAMA.",
+                "links": null
+            },
+            "BIBREF14": {
+                "ref_id": "b14",
+                "title": "Doc2sent2vec: A novel two-phase approach for learning document representation",
+                "authors": [
+                    {
+                        "first": "J",
+                        "middle": [],
+                        "last": "Ganesh",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Manish",
+                        "middle": [],
+                        "last": "Gupta",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Vijay",
+                        "middle": [
+                            "K"
+                        ],
+                        "last": "Varma",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2016,
+                "venue": "SIGIR",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "J Ganesh, Manish Gupta, and Vijay K. Varma. 2016. Doc2sent2vec: A novel two-phase approach for learning document representation. In SIGIR.",
+                "links": null
+            },
+            "BIBREF15": {
+                "ref_id": "b15",
+                "title": "AllenNLP: A Deep Semantic Natural Language Processing Platform",
+                "authors": [
+                    {
+                        "first": "Matt",
+                        "middle": [],
+                        "last": "Gardner",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Joel",
+                        "middle": [],
+                        "last": "Grus",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Mark",
+                        "middle": [],
+                        "last": "Neumann",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Oyvind",
+                        "middle": [],
+                        "last": "Tafjord",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Pradeep",
+                        "middle": [],
+                        "last": "Dasigi",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Nelson",
+                        "middle": [
+                            "F"
+                        ],
+                        "last": "Liu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Matthew",
+                        "middle": [],
+                        "last": "Peters",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Michael",
+                        "middle": [],
+                        "last": "Schmitz",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Luke",
+                        "middle": [],
+                        "last": "Zettlemoyer",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "Proceedings of Workshop for NLP Open Source Software",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {
+                    "DOI": [
+                        "10.18653/v1/W18-2501"
+                    ]
+                },
+                "num": null,
+                "urls": [],
+                "raw_text": "Matt Gardner, Joel Grus, Mark Neumann, Oyvind Tafjord, Pradeep Dasigi, Nelson F. Liu, Matthew Pe- ters, Michael Schmitz, and Luke Zettlemoyer. 2018. AllenNLP: A Deep Semantic Natural Language Pro- cessing Platform. In Proceedings of Workshop for NLP Open Source Software (NLP-OSS).",
+                "links": null
+            },
+            "BIBREF16": {
+                "ref_id": "b16",
+                "title": "Neural Vector Spaces for Unsupervised Information Retrieval",
+                "authors": [
+                    {
+                        "first": "Christophe",
+                        "middle": [],
+                        "last": "Van Gysel",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Maarten",
+                        "middle": [],
+                        "last": "De Rijke",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Evangelos",
+                        "middle": [],
+                        "last": "Kanoulas",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "ACM Trans. Inf. Syst",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Christophe Van Gysel, Maarten de Rijke, and Evange- los Kanoulas. 2017. Neural Vector Spaces for Un- supervised Information Retrieval. ACM Trans. Inf. Syst.",
+                "links": null
+            },
+            "BIBREF17": {
+                "ref_id": "b17",
+                "title": "Inductive Representation Learning on Large Graphs",
+                "authors": [
+                    {
+                        "first": "Will",
+                        "middle": [],
+                        "last": "Hamilton",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Zhitao",
+                        "middle": [],
+                        "last": "Ying",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jure",
+                        "middle": [],
+                        "last": "Leskovec",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "NIPS",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Will Hamilton, Zhitao Ying, and Jure Leskovec. 2017a. Inductive Representation Learning on Large Graphs. In NIPS.",
+                "links": null
+            },
+            "BIBREF18": {
+                "ref_id": "b18",
+                "title": "Inductive representation learning on large graphs",
+                "authors": [
+                    {
+                        "first": "William",
+                        "middle": [
+                            "L"
+                        ],
+                        "last": "Hamilton",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Zhitao",
+                        "middle": [],
+                        "last": "Ying",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jure",
+                        "middle": [],
+                        "last": "Leskovec",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "NIPS",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "William L. Hamilton, Zhitao Ying, and Jure Leskovec. 2017b. Inductive representation learning on large graphs. In NIPS.",
+                "links": null
+            },
+            "BIBREF19": {
+                "ref_id": "b19",
+                "title": "Explaining away syntactic structure in semantic document representations",
+                "authors": [
+                    {
+                        "first": "Erik",
+                        "middle": [],
+                        "last": "Holmer",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Andreas",
+                        "middle": [],
+                        "last": "Marfurt",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "ArXiv",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Erik Holmer and Andreas Marfurt. 2018. Explaining away syntactic structure in semantic document rep- resentations. ArXiv, abs/1806.01620.",
+                "links": null
+            },
+            "BIBREF20": {
+                "ref_id": "b20",
+                "title": "Universal Language Model Fine-tuning for Text Classification",
+                "authors": [
+                    {
+                        "first": "Jeremy",
+                        "middle": [],
+                        "last": "Howard",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Sebastian",
+                        "middle": [],
+                        "last": "Ruder",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "ACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {
+                    "DOI": [
+                        "10.18653/v1/P18-1031"
+                    ]
+                },
+                "num": null,
+                "urls": [],
+                "raw_text": "Jeremy Howard and Sebastian Ruder. 2018. Universal Language Model Fine-tuning for Text Classification. In ACL.",
+                "links": null
+            },
+            "BIBREF21": {
+                "ref_id": "b21",
+                "title": "A context-aware citation recommendation model with bert and graph convolutional networks",
+                "authors": [
+                    {
+                        "first": "Chanwoo",
+                        "middle": [],
+                        "last": "Jeong",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Sion",
+                        "middle": [],
+                        "last": "Jang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Hyuna",
+                        "middle": [],
+                        "last": "Shin",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lucy",
+                        "middle": [],
+                        "last": "Eunjeong",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Sungchul",
+                        "middle": [],
+                        "last": "Park",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Choi",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "ArXiv",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Chanwoo Jeong, Sion Jang, Hyuna Shin, Eun- jeong Lucy Park, and Sungchul Choi. 2019. A context-aware citation recommendation model with bert and graph convolutional networks. ArXiv, abs/1903.06464.",
+                "links": null
+            },
+            "BIBREF22": {
+                "ref_id": "b22",
+                "title": "A Scalable Hybrid Research Paper Recommender System for Microsoft Academic",
+                "authors": [
+                    {
+                        "first": "Anshul",
+                        "middle": [],
+                        "last": "Kanakia",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Zhihong",
+                        "middle": [],
+                        "last": "Shen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Darrin",
+                        "middle": [],
+                        "last": "Eide",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kuansan",
+                        "middle": [],
+                        "last": "Wang",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "WWW",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Anshul Kanakia, Zhihong Shen, Darrin Eide, and Kuansan Wang. 2019. A Scalable Hybrid Research Paper Recommender System for Microsoft Aca- demic. In WWW.",
+                "links": null
+            },
+            "BIBREF23": {
+                "ref_id": "b23",
+                "title": "Adam: A Method for Stochastic Optimization",
+                "authors": [
+                    {
+                        "first": "P",
+                        "middle": [],
+                        "last": "Diederik",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jimmy",
+                        "middle": [],
+                        "last": "Kingma",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Ba",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2014,
+                "venue": "ArXiv",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Diederik P. Kingma and Jimmy Ba. 2014. Adam: A Method for Stochastic Optimization. ArXiv, abs/1412.6980.",
+                "links": null
+            },
+            "BIBREF24": {
+                "ref_id": "b24",
+                "title": "Semisupervised classification with graph convolutional networks",
+                "authors": [
+                    {
+                        "first": "N",
+                        "middle": [],
+                        "last": "Thomas",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Max",
+                        "middle": [],
+                        "last": "Kipf",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Welling",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Thomas N Kipf and Max Welling. 2017. Semi- supervised classification with graph convolutional networks. ICLR.",
+                "links": null
+            },
+            "BIBREF25": {
+                "ref_id": "b25",
+                "title": "Raquel Urtasun, and Sanja Fidler. 2015. Skip-thought vectors",
+                "authors": [
+                    {
+                        "first": "Ryan",
+                        "middle": [],
+                        "last": "Kiros",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yukun",
+                        "middle": [],
+                        "last": "Zhu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ruslan",
+                        "middle": [],
+                        "last": "Salakhutdinov",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Richard",
+                        "middle": [
+                            "S"
+                        ],
+                        "last": "Zemel",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Antonio",
+                        "middle": [],
+                        "last": "Torralba",
+                        "suffix": ""
+                    }
+                ],
+                "year": null,
+                "venue": "NIPS",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Ryan Kiros, Yukun Zhu, Ruslan Salakhutdinov, Richard S. Zemel, Antonio Torralba, Raquel Urta- sun, and Sanja Fidler. 2015. Skip-thought vectors. In NIPS.",
+                "links": null
+            },
+            "BIBREF26": {
+                "ref_id": "b26",
+                "title": "Identifying a better measure of relatedness for mapping science",
+                "authors": [
+                    {
+                        "first": "Richard",
+                        "middle": [],
+                        "last": "Klavans",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kevin",
+                        "middle": [
+                            "W"
+                        ],
+                        "last": "Boyack",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2006,
+                "venue": "Journal of the Association for Information Science and Technology",
+                "volume": "57",
+                "issue": "",
+                "pages": "251--263",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Richard Klavans and Kevin W. Boyack. 2006. Iden- tifying a better measure of relatedness for mapping science. Journal of the Association for Information Science and Technology, 57:251-263.",
+                "links": null
+            },
+            "BIBREF27": {
+                "ref_id": "b27",
+                "title": "An empirical evaluation of doc2vec with practical insights into document embedding generation",
+                "authors": [
+                    {
+                        "first": "Han",
+                        "middle": [],
+                        "last": "Jey",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Timothy",
+                        "middle": [],
+                        "last": "Lau",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Baldwin",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2016,
+                "venue": "Rep4NLP@ACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Jey Han Lau and Timothy Baldwin. 2016. An empirical evaluation of doc2vec with practical in- sights into document embedding generation. In Rep4NLP@ACL.",
+                "links": null
+            },
+            "BIBREF28": {
+                "ref_id": "b28",
+                "title": "Distributed Representations of Sentences and Documents",
+                "authors": [
+                    {
+                        "first": "Quoc",
+                        "middle": [],
+                        "last": "Le",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Tomas",
+                        "middle": [],
+                        "last": "Mikolov",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2014,
+                "venue": "ICML",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Quoc Le and Tomas Mikolov. 2014. Distributed Repre- sentations of Sentences and Documents. In ICML.",
+                "links": null
+            },
+            "BIBREF29": {
+                "ref_id": "b29",
+                "title": "Is searching full text more effective than searching abstracts?",
+                "authors": [
+                    {
+                        "first": "Jimmy",
+                        "middle": [
+                            "J"
+                        ],
+                        "last": "Lin",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2008,
+                "venue": "BMC Bioinformatics",
+                "volume": "10",
+                "issue": "",
+                "pages": "46--46",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Jimmy J. Lin. 2008. Is searching full text more effec- tive than searching abstracts? BMC Bioinformatics, 10:46-46.",
+                "links": null
+            },
+            "BIBREF30": {
+                "ref_id": "b30",
+                "title": "Bulletin of the Medical Library Association",
+                "authors": [
+                    {
+                        "first": "Carolyn",
+                        "middle": [
+                            "E"
+                        ],
+                        "last": "Lipscomb",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2000,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Carolyn E Lipscomb. 2000. Medical Subject Headings (MeSH). Bulletin of the Medical Library Associa- tion.",
+                "links": null
+            },
+            "BIBREF31": {
+                "ref_id": "b31",
+                "title": "Unsupervised Document Embedding with CNNs",
+                "authors": [
+                    {
+                        "first": "Chundi",
+                        "middle": [],
+                        "last": "Liu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Shunan",
+                        "middle": [],
+                        "last": "Zhao",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Maksims",
+                        "middle": [],
+                        "last": "Volkovs",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "ArXiv",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Chundi Liu, Shunan Zhao, and Maksims Volkovs. 2018. Unsupervised Document Embedding with CNNs. ArXiv, abs/1711.04168v3.",
+                "links": null
+            },
+            "BIBREF32": {
+                "ref_id": "b32",
+                "title": "A Model of Extended Paragraph Vector for Document Categorization and Trend Analysis",
+                "authors": [
+                    {
+                        "first": "Pengfei",
+                        "middle": [],
+                        "last": "Liu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "King",
+                        "middle": [
+                            "Keung"
+                        ],
+                        "last": "Wu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Helen",
+                        "middle": [
+                            "M"
+                        ],
+                        "last": "Meng",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Pengfei Liu, King Keung Wu, and Helen M. Meng. 2017. A Model of Extended Paragraph Vector for Document Categorization and Trend Analysis. IJCNN.",
+                "links": null
+            },
+            "BIBREF34": {
+                "ref_id": "b34",
+                "title": "Accelerating t-SNE Using Tree-based Algorithms",
+                "authors": [
+                    {
+                        "first": "Laurens",
+                        "middle": [],
+                        "last": "Van Der Maaten",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2014,
+                "venue": "Journal of Machine Learning Research",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Laurens van der Maaten. 2014. Accelerating t-SNE Using Tree-based Algorithms. Journal of Machine Learning Research.",
+                "links": null
+            },
+            "BIBREF35": {
+                "ref_id": "b35",
+                "title": "DisSent: Learning Sentence Representations from Explicit Discourse Relations",
+                "authors": [
+                    {
+                        "first": "Allen",
+                        "middle": [],
+                        "last": "Nie",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Erin",
+                        "middle": [],
+                        "last": "Bennett",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Noah",
+                        "middle": [],
+                        "last": "Goodman",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "ACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {
+                    "DOI": [
+                        "10.18653/v1/P19-1442"
+                    ]
+                },
+                "num": null,
+                "urls": [],
+                "raw_text": "Allen Nie, Erin Bennett, and Noah Goodman. 2019. DisSent: Learning Sentence Representations from Explicit Discourse Relations. In ACL.",
+                "links": null
+            },
+            "BIBREF36": {
+                "ref_id": "b36",
+                "title": "Scikit-learn: Machine learning in Python",
+                "authors": [
+                    {
+                        "first": "F",
+                        "middle": [],
+                        "last": "Pedregosa",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "G",
+                        "middle": [],
+                        "last": "Varoquaux",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "A",
+                        "middle": [],
+                        "last": "Gramfort",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "V",
+                        "middle": [],
+                        "last": "Michel",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "B",
+                        "middle": [],
+                        "last": "Thirion",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "O",
+                        "middle": [],
+                        "last": "Grisel",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "M",
+                        "middle": [],
+                        "last": "Blondel",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "P",
+                        "middle": [],
+                        "last": "Prettenhofer",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "R",
+                        "middle": [],
+                        "last": "Weiss",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "V",
+                        "middle": [],
+                        "last": "Dubourg",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "J",
+                        "middle": [],
+                        "last": "Vanderplas",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "A",
+                        "middle": [],
+                        "last": "Passos",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "D",
+                        "middle": [],
+                        "last": "Cournapeau",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "M",
+                        "middle": [],
+                        "last": "Brucher",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "M",
+                        "middle": [],
+                        "last": "Perrot",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "E",
+                        "middle": [],
+                        "last": "Duchesnay",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2011,
+                "venue": "Journal of Machine Learning Research",
+                "volume": "12",
+                "issue": "",
+                "pages": "2825--2830",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "F. Pedregosa, G. Varoquaux, A. Gramfort, V. Michel, B. Thirion, O. Grisel, M. Blondel, P. Prettenhofer, R. Weiss, V. Dubourg, J. Vanderplas, A. Passos, D. Cournapeau, M. Brucher, M. Perrot, and E. Duch- esnay. 2011. Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12:2825-2830.",
+                "links": null
+            },
+            "BIBREF37": {
+                "ref_id": "b37",
+                "title": "Deep Contextualized Word Representations",
+                "authors": [
+                    {
+                        "first": "Matthew",
+                        "middle": [
+                            "E"
+                        ],
+                        "last": "Peters",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Mark",
+                        "middle": [],
+                        "last": "Neumann",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Mohit",
+                        "middle": [],
+                        "last": "Iyyer",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Matt",
+                        "middle": [],
+                        "last": "Gardner",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Christopher",
+                        "middle": [],
+                        "last": "Clark",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kenton",
+                        "middle": [],
+                        "last": "Lee",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Luke",
+                        "middle": [],
+                        "last": "Zettlemoyer",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Matthew E. Peters, Mark Neumann, Mohit Iyyer, Matt Gardner, Christopher Clark, Kenton Lee, and Luke Zettlemoyer. 2018. Deep Contextualized Word Rep- resentations.",
+                "links": null
+            },
+            "BIBREF38": {
+                "ref_id": "b38",
+                "title": "Improving language understanding by generative pre-training",
+                "authors": [
+                    {
+                        "first": "Alec",
+                        "middle": [],
+                        "last": "Radford",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Karthik",
+                        "middle": [],
+                        "last": "Narasimhan",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Alec Radford, Karthik Narasimhan, Tim Salimans, and Ilya Sutskever. 2018. Improving language under- standing by generative pre-training. arXiv.",
+                "links": null
+            },
+            "BIBREF39": {
+                "ref_id": "b39",
+                "title": "Software Framework for Topic Modelling with Large Corpora",
+                "authors": [
+                    {
+                        "first": "Petr",
+                        "middle": [],
+                        "last": "Radim\u0159eh\u016f\u0159ek",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Sojka",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2010,
+                "venue": "LREC",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Radim\u0158eh\u016f\u0159ek and Petr Sojka. 2010. Software Frame- work for Topic Modelling with Large Corpora. In LREC.",
+                "links": null
+            },
+            "BIBREF40": {
+                "ref_id": "b40",
+                "title": "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks",
+                "authors": [
+                    {
+                        "first": "Nils",
+                        "middle": [],
+                        "last": "Reimers",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Iryna",
+                        "middle": [],
+                        "last": "Gurevych",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "EMNLP",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Nils Reimers and Iryna Gurevych. 2019. Sentence- BERT: Sentence Embeddings using Siamese BERT- Networks. In EMNLP.",
+                "links": null
+            },
+            "BIBREF41": {
+                "ref_id": "b41",
+                "title": "Vmeasure: A Conditional Entropy-based External Cluster Evaluation Measure",
+                "authors": [
+                    {
+                        "first": "Andrew",
+                        "middle": [],
+                        "last": "Rosenberg",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Julia",
+                        "middle": [],
+                        "last": "Hirschberg",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2007,
+                "venue": "EMNLP",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Andrew Rosenberg and Julia Hirschberg. 2007. V- measure: A Conditional Entropy-based External Cluster Evaluation Measure. In EMNLP.",
+                "links": null
+            },
+            "BIBREF42": {
+                "ref_id": "b42",
+                "title": "Collaborative filtering recommender systems",
+                "authors": [
+                    {
+                        "first": "Ben",
+                        "middle": [],
+                        "last": "Schafer",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Dan",
+                        "middle": [],
+                        "last": "Frankowski",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jon",
+                        "middle": [],
+                        "last": "Herlocker",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Shilad",
+                        "middle": [],
+                        "last": "Sen",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2007,
+                "venue": "The adaptive web",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "J Ben Schafer, Dan Frankowski, Jon Herlocker, and Shilad Sen. 2007. Collaborative filtering recom- mender systems. In The adaptive web. Springer.",
+                "links": null
+            },
+            "BIBREF43": {
+                "ref_id": "b43",
+                "title": "Distribution of information in biomedical abstracts and full-text publications",
+                "authors": [
+                    {
+                        "first": "J",
+                        "middle": [],
+                        "last": "Martijn",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Marc",
+                        "middle": [],
+                        "last": "Schuemie",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Weeber",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "J",
+                        "middle": [
+                            "A"
+                        ],
+                        "last": "Bob",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Erik",
+                        "middle": [
+                            "M"
+                        ],
+                        "last": "Schijvenaars",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "C",
+                        "middle": [],
+                        "last": "Van Mulligen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Rob",
+                        "middle": [],
+                        "last": "Christiaan Van Der Eijk",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Barend",
+                        "middle": [],
+                        "last": "Jelier",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jan",
+                        "middle": [
+                            "A"
+                        ],
+                        "last": "Mons",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Kors",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2004,
+                "venue": "",
+                "volume": "20",
+                "issue": "",
+                "pages": "2597--604",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Martijn J. Schuemie, Marc Weeber, Bob J. A. Schijve- naars, Erik M. van Mulligen, C. Christiaan van der Eijk, Rob Jelier, Barend Mons, and Jan A. Kors. 2004. Distribution of information in biomedical ab- stracts and full-text publications. Bioinformatics, 20(16):2597-604.",
+                "links": null
+            },
+            "BIBREF44": {
+                "ref_id": "b44",
+                "title": "Improved semantic-aware network embedding with fine-grained word alignment",
+                "authors": [
+                    {
+                        "first": "Dinghan",
+                        "middle": [],
+                        "last": "Shen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Xinyuan",
+                        "middle": [],
+                        "last": "Zhang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ricardo",
+                        "middle": [],
+                        "last": "Henao",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lawrence",
+                        "middle": [],
+                        "last": "Carin",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "EMNLP",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Dinghan Shen, Xinyuan Zhang, Ricardo Henao, and Lawrence Carin. 2018. Improved semantic-aware network embedding with fine-grained word align- ment. In EMNLP.",
+                "links": null
+            },
+            "BIBREF45": {
+                "ref_id": "b45",
+                "title": "An Overview of Microsoft Academic Service (MAS) and Applications",
+                "authors": [
+                    {
+                        "first": "Arnab",
+                        "middle": [],
+                        "last": "Sinha",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Zhihong",
+                        "middle": [],
+                        "last": "Shen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yang",
+                        "middle": [],
+                        "last": "Song",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Hao",
+                        "middle": [],
+                        "last": "Ma",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Darrin",
+                        "middle": [],
+                        "last": "Eide",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Bo-June Paul",
+                        "middle": [],
+                        "last": "Hsu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kuansan",
+                        "middle": [],
+                        "last": "Wang",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2015,
+                "venue": "WWW",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Arnab Sinha, Zhihong Shen, Yang Song, Hao Ma, Dar- rin Eide, Bo-June Paul Hsu, and Kuansan Wang. 2015. An Overview of Microsoft Academic Service (MAS) and Applications. In WWW.",
+                "links": null
+            },
+            "BIBREF46": {
+                "ref_id": "b46",
+                "title": "Cane: Context-aware network embedding for relation modeling",
+                "authors": [
+                    {
+                        "first": "Cunchao",
+                        "middle": [],
+                        "last": "Tu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Han",
+                        "middle": [],
+                        "last": "Liu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Zhiyuan",
+                        "middle": [],
+                        "last": "Liu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Maosong",
+                        "middle": [],
+                        "last": "Sun",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "ACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Cunchao Tu, Han Liu, Zhiyuan Liu, and Maosong Sun. 2017. Cane: Context-aware network embedding for relation modeling. In ACL.",
+                "links": null
+            },
+            "BIBREF47": {
+                "ref_id": "b47",
+                "title": "Attention Is All You Need",
+                "authors": [
+                    {
+                        "first": "Ashish",
+                        "middle": [],
+                        "last": "Vaswani",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Noam",
+                        "middle": [],
+                        "last": "Shazeer",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Niki",
+                        "middle": [],
+                        "last": "Parmar",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jakob",
+                        "middle": [],
+                        "last": "Uszkoreit",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Llion",
+                        "middle": [],
+                        "last": "Jones",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Aidan",
+                        "middle": [
+                            "N"
+                        ],
+                        "last": "Gomez",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lukasz",
+                        "middle": [],
+                        "last": "Kaiser",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Illia",
+                        "middle": [],
+                        "last": "Polosukhin",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "NIPS",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin. 2017. Attention Is All You Need. In NIPS.",
+                "links": null
+            },
+            "BIBREF48": {
+                "ref_id": "b48",
+                "title": "Improving textual network learning with variational homophilic embeddings",
+                "authors": [
+                    {
+                        "first": "Wenlin",
+                        "middle": [],
+                        "last": "Wang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Chenyang",
+                        "middle": [],
+                        "last": "Tao",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Zhe",
+                        "middle": [],
+                        "last": "Gan",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Guoyin",
+                        "middle": [],
+                        "last": "Wang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Liqun",
+                        "middle": [],
+                        "last": "Chen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Xinyuan",
+                        "middle": [],
+                        "last": "Zhang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ruiyi",
+                        "middle": [],
+                        "last": "Zhang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Qian",
+                        "middle": [],
+                        "last": "Yang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ricardo",
+                        "middle": [],
+                        "last": "Henao",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lawrence",
+                        "middle": [],
+                        "last": "Carin",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "Advances in Neural Information Processing Systems",
+                "volume": "",
+                "issue": "",
+                "pages": "2074--2085",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Wenlin Wang, Chenyang Tao, Zhe Gan, Guoyin Wang, Liqun Chen, Xinyuan Zhang, Ruiyi Zhang, Qian Yang, Ricardo Henao, and Lawrence Carin. 2019. Improving textual network learning with variational homophilic embeddings. In Advances in Neural In- formation Processing Systems, pages 2074-2085.",
+                "links": null
+            },
+            "BIBREF49": {
+                "ref_id": "b49",
+                "title": "A Broad-Coverage Challenge Corpus for Sentence Understanding through Inference",
+                "authors": [
+                    {
+                        "first": "Adina",
+                        "middle": [],
+                        "last": "Williams",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Nikita",
+                        "middle": [],
+                        "last": "Nangia",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Samuel",
+                        "middle": [],
+                        "last": "Bowman",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {
+                    "DOI": [
+                        "10.18653/v1/N18-1101"
+                    ]
+                },
+                "num": null,
+                "urls": [],
+                "raw_text": "Adina Williams, Nikita Nangia, and Samuel Bowman. 2018. A Broad-Coverage Challenge Corpus for Sen- tence Understanding through Inference. In NAACL- HLT.",
+                "links": null
+            },
+            "BIBREF50": {
+                "ref_id": "b50",
+                "title": "Simplifying graph convolutional networks",
+                "authors": [
+                    {
+                        "first": "Felix",
+                        "middle": [],
+                        "last": "Wu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "H",
+                        "middle": [],
+                        "last": "Amauri",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Tianyi",
+                        "middle": [],
+                        "last": "Souza",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Christopher",
+                        "middle": [],
+                        "last": "Zhang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Tao",
+                        "middle": [],
+                        "last": "Fifty",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kilian",
+                        "middle": [
+                            "Q"
+                        ],
+                        "last": "Yu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Weinberger",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "ICML",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Felix Wu, Amauri H. Souza, Tianyi Zhang, Christo- pher Fifty, Tao Yu, and Kilian Q. Weinberger. 2019a. Simplifying graph convolutional networks. In ICML.",
+                "links": null
+            },
+            "BIBREF51": {
+                "ref_id": "b51",
+                "title": "Word Mover's Embedding: From Word2Vec to Document Embedding",
+                "authors": [
+                    {
+                        "first": "Lingfei",
+                        "middle": [],
+                        "last": "Wu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ian",
+                        "middle": [],
+                        "last": "En-Hsu Yen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kun",
+                        "middle": [],
+                        "last": "Xu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Fangli",
+                        "middle": [],
+                        "last": "Xu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Avinash",
+                        "middle": [],
+                        "last": "Balakrishnan",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Pin-Yu",
+                        "middle": [],
+                        "last": "Chen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Pradeep",
+                        "middle": [],
+                        "last": "Ravikumar",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Michael",
+                        "middle": [
+                            "J"
+                        ],
+                        "last": "Witbrock",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "EMNLP",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Lingfei Wu, Ian En-Hsu Yen, Kun Xu, Fangli Xu, Avinash Balakrishnan, Pin-Yu Chen, Pradeep Ravikumar, and Michael J Witbrock. 2018. Word Mover's Embedding: From Word2Vec to Document Embedding. In EMNLP.",
+                "links": null
+            },
+            "BIBREF52": {
+                "ref_id": "b52",
+                "title": "Google's neural machine translation system: Bridging the gap between human and machine translation",
+                "authors": [
+                    {
+                        "first": "Yonghui",
+                        "middle": [],
+                        "last": "Wu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Mike",
+                        "middle": [],
+                        "last": "Schuster",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Zhifeng",
+                        "middle": [],
+                        "last": "Chen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "V",
+                        "middle": [],
+                        "last": "Quoc",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Mohammad",
+                        "middle": [],
+                        "last": "Le",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Wolfgang",
+                        "middle": [],
+                        "last": "Norouzi",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Maxim",
+                        "middle": [],
+                        "last": "Macherey",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yuan",
+                        "middle": [],
+                        "last": "Krikun",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Qin",
+                        "middle": [],
+                        "last": "Cao",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Klaus",
+                        "middle": [],
+                        "last": "Gao",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Macherey",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2016,
+                "venue": "ArXiv",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Yonghui Wu, Mike Schuster, Zhifeng Chen, Quoc V Le, Mohammad Norouzi, Wolfgang Macherey, Maxim Krikun, Yuan Cao, Qin Gao, Klaus Macherey, et al. 2016. Google's neural machine translation system: Bridging the gap between human and machine translation. ArXiv, abs/1609.08144.",
+                "links": null
+            },
+            "BIBREF54": {
+                "ref_id": "b54",
+                "title": "Xlnet: Generalized autoregressive pretraining for language understanding",
+                "authors": [
+                    {
+                        "first": "Zhilin",
+                        "middle": [],
+                        "last": "Yang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Zihang",
+                        "middle": [],
+                        "last": "Dai",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yiming",
+                        "middle": [],
+                        "last": "Yang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jaime",
+                        "middle": [
+                            "G"
+                        ],
+                        "last": "Carbonell",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ruslan",
+                        "middle": [],
+                        "last": "Salakhutdinov",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "V",
+                        "middle": [],
+                        "last": "Quoc",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Le",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2019,
+                "venue": "ArXiv",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Zhilin Yang, Zihang Dai, Yiming Yang, Jaime G. Car- bonell, Ruslan Salakhutdinov, and Quoc V. Le. 2019. Xlnet: Generalized autoregressive pretraining for language understanding. ArXiv, abs/1906.08237.",
+                "links": null
+            },
+            "BIBREF55": {
+                "ref_id": "b55",
+                "title": "From neural re-ranking to neural ranking: Learning a sparse representation for inverted indexing",
+                "authors": [
+                    {
+                        "first": "Hamed",
+                        "middle": [],
+                        "last": "Zamani",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Mostafa",
+                        "middle": [],
+                        "last": "Dehghani",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "W",
+                        "middle": [
+                            "Bruce"
+                        ],
+                        "last": "Croft",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Erik",
+                        "middle": [
+                            "G"
+                        ],
+                        "last": "",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "CIKM",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Hamed Zamani, Mostafa Dehghani, W. Bruce Croft, Erik G. Learned-Miller, and Jaap Kamps. 2018. From neural re-ranking to neural ranking: Learn- ing a sparse representation for inverted indexing. In CIKM.",
+                "links": null
+            },
+            "BIBREF56": {
+                "ref_id": "b56",
+                "title": "Diffusion maps for textual network embedding",
+                "authors": [
+                    {
+                        "first": "Xinyuan",
+                        "middle": [],
+                        "last": "Zhang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yitong",
+                        "middle": [],
+                        "last": "Li",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Dinghan",
+                        "middle": [],
+                        "last": "Shen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lawrence",
+                        "middle": [],
+                        "last": "Carin",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Xinyuan Zhang, Yitong Li, Dinghan Shen, and Lawrence Carin. 2018. Diffusion maps for textual network embedding. In NeurIPS.",
+                "links": null
+            }
+        },
+        "ref_entries": {
+            "FIGREF0": {
+                "uris": null,
+                "type_str": "figure",
+                "num": null,
+                "text": "t-SNE visualization of paper embeddings and their corresponding MAG topics."
+            },
+            "TABREF1": {
+                "content": "<table/>",
+                "type_str": "table",
+                "num": null,
+                "text": "Results on the SCIDOCS evaluation suite consisting of 7 tasks."
+            },
+            "TABREF3": {
+                "content": "<table><tr><td>: Ablations: Numbers are averages of metrics</td></tr><tr><td>for each evaluation task: CLS: classification, USR:</td></tr><tr><td>User activity, CITE: Citation prediction, REC: Recom-</td></tr><tr><td>mendation, Avg. average over all tasks &amp; metrics.</td></tr></table>",
+                "type_str": "table",
+                "num": null,
+                "text": ""
+            },
+            "TABREF4": {
+                "content": "<table><tr><td>Training signal</td><td>CLS USR CITE REC All</td></tr><tr><td>SPECTER</td><td>84.2 88.4 91.5 36.9 80.0</td></tr></table>",
+                "type_str": "table",
+                "num": null,
+                "text": "SciBERT fine-tune on co-view 83.0 84.2 84.1 36.4 76.0 SciBERT fine-tune on co-read 82.3 85.4 86.7 36.3 77.1 SciBERT fine-tune on co-citation 82.9 84.3 85.2 36.6 76.4 SciBERT fine-tune on multitask 83.3 86.1 88.2 36.0 78.0"
+            },
+            "TABREF5": {
+                "content": "<table/>",
+                "type_str": "table",
+                "num": null,
+                "text": "Comparison with task-specific fine-tuning."
+            }
+        }
+    }
+}

@@ -1,0 +1,2147 @@
+{
+    "paper_id": "N18-3011",
+    "header": {
+        "generated_with": "S2ORC 1.0.0",
+        "date_generated": "2021-02-12T10:00:43.166943Z"
+    },
+    "title": "Construction of the Literature Graph in Semantic Scholar",
+    "authors": [
+        {
+            "first": "Waleed",
+            "middle": [],
+            "last": "Ammar",
+            "suffix": "",
+            "affiliation": {},
+            "email": "waleeda@allenai.org"
+        },
+        {
+            "first": "Dirk",
+            "middle": [],
+            "last": "Groeneveld",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Chandra",
+            "middle": [],
+            "last": "Bhagavatula",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Iz",
+            "middle": [],
+            "last": "Beltagy",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Miles",
+            "middle": [],
+            "last": "Crawford",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Doug",
+            "middle": [],
+            "last": "Downey",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Jason",
+            "middle": [],
+            "last": "Dunkelberger",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Ahmed",
+            "middle": [],
+            "last": "Elgohary",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Sergey",
+            "middle": [],
+            "last": "Feldman",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Vu",
+            "middle": [],
+            "last": "Ha",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Rodney",
+            "middle": [],
+            "last": "Kinney",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Sebastian",
+            "middle": [],
+            "last": "Kohlmeier",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Kyle",
+            "middle": [],
+            "last": "Lo",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Tyler",
+            "middle": [],
+            "last": "Murray",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Hsu-Han",
+            "middle": [],
+            "last": "Ooi",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Matthew",
+            "middle": [],
+            "last": "Peters",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Joanna",
+            "middle": [],
+            "last": "Power",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Sam",
+            "middle": [],
+            "last": "Skjonsberg",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Lucy",
+            "middle": [
+                "Lu"
+            ],
+            "last": "Wang",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Chris",
+            "middle": [],
+            "last": "Wilhelm",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Zheng",
+            "middle": [],
+            "last": "Yuan",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Madeleine",
+            "middle": [],
+            "last": "Van Zuylen",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        },
+        {
+            "first": "Oren",
+            "middle": [],
+            "last": "Etzioni",
+            "suffix": "",
+            "affiliation": {},
+            "email": ""
+        }
+    ],
+    "year": "",
+    "abstract": "We describe a deployed scalable system for organizing published scientific literature into a heterogeneous graph to facilitate algorithmic manipulation and discovery. The resulting literature graph consists of more than 280M nodes, representing papers, authors, entities and various interactions between them (e.g., authorships, citations, entity mentions). We reduce literature graph construction into familiar NLP tasks (e.g., entity extraction and linking), point out research challenges due to differences from standard formulations of these tasks, and report empirical results for each task. The methods described in this paper are used to enable semantic features in www.semanticscholar.org. Due to space constraints, we opted not to discuss our relation extraction models in this draft.",
+    "pdf_parse": {
+        "paper_id": "N18-3011",
+        "_pdf_hash": "",
+        "abstract": [
+            {
+                "text": "We describe a deployed scalable system for organizing published scientific literature into a heterogeneous graph to facilitate algorithmic manipulation and discovery. The resulting literature graph consists of more than 280M nodes, representing papers, authors, entities and various interactions between them (e.g., authorships, citations, entity mentions). We reduce literature graph construction into familiar NLP tasks (e.g., entity extraction and linking), point out research challenges due to differences from standard formulations of these tasks, and report empirical results for each task. The methods described in this paper are used to enable semantic features in www.semanticscholar.org. Due to space constraints, we opted not to discuss our relation extraction models in this draft.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Abstract",
+                "sec_num": null
+            }
+        ],
+        "body_text": [
+            {
+                "text": "The goal of this work is to facilitate algorithmic discovery in the scientific literature. Despite notable advances in scientific search engines, data mining and digital libraries (e.g., Wu et al., 2014) , researchers remain unable to answer simple questions such as:",
+                "cite_spans": [
+                    {
+                        "start": 187,
+                        "end": 203,
+                        "text": "Wu et al., 2014)",
+                        "ref_id": "BIBREF25"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "What is the percentage of female subjects in depression clinical trials?",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "Which of my co-authors published one or more papers on coreference resolution?",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "Which papers discuss the effects of Ranibizumab on the Retina?",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "In this paper, we focus on the problem of extracting structured data from scientific documents, which can later be used in natural language interfaces (e.g., Iyer et al., 2017) or to improve ranking of results in academic search (e.g., Xiong et al., Figure 1 : Part of the literature graph. 2017). We describe methods used in a scalable deployed production system for extracting structured information from scientific documents into the literature graph (see Fig. 1 ). The literature graph is a directed property graph which summarizes key information in the literature and can be used to answer the queries mentioned earlier as well as more complex queries. For example, in order to compute the Erd\u0151s number of an author X, the graph can be queried to find the number of nodes on the shortest undirected path between author X and Paul Erd\u0151s such that all edges on the path are labeled \"authored\".",
+                "cite_spans": [
+                    {
+                        "start": 158,
+                        "end": 176,
+                        "text": "Iyer et al., 2017)",
+                        "ref_id": "BIBREF12"
+                    }
+                ],
+                "ref_spans": [
+                    {
+                        "start": 250,
+                        "end": 258,
+                        "text": "Figure 1",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 459,
+                        "end": 465,
+                        "text": "Fig. 1",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "We reduce literature graph construction into familiar NLP tasks such as sequence labeling, entity linking and relation extraction, and address some of the impractical assumptions commonly made in the standard formulations of these tasks. For example, most research on named entity recognition tasks report results on large labeled datasets such as CoNLL-2003 and ACE-2005 (e.g., Lample et al., 2016 , and assume that entity types in the test set match those labeled in the training set (including work on domain adaptation, e.g., Daum\u00e9, 2007) . These assumptions, while useful for developing and benchmarking new methods, are unrealistic for many domains and applications. The paper also serves as an overview of the approach we adopt at www.semanticscholar.org in a step towards more intelligent academic search engines (Etzioni, 2011) .",
+                "cite_spans": [
+                    {
+                        "start": 348,
+                        "end": 358,
+                        "text": "CoNLL-2003",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 359,
+                        "end": 371,
+                        "text": "and ACE-2005",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 372,
+                        "end": 398,
+                        "text": "(e.g., Lample et al., 2016",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 530,
+                        "end": 542,
+                        "text": "Daum\u00e9, 2007)",
+                        "ref_id": "BIBREF6"
+                    },
+                    {
+                        "start": 821,
+                        "end": 836,
+                        "text": "(Etzioni, 2011)",
+                        "ref_id": "BIBREF8"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "In the next section, we start by describing our symbolic representation of the literature. Then, we discuss how we extract metadata associated with a paper such as authors and references, then how we extract the entities mentioned in paper text. Before we conclude, we briefly describe other research challenges we are actively working on in order to improve the quality of the literature graph.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Introduction",
+                "sec_num": "1"
+            },
+            {
+                "text": "The literature graph is a property graph with directed edges. Unlike Resource Description Framework (RDF) graphs, nodes and edges in property graphs have an internal structure which is more suitable for representing complex data types such as papers and entities. In this section, we describe the attributes associated with nodes and edges of different types in the literature graph.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Structure of The Literature Graph",
+                "sec_num": "2"
+            },
+            {
+                "text": "Papers. We obtain metadata and PDF files of papers via partnerships with publishers (e.g., Springer, Nature), catalogs (e.g., DBLP, MED-LINE), pre-publishing services (e.g., arXiv, bioRxive), as well as web-crawling. Paper nodes are associated with a set of attributes such as 'title', 'abstract', 'full text', 'venues' and 'publication year'. While some of the paper sources provide these attributes as metadata, it is often necessary to extract them from the paper PDF (details in \u00a73). We deterministically remove duplicate papers based on string similarity of their metadata, resulting in 37M unique paper nodes. Papers in the literature graph cover a variety of scientific disciplines, including computer science, molecular biology, microbiology and neuroscience.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Node Types",
+                "sec_num": "2.1"
+            },
+            {
+                "text": "Authors. Each node of this type represents a unique author, with attributes such as 'first name' and 'last name'. The literature graph has 12M nodes of this type.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Node Types",
+                "sec_num": "2.1"
+            },
+            {
+                "text": "Entities. Each node of this type represents a unique scientific concept discussed in the literature, with attributes such as 'canonical name', 'aliases' and 'description'. Our literature graph has 0.4M nodes of this type. We describe how we populate entity nodes in \u00a74.3.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Node Types",
+                "sec_num": "2.1"
+            },
+            {
+                "text": "Entity mentions. Each node of this type represents a textual reference of an entity in one of the papers, with attributes such as 'mention text', 'context', and 'confidence'. We describe how we populate the 237M mentions in the literature graph in \u00a74.1.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Node Types",
+                "sec_num": "2.1"
+            },
+            {
+                "text": "Citations. We instantiate a directed citation edge from paper nodes p 1 ! p 2 for each p 2 referenced in p 1 . Citation edges have attributes such as 'from paper id', 'to paper id' and 'contexts' (the textual contexts where p 2 is referenced in p 1 ). While some of the paper sources provide these attributes as metadata, it is often necessary to extract them from the paper PDF as detailed in \u00a73.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Edge Types",
+                "sec_num": "2.2"
+            },
+            {
+                "text": "Authorship. We instantiate a directed authorship edge between an author node and a paper node a ! p for each author of that paper.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Edge Types",
+                "sec_num": "2.2"
+            },
+            {
+                "text": "Entity linking edges. We instantiate a directed edge from an extracted entity mention node to the entity it refers to.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Edge Types",
+                "sec_num": "2.2"
+            },
+            {
+                "text": "Mention-mention relations. We instantiate a directed edge between a pair of mentions in the same sentential context if the textual relation extraction model predicts one of a predefined list of relation types between them in a sentential context. 1 We encode a symmetric relation between m 1 and m 2 as two directed edges m 1 ! m 2 and m 2 ! m 1 .",
+                "cite_spans": [
+                    {
+                        "start": 247,
+                        "end": 248,
+                        "text": "1",
+                        "ref_id": null
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Edge Types",
+                "sec_num": "2.2"
+            },
+            {
+                "text": "Entity-entity relations. While mentionmention edges represent relations between mentions in a particular context, entity-entity edges represent relations between abstract entities. These relations may be imported from an existing knowledge base (KB) or inferred from other edges in the graph.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Edge Types",
+                "sec_num": "2.2"
+            },
+            {
+                "text": "In the previous section, we described the overall structure of the literature graph. Next, we discuss how we populate paper nodes, author nodes, authorship edges, and citation edges.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "Although some publishers provide sufficient metadata about their papers, many papers are provided with incomplete metadata. Also, papers obtained via web-crawling are not associated with any metadata. To fill in this gap, we built the Sci-enceParse system to predict structured data from the raw PDFs using recurrent neural networks (RNNs). 2 For each paper, the system extracts the paper title, list of authors, and list of references; each reference consists of a title, a list of authors, a venue, and a year.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "Preparing the input layer. We split each PDF into individual pages, and feed each page to Apache's PDFBox library 3 to convert it into a sequence of tokens, where each token has features, e.g., 'text', 'font size', 'space width', 'position on the page'.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "We normalize the token-level features before feeding them as inputs to the model. For each of the 'font size' and 'space width' features, we compute three normalized values (with respect to current page, current document, and the whole training corpus), each value ranging between -0.5 to +0.5. The token's 'position on the page' is given in XY coordinate points. We scale the values linearly to range from . 0:5; 0:5/ at the top-left corner of the page to .0:5; 0:5/ at the bottom-right corner.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "In order to capture case information, we add seven numeric features to the input representation of each token: whether the first/second letter is uppercase/lowercase, the fraction of uppercase/lowercase letters and the fraction of digits.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "To help the model make correct predictions for metadata which tend to appear at the beginning (e.g., titles and authors) or at the end of papers (e.g., references), we provide the current page number as two discrete variables (relative to the beginning and end of the PDF file) with values 0, 1 and 2+. These features are repeated for each token on the same page.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "For the k-th token in the sequence, we compute the input representation i k by concatenating the numeric features, an embedding of the 'font size', and the word embedding of the lowercased token. Word embeddings are initialized with GloVe (Pennington et al., 2014) .",
+                "cite_spans": [
+                    {
+                        "start": 239,
+                        "end": 264,
+                        "text": "(Pennington et al., 2014)",
+                        "ref_id": "BIBREF19"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "Model. The input token representations are passed through one fully-connected layer and then ",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "g ! k D LSTM.Wi k ; g ! k 1 /; g k D OEg ! k I g k ; h ! k D LSTM.g k ; h ! k 1 /; h k D OEh ! k I g k",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "where W is a weight matrix, g k and h k are defined similarly to g ! k and h ! k but process token sequences in the opposite direction.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "Following Collobert et al. 2011, we feed the output of the second layer h k into a dense layer to predict unnormalized label weights for each token and learn label bigram feature weights (often described as a conditional random field layer when used in neural architectures) to account for dependencies between labels.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "Training. The ScienceParse system is trained on a snapshot of the data at PubMed Central. It consists of 1.4M PDFs and their associated metadata, which specify the correct titles, authors, and bibliographies. We use a heuristic labeling process that finds the strings from the metadata in the tokenized PDFs to produce labeled tokens. This labeling process succeeds for 76% of the documents. The remaining documents are not used in the training process. During training, we only use pages which have at least one token with a label that is not \"none\".",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "Decoding. At test time, we use Viterbi decoding to find the most likely global sequence, with no further constraints. To get the title, we use the longest continuous sequence of tokens with the \"title\" label. Since there can be multiple authors, we use all continuous sequences of tokens with the \"author\" label as authors, but require that all authors of a paper are mentioned on the same page. If the author labels are predicted in multiple pages, we use the one with the largest number of authors.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "Results. We run our final tests on a held-out set from PubMed Central, consisting of about 54K documents. The results are detailed in Table 1 . We use a conservative evaluation where an instance is correct if it exactly matches the gold annotation, with no credit for partial matching.",
+                "cite_spans": [],
+                "ref_spans": [
+                    {
+                        "start": 134,
+                        "end": 141,
+                        "text": "Table 1",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "To give an example for the type of errors our model makes, consider the paper (Wang et al., 2013) titled \"Clinical review: Efficacy of antimicrobial-impregnated catheters in external ventricular drainage -a systematic review and metaanalysis.\" The title we extract for this paper omits the first part \"Clinical review:\". This is likely to be a result of the pattern \"Foo: Bar Baz\" appearing in many training examples with only \"Bar Baz\" labeled as the title.",
+                "cite_spans": [
+                    {
+                        "start": 78,
+                        "end": 97,
+                        "text": "(Wang et al., 2013)",
+                        "ref_id": "BIBREF23"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Extracting Metadata",
+                "sec_num": "3"
+            },
+            {
+                "text": "In the previous section, we described how we populate the backbone of the literature graph, i.e., paper nodes, author nodes and citation edges. Next, we discuss how we populate mentions and entities in the literature graph using entity extraction and linking on the paper text. In order to focus on more salient entities in a given paper, we only use the title and abstract.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Extraction and Linking",
+                "sec_num": "4"
+            },
+            {
+                "text": "We experiment with three approaches for entity extraction and linking: I. Statistical: uses one or more statistical models for predicting mention spans, then uses another statistical model to link mentions to candidate entities in a KB.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Approaches",
+                "sec_num": "4.1"
+            },
+            {
+                "text": "II. Hybrid: defines a small number of handengineered, deterministic rules for string-based matching of the input text to candidate entities in the KB, then uses a statistical model to disambiguate the mentions. 4 III. Off-the-shelf: uses existing libraries, namely (Ferragina and Scaiella, 2010, TagMe) 5 and (Demner-Fushman et al., 2017, MetaMap Lite) 6 , with minimal post-processing to extract and link entities to the KB.",
+                "cite_spans": [
+                    {
+                        "start": 211,
+                        "end": 212,
+                        "text": "4",
+                        "ref_id": null
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Approaches",
+                "sec_num": "4.1"
+            },
+            {
+                "text": "We also experimented with a \"pure\" rules-based approach which disambiguates deterministically but the hybrid approach consistently gave better results.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Approaches",
+                "sec_num": "4.1"
+            },
+            {
+                "text": "5 The TagMe APIs are described at https://sobigdata. d4science.org/web/tagme/tagme-help 6 We use v3. Table 2 : Document-level evaluation of three approaches in two scientific areas: computer science (CS) and biomedical (Bio).",
+                "cite_spans": [
+                    {
+                        "start": 88,
+                        "end": 89,
+                        "text": "6",
+                        "ref_id": null
+                    }
+                ],
+                "ref_spans": [
+                    {
+                        "start": 101,
+                        "end": 108,
+                        "text": "Table 2",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Approaches",
+                "sec_num": "4.1"
+            },
+            {
+                "text": "We evaluate the performance of each approach in two broad scientific areas: computer science (CS) and biomedical research (Bio). For each unique (paper ID, entity ID) pair predicted by one of the approaches, we ask human annotators to label each mention extracted for this entity in the paper. We use CrowdFlower to manage human annotations and only include instances where three or more annotators agree on the label. If one or more of the entity mentions in that paper is judged to be correct, the pair (paper ID, entity ID) counts as one correct instance. Otherwise, it counts as an incorrect instance. We report 'yield' in lieu of 'recall' due to the difficulty of doing a scalable comprehensive annotation. Table 2 shows the results based on 500 papers using v1.1.2 of our entity extraction and linking components. In both domains, the statistical approach gives the highest precision and the lowest yield. The hybrid approach consistently gives the highest yield, but sacrifices precision. The TagMe off-the-shelf library used for the CS domain gives surprisingly good results, with precision within 1 point from the statistical models. However, the MetaMap Lite off-the-shelf library we used for the biomedical domain suffered a huge loss in precision. Our error analysis showed that each of the approaches is able to predict entities not predicted by the other approaches so we decided to pool their outputs in our deployed system, which gives significantly higher yield than any individual approach while maintaining reasonably high precision.",
+                "cite_spans": [],
+                "ref_spans": [
+                    {
+                        "start": 712,
+                        "end": 719,
+                        "text": "Table 2",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Approaches",
+                "sec_num": "4.1"
+            },
+            {
+                "text": "Given the token sequence t 1 ; : : : ; t N in a sentence, we need to identify spans which correspond to entity mentions. We use the BILOU scheme to encode labels at the token level. Unlike most formulations of named entity recognition problems (NER), we do not identify the entity type (e.g., protein, drug, chemical, disease) for each mention since the output mentions are further grounded in a KB with further information about the entity (including its type), using an entity linking module.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Extraction Models",
+                "sec_num": "4.2"
+            },
+            {
+                "text": "Model. First, we construct the token embedding x k D OEc k I w k for each token t k in the input sequence, where c k is a character-based representation computed using a convolutional neural network (CNN) with filter of size 3 characters, and w k are learned word embeddings initialized with the GloVe embeddings (Pennington et al., 2014) .",
+                "cite_spans": [
+                    {
+                        "start": 313,
+                        "end": 338,
+                        "text": "(Pennington et al., 2014)",
+                        "ref_id": "BIBREF19"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Extraction Models",
+                "sec_num": "4.2"
+            },
+            {
+                "text": "We also compute context-sensitive word embeddings, denoted as lm k D OElm ! k I lm k , by concatenating the projected outputs of forward and backward recurrent neural network language models (RNN-LM) at position k. The language model (LM) for each direction is trained independently and consists of a single layer long short-term memory (LSTM) network followed by a linear project layer. While training the LM parameters, lm ! k is used to predict t kC1 and lm k is used to predict t k 1 . We fix the LM parameters during training of the entity extraction model. See and for more details.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Extraction Models",
+                "sec_num": "4.2"
+            },
+            {
+                "text": "Given the x k and lm k embeddings for each token k 2 f1; : : : ; N g, we use a two-layer bidirectional LSTM to encode the sequence with x k and lm k feeding into the first and second layer, respectively. That is,",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Extraction Models",
+                "sec_num": "4.2"
+            },
+            {
+                "text": "g ! k D LSTM.x k ; g ! k 1 /; g k D OEg ! k I g k ; h ! k D LSTM.OEg k I lm k ; h ! k 1 /; h k D OEh ! k I h k ;",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Extraction Models",
+                "sec_num": "4.2"
+            },
+            {
+                "text": "where g k and h k are defined similarly to g ! k and h ! k but process token sequences in the opposite direction. Similar to the model described in \u00a73, we feed the output of the second LSTM into a dense layer to predict unnormalized label weights for each token and learn label bigram feature weights to account for dependencies between labels.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Extraction Models",
+                "sec_num": "4.2"
+            },
+            {
+                "text": "Results. We use the standard data splits of the SemEval-2017 Task 10 on entity (and relation) extraction from scientific papers (Augenstein et al., 2017) . Table 3 compares three variants of our entity extraction model. The first line omits the LM embeddings lm k , while the second line is the full model (including LM embeddings) showing a large improvement of 4.2 F1 points. The third line shows that creating an ensemble of 15 models further improves the results by 1.1 F1 points.",
+                "cite_spans": [
+                    {
+                        "start": 128,
+                        "end": 153,
+                        "text": "(Augenstein et al., 2017)",
+                        "ref_id": "BIBREF1"
+                    }
+                ],
+                "ref_spans": [
+                    {
+                        "start": 156,
+                        "end": 163,
+                        "text": "Table 3",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Entity Extraction Models",
+                "sec_num": "4.2"
+            },
+            {
+                "text": "Model instances. In the deployed system, we use three instances of the entity extraction model Description F1 Without LM 49.9",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Extraction Models",
+                "sec_num": "4.2"
+            },
+            {
+                "text": "With LM 54.1 Avg. of 15 models with LM 55.2 Table 3 : Results of the entity extraction model on the development set of SemEval-2017 task 10. with a similar architecture, but trained on different datasets. Two instances are trained on the BC5CDR (Li et al., 2016) and the CHEMDNER datasets (Krallinger et al., 2015) to extract key entity mentions in the biomedical domain such as diseases, drugs and chemical compounds. The third instance is trained on mention labels induced from Wikipedia articles in the computer science domain.",
+                "cite_spans": [
+                    {
+                        "start": 245,
+                        "end": 262,
+                        "text": "(Li et al., 2016)",
+                        "ref_id": "BIBREF16"
+                    },
+                    {
+                        "start": 289,
+                        "end": 314,
+                        "text": "(Krallinger et al., 2015)",
+                        "ref_id": "BIBREF14"
+                    }
+                ],
+                "ref_spans": [
+                    {
+                        "start": 44,
+                        "end": 51,
+                        "text": "Table 3",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Entity Extraction Models",
+                "sec_num": "4.2"
+            },
+            {
+                "text": "The output of all model instances are pooled together and combined with the rule-based entity extraction module, then fed into the entity linking model (described below).",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Extraction Models",
+                "sec_num": "4.2"
+            },
+            {
+                "text": "In this section, we describe the construction of entity nodes and entity-entity edges. Unlike other knowledge extraction systems such as the Never-Ending Language Learner (NELL) 7 and OpenIE 4, 8 we use existing knowledge bases (KBs) of entities to reduce the burden of identifying coherent concepts. Grounding the entity mentions in a manually-curated KB also increases user confidence in automated predictions. We use two KBs: UMLS: The UMLS metathesaurus integrates information about concepts in specialized ontologies in several biomedical domains, and is funded by the U.S. National Library of Medicine. DBpedia: DBpedia provides access to structured information in Wikipedia. Rather than including all Wikipedia pages, we used a short list of Wikipedia categories about CS and included all pages up to depth four in their trees in order to exclude irrelevant entities, e.g., \"Lord of the Rings\" in DBpedia.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Knowledge Bases",
+                "sec_num": "4.3"
+            },
+            {
+                "text": "Given a text span s identified by the entity extraction model in \u00a74.2 (or with heuristics) and a reference KB, the goal of the entity linking model is to associate the span with the entity it refers to. A span and its surrounding words are collectively referred to as a mention. We first identify a set of candidate entities that a given mention may refer to. Then, we rank the candidate entities based on a score computed using a neural model trained on labeled data.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Linking Models",
+                "sec_num": "4.4"
+            },
+            {
+                "text": "For example, given the string \". . . database of facts, an ILP system will . . . \", the entity extraction model identifies the span \"ILP\" as a possible entity and the entity linking model associates it with \"Inductive_Logic_Programming\" as the referent entity (from among other candidates like \"Integer_Linear_Programming\" or \"Instruction-level_Parallelism\").",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Linking Models",
+                "sec_num": "4.4"
+            },
+            {
+                "text": "Datasets. We used two datasets: i) a biomedical dataset formed by combining MSH (Jimeno-Yepes et al., 2011) and BC5CDR (Li et al., 2016) with UMLS as the reference KB, and ii) a CS dataset we curated using Wikipedia articles about CS concepts with DBpedia as the reference KB.",
+                "cite_spans": [
+                    {
+                        "start": 119,
+                        "end": 136,
+                        "text": "(Li et al., 2016)",
+                        "ref_id": "BIBREF16"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Linking Models",
+                "sec_num": "4.4"
+            },
+            {
+                "text": "Candidate selection. In a preprocessing step, we build an index which maps any token used in a labeled mention or an entity name in the KB to associated entity IDs, along with the frequency this token is associated with that entity. This is similar to the index used in previous entity linking systems (e.g., Bhagavatula et al., 2015) to estimate the probability that a given mention refers to an entity. At train and test time, we use this index to find candidate entities for a given mention by looking up the tokens in the mention. This method also serves as our baseline in Table 4 by selecting the entity with the highest frequency for a given mention.",
+                "cite_spans": [
+                    {
+                        "start": 309,
+                        "end": 334,
+                        "text": "Bhagavatula et al., 2015)",
+                        "ref_id": "BIBREF3"
+                    }
+                ],
+                "ref_spans": [
+                    {
+                        "start": 578,
+                        "end": 585,
+                        "text": "Table 4",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Entity Linking Models",
+                "sec_num": "4.4"
+            },
+            {
+                "text": "Scoring candidates. Given a mention (m) and a candidate entity (e), the neural model constructs a vector encoding of the mention and the entity. We encode the mention and entity using the functions f and g, respectively, as follows:",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Linking Models",
+                "sec_num": "4.4"
+            },
+            {
+                "text": "f.m/ D OEv m.name I avg.v m.lc ; v m.rc /;",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Linking Models",
+                "sec_num": "4.4"
+            },
+            {
+                "text": "g.e/ D OEv e.name I v e.def ; where m.surface, m.lc and m.rc are the mention's surface form, left and right contexts, and e.name and e.def are the candidate entity's name and definition, respectively. v text is a bag-of-words sum encoder for text. We use the same encoder for the mention surface form and the candidate name, and another encoder for the mention contexts and entity definition.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Linking Models",
+                "sec_num": "4.4"
+            },
+            {
+                "text": "Additionally, we include numerical features to estimate the confidence of a candidate entity based on the statistics collected in the index described Table 4 : The Bag of Concepts F1 score of the baseline and neural model on the two curated datasets.",
+                "cite_spans": [],
+                "ref_spans": [
+                    {
+                        "start": 150,
+                        "end": 157,
+                        "text": "Table 4",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Entity Linking Models",
+                "sec_num": "4.4"
+            },
+            {
+                "text": "earlier. We compute two scores based on the word overlap of (i) mention's context and candidate's definition and (ii) mention's surface span and the candidate entity's name. Finally, we feed the concatenation of the cosine similarity between f.m/ and g.e/ and the intersection-based scores into an affine transformation followed by a sigmoid nonlinearity to compute the final score for the pair (m, e).",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Entity Linking Models",
+                "sec_num": "4.4"
+            },
+            {
+                "text": "Results. We use the Bag of Concepts F1 metric (Ling et al., 2015) for comparison. Table 4 compares the performance of the most-frequent-entity baseline and our neural model described above.",
+                "cite_spans": [
+                    {
+                        "start": 46,
+                        "end": 65,
+                        "text": "(Ling et al., 2015)",
+                        "ref_id": "BIBREF17"
+                    }
+                ],
+                "ref_spans": [
+                    {
+                        "start": 82,
+                        "end": 89,
+                        "text": "Table 4",
+                        "ref_id": null
+                    }
+                ],
+                "eq_spans": [],
+                "section": "Entity Linking Models",
+                "sec_num": "4.4"
+            },
+            {
+                "text": "In the previous sections, we discussed how we construct the main components of the literature graph. In this section, we briefly describe several other related challenges we are actively working on.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Other Research Problems",
+                "sec_num": "5"
+            },
+            {
+                "text": "Author disambiguation. Despite initiatives to have global author IDs ORCID and ResearcherID, most publishers provide author information as names (e.g., arXiv). However, author names cannot be used as a unique identifier since several people often share the same name. Moreover, different venues and sources use different conventions in reporting the author names, e.g., \"first initial, last name\" vs. \"last name, first name\". Inspired by Culotta et al. (2007) , we train a supervised binary classifier for merging pairs of author instances and use it to incrementally create author clusters. We only consider merging two author instances if they have the same last name and share the first initial. If the first name is spelled out (rather than abbreviated) in both author instances, we also require that the first name matches.",
+                "cite_spans": [
+                    {
+                        "start": 438,
+                        "end": 459,
+                        "text": "Culotta et al. (2007)",
+                        "ref_id": "BIBREF5"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Other Research Problems",
+                "sec_num": "5"
+            },
+            {
+                "text": "Ontology matching. Popular concepts are often represented in multiple KBs. For example, the concept of \"artificial neural networks\" is represented as entity ID D016571 in the MESH ontology, and represented as page ID '21523' in DBpedia. Ontology matching is the problem of identifying semantically-equivalent entities across KBs or ontologies. 9 Limited KB coverage. The convenience of grounding entities in a hand-curated KB comes at the cost of limited coverage. Introduction of new concepts and relations in the scientific literature occurs at a faster pace than KB curation, resulting in a large gap in KB coverage of scientific concepts. In order to close this gap, we need to develop models which can predict textual relations as well as detailed concept descriptions in scientific papers. For the same reasons, we also need to augment the relations imported from the KB with relations extracted from text. Our approach to address both entity and relation coverage is based on distant supervision (Mintz et al., 2009) . In short, we train two models for identifying entity definitions and relations expressed in natural language in scientific documents, and automatically generate labeled data for training these models using known definitions and relations in the KB.",
+                "cite_spans": [
+                    {
+                        "start": 344,
+                        "end": 345,
+                        "text": "9",
+                        "ref_id": null
+                    },
+                    {
+                        "start": 1003,
+                        "end": 1023,
+                        "text": "(Mintz et al., 2009)",
+                        "ref_id": "BIBREF18"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Other Research Problems",
+                "sec_num": "5"
+            },
+            {
+                "text": "We note that the literature graph currently lacks coverage for important entity types (e.g., affiliations) and domains (e.g., physics). Covering affiliations requires small modifications to the metadata extraction model followed by an algorithm for matching author names with their affiliations. In order to cover additional scientific domains, more agreements need to be signed with publishers.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Other Research Problems",
+                "sec_num": "5"
+            },
+            {
+                "text": "Figure and table extraction. Non-textual components such as charts, diagrams and tables provide key information in many scientific documents, but the lack of large labeled datasets has impeded the development of data-driven methods for scientific figure extraction. In Siegel et al. (2018) , we induced high-quality training labels for the task of figure extraction in a large number of scientific documents, with no human intervention. To accomplish this we leveraged the auxiliary data provided in two large web collections of scientific documents (arXiv and PubMed) to locate figures and their associated captions in the rasterized PDF. We use the resulting dataset to train a deep neural network for end-to-end figure detection, yielding a model that can be more easily extended to new domains compared to previous work.",
+                "cite_spans": [
+                    {
+                        "start": 269,
+                        "end": 289,
+                        "text": "Siegel et al. (2018)",
+                        "ref_id": "BIBREF21"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Other Research Problems",
+                "sec_num": "5"
+            },
+            {
+                "text": "Understanding and predicting citations. The citation edges in the literature graph provide a wealth of information (e.g., at what rate a paper",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Other Research Problems",
+                "sec_num": "5"
+            },
+            {
+                "text": "Variants of this problem are also known as deduplication or record linkage.",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Other Research Problems",
+                "sec_num": "5"
+            },
+            {
+                "text": "is being cited and whether it is accelerating), and opens the door for further research to better understand and predict citations. For example, in order to allow users to better understand what impact a paper had and effectively navigate its citations, we experimented with methods for classifying a citation as important or incidental, as well as more finegrained classes (Valenzuela et al., 2015) . The citation information also enables us to develop models for estimating the potential of a paper or an author. In Weihs and Etzioni (2017), we predict citationbased metrics such as an author's h-index and the citation rate of a paper in the future. Also related is the problem of predicting which papers should be cited in a given draft (Bhagavatula et al., 2018) , which can help improve the quality of a paper draft before it is submitted for peer review, or used to supplement the list of references after a paper is published.",
+                "cite_spans": [
+                    {
+                        "start": 374,
+                        "end": 399,
+                        "text": "(Valenzuela et al., 2015)",
+                        "ref_id": "BIBREF22"
+                    },
+                    {
+                        "start": 741,
+                        "end": 767,
+                        "text": "(Bhagavatula et al., 2018)",
+                        "ref_id": "BIBREF2"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Other Research Problems",
+                "sec_num": "5"
+            },
+            {
+                "text": "In this paper, we discuss the construction of a graph, providing a symbolic representation of the scientific literature. We describe deployed models for identifying authors, references and entities in the paper text, and provide experimental results to evaluate the performance of each model. Three research directions follow from this work and other similar projects, e.g., Hahn-Powell et al. (2017) ; Wu et al. (2014) : i) improving quality and enriching content of the literature graph (e.g., ontology matching and knowledge base population). ii) aggregating domain-specific extractions across many papers to enable a better understanding of the literature as a whole (e.g., identifying demographic biases in clinical trial participants and summarizing empirical results on important tasks). iii) exploring the literature via natural language interfaces.",
+                "cite_spans": [
+                    {
+                        "start": 375,
+                        "end": 400,
+                        "text": "Hahn-Powell et al. (2017)",
+                        "ref_id": "BIBREF10"
+                    },
+                    {
+                        "start": 403,
+                        "end": 419,
+                        "text": "Wu et al. (2014)",
+                        "ref_id": "BIBREF25"
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Conclusion and Future Work",
+                "sec_num": "6"
+            },
+            {
+                "text": "In order to help future research efforts, we make the following resources publicly available: metadata for over 20 million papers, 10 meaningful citations dataset, 11 models for figure and table extraction, 12 models for predicting citations in a paper draft 13 and models for extracting paper metadata, 14 among other resources. 15 ",
+                "cite_spans": [
+                    {
+                        "start": 330,
+                        "end": 332,
+                        "text": "15",
+                        "ref_id": null
+                    }
+                ],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "Conclusion and Future Work",
+                "sec_num": "6"
+            },
+            {
+                "text": "The ScienceParse libraries can be found at http:// allenai.org/software/.3 https://pdfbox.apache.org",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "",
+                "sec_num": null
+            },
+            {
+                "text": "http://rtw.ml.cmu.edu/rtw/ 8 https://github.com/allenai/ openie-standalone",
+                "cite_spans": [],
+                "ref_spans": [],
+                "eq_spans": [],
+                "section": "",
+                "sec_num": null
+            }
+        ],
+        "back_matter": [],
+        "bib_entries": {
+            "BIBREF0": {
+                "ref_id": "b0",
+                "title": "The ai2 system at semeval-2017 task 10 (scienceie): semi-supervised end-to-end entity and relation extraction",
+                "authors": [
+                    {
+                        "first": "Waleed",
+                        "middle": [],
+                        "last": "Ammar",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Matthew",
+                        "middle": [
+                            "E"
+                        ],
+                        "last": "Peters",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Chandra",
+                        "middle": [],
+                        "last": "Bhagavatula",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Russell",
+                        "middle": [],
+                        "last": "Power",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "ACL workshop (SemEval)",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Waleed Ammar, Matthew E. Peters, Chandra Bhagavat- ula, and Russell Power. 2017. The ai2 system at semeval-2017 task 10 (scienceie): semi-supervised end-to-end entity and relation extraction. In ACL workshop (SemEval).",
+                "links": null
+            },
+            "BIBREF1": {
+                "ref_id": "b1",
+                "title": "Semeval 2017 task 10 (scienceie): Extracting keyphrases and relations from scientific publications",
+                "authors": [
+                    {
+                        "first": "Isabelle",
+                        "middle": [],
+                        "last": "Augenstein",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Mrinal",
+                        "middle": [],
+                        "last": "Das",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Sebastian",
+                        "middle": [],
+                        "last": "Riedel",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lakshmi",
+                        "middle": [],
+                        "last": "Vikraman",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Andrew",
+                        "middle": [
+                            "D"
+                        ],
+                        "last": "Mccallum",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Isabelle Augenstein, Mrinal Das, Sebastian Riedel, Lakshmi Vikraman, and Andrew D. McCallum. 2017. Semeval 2017 task 10 (scienceie): Extracting keyphrases and relations from scientific publications. In ACL workshop (SemEval).",
+                "links": null
+            },
+            "BIBREF2": {
+                "ref_id": "b2",
+                "title": "Content-based citation recommendation",
+                "authors": [
+                    {
+                        "first": "Chandra",
+                        "middle": [],
+                        "last": "Bhagavatula",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Sergey",
+                        "middle": [],
+                        "last": "Feldman",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Russell",
+                        "middle": [],
+                        "last": "Power",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Waleed",
+                        "middle": [],
+                        "last": "Ammar",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "NAACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Chandra Bhagavatula, Sergey Feldman, Russell Power, and Waleed Ammar. 2018. Content-based citation recommendation. In NAACL.",
+                "links": null
+            },
+            "BIBREF3": {
+                "ref_id": "b3",
+                "title": "TabEL: entity linking in web tables. In ISWC",
+                "authors": [
+                    {
+                        "first": "Chandra",
+                        "middle": [],
+                        "last": "Bhagavatula",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Thanapon",
+                        "middle": [],
+                        "last": "Noraset",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Doug",
+                        "middle": [],
+                        "last": "Downey",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2015,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Chandra Bhagavatula, Thanapon Noraset, and Doug Downey. 2015. TabEL: entity linking in web tables. In ISWC.",
+                "links": null
+            },
+            "BIBREF4": {
+                "ref_id": "b4",
+                "title": "Natural language processing (almost) from scratch",
+                "authors": [
+                    {
+                        "first": "Ronan",
+                        "middle": [],
+                        "last": "Collobert",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jason",
+                        "middle": [],
+                        "last": "Weston",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "L\u00e9on",
+                        "middle": [],
+                        "last": "Bottou",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Michael",
+                        "middle": [],
+                        "last": "Karlen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Koray",
+                        "middle": [],
+                        "last": "Kavukcuoglu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Pavel",
+                        "middle": [
+                            "P"
+                        ],
+                        "last": "Kuksa",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2011,
+                "venue": "JMLR",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Ronan Collobert, Jason Weston, L\u00e9on Bottou, Michael Karlen, Koray Kavukcuoglu, and Pavel P. Kuksa. 2011. Natural language processing (almost) from scratch. In JMLR.",
+                "links": null
+            },
+            "BIBREF5": {
+                "ref_id": "b5",
+                "title": "Author disambiguation using error-driven machine learning with a ranking loss function",
+                "authors": [
+                    {
+                        "first": "Aron",
+                        "middle": [],
+                        "last": "Culotta",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Pallika",
+                        "middle": [],
+                        "last": "Kanani",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Robert",
+                        "middle": [],
+                        "last": "Hall",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Michael",
+                        "middle": [],
+                        "last": "Wick",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Andrew",
+                        "middle": [
+                            "D"
+                        ],
+                        "last": "Mccallum",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2007,
+                "venue": "IIWeb Workshop",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Aron Culotta, Pallika Kanani, Robert Hall, Michael Wick, and Andrew D. McCallum. 2007. Author disambiguation using error-driven machine learning with a ranking loss function. In IIWeb Workshop.",
+                "links": null
+            },
+            "BIBREF6": {
+                "ref_id": "b6",
+                "title": "Frustratingly easy domain adaptation",
+                "authors": [
+                    {
+                        "first": "Hal",
+                        "middle": [],
+                        "last": "Daum\u00e9",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2007,
+                "venue": "ACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Hal Daum\u00e9. 2007. Frustratingly easy domain adapta- tion. In ACL.",
+                "links": null
+            },
+            "BIBREF7": {
+                "ref_id": "b7",
+                "title": "MetaMap Lite: an evaluation of a new Java implementation of MetaMap",
+                "authors": [
+                    {
+                        "first": "Dina",
+                        "middle": [],
+                        "last": "Demner-Fushman",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Willie",
+                        "middle": [
+                            "J"
+                        ],
+                        "last": "Rogers",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Alan",
+                        "middle": [
+                            "R"
+                        ],
+                        "last": "Aronson",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "JAMIA",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Dina Demner-Fushman, Willie J. Rogers, and Alan R. Aronson. 2017. MetaMap Lite: an evaluation of a new Java implementation of MetaMap. In JAMIA.",
+                "links": null
+            },
+            "BIBREF8": {
+                "ref_id": "b8",
+                "title": "Search needs a shake-up",
+                "authors": [
+                    {
+                        "first": "Oren",
+                        "middle": [
+                            "Etzioni"
+                        ],
+                        "last": "",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2011,
+                "venue": "Nature",
+                "volume": "476",
+                "issue": "",
+                "pages": "25--31",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Oren Etzioni. 2011. Search needs a shake-up. Nature 476 7358:25-6.",
+                "links": null
+            },
+            "BIBREF9": {
+                "ref_id": "b9",
+                "title": "TAGME: on-the-fly annotation of short text fragments (by wikipedia entities)",
+                "authors": [
+                    {
+                        "first": "Paolo",
+                        "middle": [],
+                        "last": "Ferragina",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ugo",
+                        "middle": [],
+                        "last": "Scaiella",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2010,
+                "venue": "CIKM",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Paolo Ferragina and Ugo Scaiella. 2010. TAGME: on-the-fly annotation of short text fragments (by wikipedia entities). In CIKM.",
+                "links": null
+            },
+            "BIBREF10": {
+                "ref_id": "b10",
+                "title": "Swanson linking revisited: Accelerating literature-based discovery across domains using a conceptual influence graph",
+                "authors": [
+                    {
+                        "first": "Gus",
+                        "middle": [],
+                        "last": "Hahn-Powell",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Marco",
+                        "middle": [
+                            "Antonio"
+                        ],
+                        "last": "Valenzuela-Escarcega",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Mihai",
+                        "middle": [],
+                        "last": "Surdeanu",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "ACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Gus Hahn-Powell, Marco Antonio Valenzuela- Escarcega, and Mihai Surdeanu. 2017. Swanson linking revisited: Accelerating literature-based dis- covery across domains using a conceptual influence graph. In ACL.",
+                "links": null
+            },
+            "BIBREF11": {
+                "ref_id": "b11",
+                "title": "Long short-term memory",
+                "authors": [
+                    {
+                        "first": "Sepp",
+                        "middle": [],
+                        "last": "Hochreiter",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "J\u00fcrgen",
+                        "middle": [],
+                        "last": "Schmidhuber",
+                        "suffix": ""
+                    }
+                ],
+                "year": 1997,
+                "venue": "Neural computation",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Sepp Hochreiter and J\u00fcrgen Schmidhuber. 1997. Long short-term memory. Neural computation .",
+                "links": null
+            },
+            "BIBREF12": {
+                "ref_id": "b12",
+                "title": "Learning a neural semantic parser from user feedback",
+                "authors": [
+                    {
+                        "first": "Srinivasan",
+                        "middle": [],
+                        "last": "Iyer",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Ioannis",
+                        "middle": [],
+                        "last": "Konstas",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Alvin",
+                        "middle": [],
+                        "last": "Cheung",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jayant",
+                        "middle": [],
+                        "last": "Krishnamurthy",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Luke",
+                        "middle": [
+                            "S"
+                        ],
+                        "last": "Zettlemoyer",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "ACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Srinivasan Iyer, Ioannis Konstas, Alvin Cheung, Jayant Krishnamurthy, and Luke S. Zettlemoyer. 2017. Learning a neural semantic parser from user feed- back. In ACL.",
+                "links": null
+            },
+            "BIBREF13": {
+                "ref_id": "b13",
+                "title": "Exploiting mesh indexing in medline to generate a data set for word sense disambiguation",
+                "authors": [
+                    {
+                        "first": "J",
+                        "middle": [],
+                        "last": "Antonio",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Bridget",
+                        "middle": [
+                            "T"
+                        ],
+                        "last": "Jimeno-Yepes",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Alan",
+                        "middle": [
+                            "R"
+                        ],
+                        "last": "Mcinnes",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Aronson",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2011,
+                "venue": "BMC bioinformatics",
+                "volume": "12",
+                "issue": "1",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Antonio J. Jimeno-Yepes, Bridget T. McInnes, and Alan R. Aronson. 2011. Exploiting mesh indexing in medline to generate a data set for word sense dis- ambiguation. BMC bioinformatics 12(1):223.",
+                "links": null
+            },
+            "BIBREF14": {
+                "ref_id": "b14",
+                "title": "CHEMDNER: The drugs and chemical names extraction challenge",
+                "authors": [
+                    {
+                        "first": "Martin",
+                        "middle": [],
+                        "last": "Krallinger",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Florian",
+                        "middle": [],
+                        "last": "Leitner",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Obdulia",
+                        "middle": [],
+                        "last": "Rabal",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Miguel",
+                        "middle": [],
+                        "last": "Vazquez",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2015,
+                "venue": "In J. Cheminformatics",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Martin Krallinger, Florian Leitner, Obdulia Rabal, Miguel Vazquez, Julen Oyarzabal, and Alfonso Va- lencia. 2015. CHEMDNER: The drugs and chemi- cal names extraction challenge. In J. Cheminformat- ics.",
+                "links": null
+            },
+            "BIBREF15": {
+                "ref_id": "b15",
+                "title": "Neural architectures for named entity recognition",
+                "authors": [
+                    {
+                        "first": "Guillaume",
+                        "middle": [],
+                        "last": "Lample",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Miguel",
+                        "middle": [],
+                        "last": "Ballesteros",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "K",
+                        "middle": [],
+                        "last": "Sandeep",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kazuya",
+                        "middle": [],
+                        "last": "Subramanian",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Chris",
+                        "middle": [],
+                        "last": "Kawakami",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Dyer",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2016,
+                "venue": "HLT-NAACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Guillaume Lample, Miguel Ballesteros, Sandeep K Subramanian, Kazuya Kawakami, and Chris Dyer. 2016. Neural architectures for named entity recog- nition. In HLT-NAACL.",
+                "links": null
+            },
+            "BIBREF16": {
+                "ref_id": "b16",
+                "title": "Biocreative v cdr task corpus: a resource for chemical disease relation extraction. Database : the journal of biological databases and curation",
+                "authors": [
+                    {
+                        "first": "Jiao",
+                        "middle": [],
+                        "last": "Li",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yueping",
+                        "middle": [],
+                        "last": "Sun",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Robin",
+                        "middle": [
+                            "J"
+                        ],
+                        "last": "Johnson",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Daniela",
+                        "middle": [],
+                        "last": "Sciaky",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Chih-Hsuan",
+                        "middle": [],
+                        "last": "Wei",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Robert",
+                        "middle": [],
+                        "last": "Leaman",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Allan",
+                        "middle": [
+                            "Peter"
+                        ],
+                        "last": "Davis",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Carolyn",
+                        "middle": [
+                            "J"
+                        ],
+                        "last": "Mattingly",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Thomas",
+                        "middle": [
+                            "C"
+                        ],
+                        "last": "Wiegers",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Zhiyong",
+                        "middle": [],
+                        "last": "Lu",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2016,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Jiao Li, Yueping Sun, Robin J. Johnson, Daniela Sci- aky, Chih-Hsuan Wei, Robert Leaman, Allan Peter Davis, Carolyn J. Mattingly, Thomas C. Wiegers, and Zhiyong Lu. 2016. Biocreative v cdr task cor- pus: a resource for chemical disease relation extrac- tion. Database : the journal of biological databases and curation 2016.",
+                "links": null
+            },
+            "BIBREF17": {
+                "ref_id": "b17",
+                "title": "Design challenges for entity linking",
+                "authors": [
+                    {
+                        "first": "Xiao",
+                        "middle": [],
+                        "last": "Ling",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Sameer",
+                        "middle": [],
+                        "last": "Singh",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Daniel",
+                        "middle": [
+                            "S"
+                        ],
+                        "last": "Weld",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2015,
+                "venue": "Transactions of the Association for Computational Linguistics",
+                "volume": "3",
+                "issue": "",
+                "pages": "315--328",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Xiao Ling, Sameer Singh, and Daniel S. Weld. 2015. Design challenges for entity linking. Transactions of the Association for Computational Linguistics 3:315-328.",
+                "links": null
+            },
+            "BIBREF18": {
+                "ref_id": "b18",
+                "title": "Distant supervision for relation extraction without labeled data",
+                "authors": [
+                    {
+                        "first": "Mike",
+                        "middle": [],
+                        "last": "Mintz",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Steven",
+                        "middle": [],
+                        "last": "Bills",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2009,
+                "venue": "ACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Mike Mintz, Steven Bills, Rion Snow, and Daniel Ju- rafsky. 2009. Distant supervision for relation extrac- tion without labeled data. In ACL.",
+                "links": null
+            },
+            "BIBREF19": {
+                "ref_id": "b19",
+                "title": "GloVe: Global vectors for word representation",
+                "authors": [
+                    {
+                        "first": "Jeffrey",
+                        "middle": [],
+                        "last": "Pennington",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Richard",
+                        "middle": [],
+                        "last": "Socher",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Christopher",
+                        "middle": [
+                            "D"
+                        ],
+                        "last": "Manning",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2014,
+                "venue": "EMNLP",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Jeffrey Pennington, Richard Socher, and Christopher D. Manning. 2014. GloVe: Global vectors for word rep- resentation. In EMNLP.",
+                "links": null
+            },
+            "BIBREF20": {
+                "ref_id": "b20",
+                "title": "Semi-supervised sequence tagging with bidirectional language models",
+                "authors": [
+                    {
+                        "first": "Matthew",
+                        "middle": [
+                            "E"
+                        ],
+                        "last": "Peters",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Waleed",
+                        "middle": [],
+                        "last": "Ammar",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Chandra",
+                        "middle": [],
+                        "last": "Bhagavatula",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Russell",
+                        "middle": [],
+                        "last": "Power",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "ACL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Matthew E. Peters, Waleed Ammar, Chandra Bhagavat- ula, and Russell Power. 2017. Semi-supervised se- quence tagging with bidirectional language models. In ACL.",
+                "links": null
+            },
+            "BIBREF21": {
+                "ref_id": "b21",
+                "title": "Extracting scientific figures with distantly supervised neural networks",
+                "authors": [
+                    {
+                        "first": "Noah",
+                        "middle": [],
+                        "last": "Siegel",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Nicholas",
+                        "middle": [],
+                        "last": "Lourie",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Russell",
+                        "middle": [],
+                        "last": "Power",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Waleed",
+                        "middle": [],
+                        "last": "Ammar",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2018,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Noah Siegel, Nicholas Lourie, Russell Power, and Waleed Ammar. 2018. Extracting scientific figures with distantly supervised neural networks. In JCDL.",
+                "links": null
+            },
+            "BIBREF22": {
+                "ref_id": "b22",
+                "title": "Identifying meaningful citations",
+                "authors": [
+                    {
+                        "first": "Marco",
+                        "middle": [],
+                        "last": "Valenzuela",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Vu",
+                        "middle": [],
+                        "last": "Ha",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Oren",
+                        "middle": [],
+                        "last": "Etzioni",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2015,
+                "venue": "AAAI Workshop (Scholarly Big Data)",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Marco Valenzuela, Vu Ha, and Oren Etzioni. 2015. Identifying meaningful citations. In AAAI Workshop (Scholarly Big Data).",
+                "links": null
+            },
+            "BIBREF23": {
+                "ref_id": "b23",
+                "title": "Clinical review: Efficacy of antimicrobial-impregnated catheters in external ventricular drainage -a systematic review and meta-analysis",
+                "authors": [
+                    {
+                        "first": "Xiang",
+                        "middle": [],
+                        "last": "Wang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yan",
+                        "middle": [],
+                        "last": "Dong",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Yi-Ming",
+                        "middle": [],
+                        "last": "Xiang Qian Qi",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Cheng-Guang",
+                        "middle": [],
+                        "last": "Li",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Lijun",
+                        "middle": [],
+                        "last": "Huang",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "",
+                        "middle": [],
+                        "last": "Hou",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2013,
+                "venue": "Critical care",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Xiang Wang, Yan Dong, Xiang qian Qi, Yi-Ming Li, Cheng-Guang Huang, and Lijun Hou. 2013. Clin- ical review: Efficacy of antimicrobial-impregnated catheters in external ventricular drainage -a system- atic review and meta-analysis. In Critical care.",
+                "links": null
+            },
+            "BIBREF24": {
+                "ref_id": "b24",
+                "title": "Learning to predict citation-based impact measures",
+                "authors": [
+                    {
+                        "first": "Luca",
+                        "middle": [],
+                        "last": "Weihs",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Oren",
+                        "middle": [],
+                        "last": "Etzioni",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "JCDL",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Luca Weihs and Oren Etzioni. 2017. Learning to pre- dict citation-based impact measures. In JCDL.",
+                "links": null
+            },
+            "BIBREF25": {
+                "ref_id": "b25",
+                "title": "CiteSeerX: AI in a digital library search engine",
+                "authors": [
+                    {
+                        "first": "Jian",
+                        "middle": [],
+                        "last": "Wu",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Kyle",
+                        "middle": [],
+                        "last": "Williams",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Hung-Hsuan",
+                        "middle": [],
+                        "last": "Chen",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Madian",
+                        "middle": [],
+                        "last": "Khabsa",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Cornelia",
+                        "middle": [],
+                        "last": "Caragea",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Alexander",
+                        "middle": [],
+                        "last": "Ororbia",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Douglas",
+                        "middle": [],
+                        "last": "Jordan",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "C. Lee",
+                        "middle": [],
+                        "last": "Giles",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2014,
+                "venue": "AAAI",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Jian Wu, Kyle Williams, Hung-Hsuan Chen, Madian Khabsa, Cornelia Caragea, Alexander Ororbia, Dou- glas Jordan, and C. Lee Giles. 2014. CiteSeerX: AI in a digital library search engine. In AAAI.",
+                "links": null
+            },
+            "BIBREF26": {
+                "ref_id": "b26",
+                "title": "Explicit semantic ranking for academic search via knowledge graph embedding",
+                "authors": [
+                    {
+                        "first": "Chenyan",
+                        "middle": [],
+                        "last": "Xiong",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Russell",
+                        "middle": [],
+                        "last": "Power",
+                        "suffix": ""
+                    },
+                    {
+                        "first": "Jamie",
+                        "middle": [],
+                        "last": "Callan",
+                        "suffix": ""
+                    }
+                ],
+                "year": 2017,
+                "venue": "",
+                "volume": "",
+                "issue": "",
+                "pages": "",
+                "other_ids": {},
+                "num": null,
+                "urls": [],
+                "raw_text": "Chenyan Xiong, Russell Power, and Jamie Callan. 2017. Explicit semantic ranking for academic search via knowledge graph embedding. In WWW.",
+                "links": null
+            }
+        },
+        "ref_entries": {}
+    }
+}

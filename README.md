@@ -56,8 +56,10 @@ There are a couple of test PDFs in `tests/input/` if you'd like to try with that
 For example, you can try:
 
 ```console
-python doc2json/pdf2json/process_pdf.py -i tests/pdf/b80e338a4e543de6b49cada07156c9149d22.pdf -t temp_dir/ -o output_dir/
+python doc2json/pdf2json/process_pdf.py -i tests/pdf/N18-3011.pdf -t temp_dir/ -o output_dir/
 ```
+
+This will generate a JSON file in the specified `output_dir`. If unspecified, the file will be in the `output/` directory from your path.
 
 ## LaTeX Processing
 
@@ -73,6 +75,8 @@ A few examples are available under `tests/latex/`. For example, you can try:
 ```console
 python doc2json/pdf2json/process_tex.py -i test/latex/1911.02782.gz -t temp_dir/ -o output_dir/
 ```
+
+Again, this will produce a JSON file in the specified `output_dir`.
 
 ## Loading a S2ORC JSON file
 

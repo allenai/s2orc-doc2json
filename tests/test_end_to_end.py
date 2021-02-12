@@ -29,7 +29,7 @@ class TestE2E(unittest.TestCase):
             if fname.endswith('.pdf'):
                 print(fname)
                 # get paper id
-                pid = fname.split('.')[0]
+                pid = '.'.join(fname.split('.')[:-1])
                 # remove output files if previously made
                 temp_file_name = os.path.join(TEST_PDF_TEMP_DATA, f'{pid}.tei.xml')
                 output_file_name = os.path.join(TEST_PDF_OUTPUT_DATA, f'{pid}.json')
