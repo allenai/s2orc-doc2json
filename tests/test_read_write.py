@@ -4,7 +4,7 @@ import json
 
 from doc2json.s2orc import load_s2orc
 
-JSON_INPUT_DATA = os.path.join('tests', 'pdf', '24e6b80e338a4e543de6b49cada07156c9149d22.json')
+JSON_INPUT_DATA = os.path.join('tests', 'pdf', 'N18-3011.json')
 
 
 class TestS2ORC(unittest.TestCase):
