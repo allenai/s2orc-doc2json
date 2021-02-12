@@ -351,7 +351,7 @@ class Paragraph:
         if type(section) == str:
             if section:
                 sec_parts = section.split('::')
-                section_list = [(None, sec_name) for sec_name in sec_parts]
+                section_list = [[None, sec_name] for sec_name in sec_parts]
             else:
                 section_list = None
             if section_list and sec_num:
