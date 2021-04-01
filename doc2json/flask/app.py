@@ -3,7 +3,7 @@ Flask app for S2ORC pdf2json utility
 """
 import hashlib
 from flask import Flask, request, jsonify, flash, url_for, redirect, render_template, send_file
-from doc2json.pdf2json.process_pdf import process_pdf_stream
+from doc2json.grobid2json.process_pdf import process_pdf_stream
 from doc2json.tex2json.process_tex import process_tex_stream
 
 app = Flask(__name__)

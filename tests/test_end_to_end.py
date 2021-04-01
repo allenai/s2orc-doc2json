@@ -2,7 +2,7 @@ import os
 import unittest
 import shutil
 
-from doc2json.pdf2json.process_pdf import process_pdf_file
+from doc2json.grobid2json.process_pdf import process_pdf_file
 from doc2json.tex2json.process_tex import process_tex_file
 
 TEST_PDF_INPUT_DATA = os.path.join('tests', 'pdf')
