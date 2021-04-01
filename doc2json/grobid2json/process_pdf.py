@@ -5,8 +5,8 @@ import time
 from bs4 import BeautifulSoup
 from typing import Dict
 
-from doc2json.pdf2json.grobid.grobid_client import GrobidClient
-from doc2json.pdf2json.tei_to_json import convert_tei_xml_file_to_s2orc_json, convert_tei_xml_soup_to_s2orc_json
+from doc2json.grobid2json.grobid.grobid_client import GrobidClient
+from doc2json.grobid2json.tei_to_json import convert_tei_xml_file_to_s2orc_json, convert_tei_xml_soup_to_s2orc_json
 
 
 def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:

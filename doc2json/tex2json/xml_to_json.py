@@ -7,7 +7,7 @@ from typing import List, Dict, Tuple, Optional
 import copy
 import latex2mathml.converter
 
-from doc2json.pdf2json.grobid.grobid_client import GrobidClient
+from doc2json.grobid2json.grobid.grobid_client import GrobidClient
 from doc2json.utils.grobid_util import parse_bib_entry, get_author_data_from_grobid_xml
 from doc2json.s2orc import Paper, Paragraph
 
