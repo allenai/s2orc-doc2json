@@ -18,8 +18,12 @@ python spp_client.py --input example.pdf --output example.json
 
 As a Python library:
 ```
+import json
 from doc2json.spp2json.spp.spp_client import SppClient
 
 client = SppClient()
-client.process('example.pdf', )
+client.process('example.pdf', 'example.json')
+
+with open('example.json', 'r') as f_in:
+    spp_json = json.load(f_in)
 ```
