@@ -1,6 +1,6 @@
 # Convert scientific papers to S2ORC JSON
 
-This project is a part of [S2ORC](https://github.com/allenai/s2orc). For S2ORC, we convert PDFs to JSON using Grobid and a custom TEI.XML to JSON parser. That TEI.XML to JSON parser (`pdf2json`) is made available here. We additionally process LaTeX dumps from arXiv. That parser (`tex2json`) is also made available here.
+This project is a part of [S2ORC](https://github.com/allenai/s2orc). For S2ORC, we convert PDFs to JSON using Grobid and a custom TEI.XML to JSON parser. That TEI.XML to JSON parser (`grobid2json`) is made available here. We additionally process LaTeX dumps from arXiv. That parser (`tex2json`) is also made available here.
 
 The S2ORC github page includes a JSON schema, but it may be easier to understand that schema based on the python classes in `doc2json/s2orc.py`.
 
@@ -29,7 +29,7 @@ python setup.py develop
 
 ## PDF Processing
 
-The current `pdf2json` tool uses Grobid to first process each PDF into XML, then extracts paper components from the XML.
+The current `grobid2json` tool uses Grobid to first process each PDF into XML, then extracts paper components from the XML.
 
 ### Install Grobid
 
@@ -56,7 +56,7 @@ There are a couple of test PDFs in `tests/input/` if you'd like to try with that
 For example, you can try:
 
 ```console
-python doc2json/pdf2json/process_pdf.py -i tests/pdf/N18-3011.pdf -t temp_dir/ -o output_dir/
+python doc2json/grobid2json/process_pdf.py -i tests/pdf/N18-3011.pdf -t temp_dir/ -o output_dir/
 ```
 
 This will generate a JSON file in the specified `output_dir`. If unspecified, the file will be in the `output/` directory from your path.
@@ -73,7 +73,7 @@ To process LaTeX, all files must be in a zip file, similar to the `*.gz` files y
 A few examples are available under `tests/latex/`. For example, you can try:
 
 ```console
-python doc2json/pdf2json/process_tex.py -i test/latex/1911.02782.gz -t temp_dir/ -o output_dir/
+python doc2json/grobid2json/process_tex.py -i test/latex/1911.02782.gz -t temp_dir/ -o output_dir/
 ```
 
 Again, this will produce a JSON file in the specified `output_dir`.
