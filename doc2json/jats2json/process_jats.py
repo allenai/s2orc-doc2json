@@ -47,14 +47,12 @@ def process_jats_file(
         jats_file: str,
         output_dir: str=BASE_OUTPUT_DIR,
         log_dir: str=BASE_LOG_DIR,
-        keep_flag: bool=False,
 ) -> Optional[str]:
     """
     Process files in a JATS XML file and get JSON representation
     :param jats_file:
     :param output_dir:
     :param log_dir:
-    :param keep_flag:
     :return:
     """
     # create directories
@@ -64,7 +62,6 @@ def process_jats_file(
     # get paper id as the name of the file
     paper_id = os.path.splitext(jats_file)[0].split('/')[-1]
     output_file = os.path.join(output_dir, f'{paper_id}.json')
-    cleanup_flag = not keep_flag
 
     # check if input file exists and output file doesn't
     if not os.path.exists(jats_file):
