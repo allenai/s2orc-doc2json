@@ -1309,7 +1309,11 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
     metadata = {
         "title": title,
         "authors": authors,
-        "year": year_str
+        "year": year_str,
+        "venue": "",
+        "identifiers": {
+            "arxiv_id": file_id
+        }
     }
 
     return Paper(
