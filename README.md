@@ -6,11 +6,8 @@ The S2ORC github page includes a JSON schema, but it may be easier to understand
 
 This custom JSON schema is also used for the [CORD-19](https://github.com/allenai/cord19) project, so those who have interacted with CORD-19 may find this format familiar.
 
-Note: in S2ORC and CORD-19, we also do several other things which are *not* included in this utility:
-- Linking bibliography entries to other papers in S2ORC
-- Parse JATS XML files (format used by PubMed Central and others)
-
-We may eventually make these components available as well, but no promises.
+Possible future components (no promises):
+- Linking bibliography entries (bibliography consolidation) to papers in S2ORC
 
 ## Setup your environment
 
@@ -77,6 +74,16 @@ python doc2json/grobid2json/process_tex.py -i test/latex/1911.02782.gz -t temp_d
 ```
 
 Again, this will produce a JSON file in the specified `output_dir`.
+
+## PMC JATS XML Processing
+
+To process JATS XML, try:
+
+```console
+python doc2json/jats2json/process_jats.py -i test/jats/PMC5828200.nxml -o output_dir/
+```
+
+This will create a JSON file with the same paper id in the specified output directory.
 
 ## Loading a S2ORC JSON file
 
