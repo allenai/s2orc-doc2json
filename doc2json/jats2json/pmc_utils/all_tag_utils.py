@@ -185,7 +185,7 @@ def parse_all_paragraphs_in_section(
     """
     outputs = []
     sp = BeautifulSoup('', 'lxml')
-    for par_tag in sec_tag.find_all("p", recursive=False):
+    for par_tag in sec_tag.find_all("p", recursive=True):
         cite_spans = []
         fig_spans = []
         table_spans = []
@@ -194,15 +194,11 @@ def parse_all_paragraphs_in_section(
         sub_spans = []
         eq_spans = []
 
-        formula_flag = False
-        if par_tag.find('inline-formula'):
-            formula_flag = True
-
         if par_tag.find('display-formula'):
-            formula_flag = True
+            raise NotImplementedError('Display formula!')
 
         if par_tag.find('formula'):
-            formula_flag = True
+            raise NotImplementedError('Formula!')
 
         formula_dict = parse_formulas(par_tag, sp, replace_formula)
 

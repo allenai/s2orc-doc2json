@@ -76,6 +76,14 @@ def process_body_tag(body_tag, soup) -> Dict:
 
     # some articles (like PMC2844102) have no sections
     sec_tags = body_tag.find_all('sec', recursive=False)
+
+    # try looking in article tag
+    if not sec_tags:
+        try:
+            sec_tags = body_tag.article.find_all('sec', recursive=False)
+        except:
+            pass
+
     if sec_tags:
         all_par_blobs = []
         for sec_tag in sec_tags:
@@ -86,7 +94,6 @@ def process_body_tag(body_tag, soup) -> Dict:
             else:
                 par_blobs = recurse_parse_section(sec_tag=sec_tag)
                 all_par_blobs.extend(par_blobs)
-
     else:
         all_par_blobs = parse_all_paragraphs_in_section(body_tag)
 
@@ -324,4 +331,11 @@ def convert_jats_xml_to_s2orc_json(jats_file: str, log_dir: str):
 if __name__ == '__main__':
     jats_file = 'tests/jats/PMC5828200.nxml'
     paper = convert_jats_xml_to_s2orc_json(jats_file, 'logs')
-    pprint(paper.as_json())
+
+    jats_file = 'tests/jats/PMC6398430.nxml'
+    paper = convert_jats_xml_to_s2orc_json(jats_file, 'logs')
+
+    jats_file = 'tests/jats/PMC7417471.nxml'
+    paper = convert_jats_xml_to_s2orc_json(jats_file, 'logs')
+
+    print('done.')
