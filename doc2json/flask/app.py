@@ -5,10 +5,11 @@ import hashlib
 from flask import Flask, request, jsonify, flash, url_for, redirect, render_template, send_file
 from doc2json.grobid2json.process_pdf import process_pdf_stream
 from doc2json.tex2json.process_tex import process_tex_stream
+from doc2json.jats2json.process_jats import process_jats_stream
 
 app = Flask(__name__)
 
-ALLOWED_EXTENSIONS = {'pdf', 'gz'}
+ALLOWED_EXTENSIONS = {'pdf', 'gz', 'nxml'}
 
 
 @app.route('/')
@@ -36,6 +37,18 @@ def upload_file():
             # get results
             results = process_tex_stream(filename, zip_content)
             return jsonify(results)
+        # read nxml file (jats)
+        elif filename.endswith('nxml'):
+            xml_stream = uploaded_file.stream
+            xml_content = xml_stream.read()
+            # get results
+            results = process_jats_stream(filename, xml_content)
+            return jsonify(results)
+        # unknown
+        else:
+            return {
+                "Error": "Unknown file type!"
+            }
 
     return redirect(url_for('index'))
 

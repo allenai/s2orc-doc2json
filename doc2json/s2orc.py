@@ -26,7 +26,7 @@ REFERENCE_OUTPUT_KEYS = {
 }
 
 METADATA_KEYS = {
-    "title", "authors", "year"
+    "title", "authors", "year", "venue", "identifiers"
 }
 
 
@@ -285,17 +285,23 @@ class Metadata:
             self,
             title: str,
             authors: List[Dict],
-            year: Optional[str] = None
+            year: Optional[str] = None,
+            venue: Optional[str] = None,
+            identifiers: Optional[Dict] = {}
     ):
         self.title = title
         self.authors = [Author(**author) for author in authors]
         self.year = year
+        self.venue = venue
+        self.identifiers = identifiers
 
     def as_json(self):
         return {
             "title": self.title,
             "authors": [author.as_json() for author in self.authors],
-            "year": self.year
+            "year": self.year,
+            "venue": self.venue,
+            "identifiers": self.identifiers
         }
 
 
