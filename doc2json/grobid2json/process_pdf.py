@@ -8,6 +8,10 @@ from typing import Dict
 from doc2json.grobid2json.grobid.grobid_client import GrobidClient
 from doc2json.grobid2json.tei_to_json import convert_tei_xml_file_to_s2orc_json, convert_tei_xml_soup_to_s2orc_json
 
+BASE_TEMP_DIR = 'temp'
+BASE_OUTPUT_DIR = 'output'
+BASE_LOG_DIR = 'log'
+
 
 def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
     """
@@ -30,7 +34,11 @@ def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
     return paper.release_json('pdf')
 
 
-def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:
+def process_pdf_file(
+        input_file: str,
+        temp_dir: str = BASE_TEMP_DIR,
+        output_dir: str = BASE_OUTPUT_DIR
+) -> str:
     """
     Process a PDF file and get JSON representation
     :param input_file:
@@ -69,8 +77,8 @@ def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run S2ORC PDF2JSON")
     parser.add_argument("-i", "--input", default=None, help="path to the input PDF file")
-    parser.add_argument("-t", "--temp", default='temp/', help="path to the temp dir for putting tei xml files")
-    parser.add_argument("-o", "--output", default='output/', help="path to the output dir for putting json files")
+    parser.add_argument("-t", "--temp", default=BASE_TEMP_DIR, help="path to the temp dir for putting tei xml files")
+    parser.add_argument("-o", "--output", default=BASE_OUTPUT_DIR, help="path to the output dir for putting json files")
     parser.add_argument("-k", "--keep", action='store_true')
 
     args = parser.parse_args()
