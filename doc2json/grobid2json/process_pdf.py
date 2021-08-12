@@ -46,6 +46,9 @@ def process_pdf_file(
     :param output_dir:
     :return:
     """
+    os.makedirs(temp_dir, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
+
     # get paper id as the name of the file
     paper_id = '.'.join(input_file.split('/')[-1].split('.')[:-1])
     tei_file = os.path.join(temp_dir, f'{paper_id}.tei.xml')
