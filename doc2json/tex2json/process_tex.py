@@ -16,13 +16,15 @@ BASE_LOG_DIR = 'log'
 def process_tex_stream(
         fname: str,
         stream: bytes,
-        temp_dir: str=BASE_TEMP_DIR
+        temp_dir: str=BASE_TEMP_DIR,
+        keep_flag: bool=False
 ):
     """
     Process a gz file stream
     :param fname:
     :param stream:
     :param temp_dir:
+    :param keep_flag:
     :return:
     """
     temp_input_dir = os.path.join(temp_dir, 'input')
@@ -34,7 +36,7 @@ def process_tex_stream(
     with open(temp_input_file, 'wb') as outf:
         outf.write(stream)
 
-    output_file = process_tex_file(temp_input_file)
+    output_file = process_tex_file(temp_input_file, keep_flag=keep_flag)
 
     if os.path.exists(output_file):
         with open(output_file, 'r') as f:
