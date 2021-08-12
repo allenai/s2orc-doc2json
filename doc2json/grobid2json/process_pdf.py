@@ -27,7 +27,7 @@ def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
     # get paper
     paper = convert_tei_xml_soup_to_s2orc_json(soup, input_file, sha)
 
-    return paper.as_json()
+    return paper.release_json('pdf')
 
 
 def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:
