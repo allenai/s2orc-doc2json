@@ -950,6 +950,7 @@ def get_table_map_from_text(sp: BeautifulSoup, keep_table_contents=True) -> Dict
                         "num": flt.get('id-text', None),
                         "text": None,   # placeholder
                         "content": content,
+                        "html": html,
                         "ref_id": ref_id
                     }
                     for row in flt.find_all('row'):
