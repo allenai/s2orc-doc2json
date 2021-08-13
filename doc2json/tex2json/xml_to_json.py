@@ -863,6 +863,22 @@ def process_figures_from_tex(sp: BeautifulSoup, ref_map: Dict) -> Dict:
     return ref_map
 
 
+def convert_table_to_html(table_lst: List) -> str:
+    html_str = '<table>'
+    for i, row in enumerate(table_lst):
+        html_str += '<tr>'
+        bottom_border = row.get('bottom-border')
+        if i == 0 or bottom_border:
+            for cell in row['cells']:
+                html_str += f"<th>{cell['text']}</th>"
+        else:
+            for cell in row['cells']:
+                html_str += f"<td>{cell['text']}</td>"
+        html_str += '</tr>'
+    html_str += '</table>'
+    return html_str
+
+
 def extract_table(table: BeautifulSoup) -> List:
     """
     Extract table values from table entry
@@ -926,11 +942,14 @@ def get_table_map_from_text(sp: BeautifulSoup, keep_table_contents=True) -> Dict
                 if flt.get('id'):
                     # normalize table id
                     ref_id = flt.get('id').replace('uid', 'TABREF')
+                    # get table content
+                    content = extract_table(flt) if keep_table_contents else None
+                    html = convert_table_to_html(content) if keep_table_contents else None
                     # form tabmap entry
                     table_map[ref_id] = {
                         "num": flt.get('id-text', None),
                         "text": None,   # placeholder
-                        "content": extract_table(flt) if keep_table_contents else None,
+                        "content": content,
                         "ref_id": ref_id
                     }
                     for row in flt.find_all('row'):
