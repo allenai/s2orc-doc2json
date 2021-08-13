@@ -36,7 +36,7 @@ def process_tex_stream(
     with open(temp_input_file, 'wb') as outf:
         outf.write(stream)
 
-    output_file = process_tex_file(temp_input_file, keep_flag=keep_flag)
+    output_file = process_tex_file(temp_input_file, temp_dir=temp_dir, keep_flag=keep_flag)
 
     if os.path.exists(output_file):
         with open(output_file, 'r') as f:
