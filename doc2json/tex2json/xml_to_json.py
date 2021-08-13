@@ -864,6 +864,8 @@ def process_figures_from_tex(sp: BeautifulSoup, ref_map: Dict) -> Dict:
 
 
 def convert_table_to_html(table_lst: List) -> str:
+    if not table_lst:
+        return ''
     html_str = '<table>'
     for i, row in enumerate(table_lst):
         html_str += '<tr>'
@@ -968,11 +970,15 @@ def get_table_map_from_text(sp: BeautifulSoup, keep_table_contents=True) -> Dict
             if tab.name and tab.get('id'):
                 # normalize table id
                 ref_id = tab.get('id').replace('uid', 'TABREF')
+                # get table content
+                content = extract_table(tab) if keep_table_contents else None
+                html = convert_table_to_html(content) if keep_table_contents else None
                 # form tabmap entry
                 table_map[ref_id] = {
                     "num": tab.get('id-text', None),
                     "text": None,   # placeholder
-                    "content": extract_table(tab) if keep_table_contents else None,
+                    "content": content,
+                    "html": html,
                     "ref_id": ref_id
                 }
                 for row in tab.find_all('row'):
