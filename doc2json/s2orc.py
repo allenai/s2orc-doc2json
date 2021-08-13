@@ -46,7 +46,8 @@ class ReferenceEntry:
         "text": "Diversity indices of...",
         "latex": null,
         "type": "table",
-        "content": ""
+        "content": "",
+        "html": ""
       }
     }
     """
@@ -58,6 +59,7 @@ class ReferenceEntry:
             latex: Optional[str] = None,
             mathml: Optional[str] = None,
             content: Optional[str] = None,
+            html: Optional[str] = None,
             uris: Optional[List[str]] = None,
             num: Optional[str] = None,
             parent: Optional[str] = None
@@ -68,6 +70,7 @@ class ReferenceEntry:
         self.latex = latex
         self.mathml = mathml
         self.content = content
+        self.html = html
         self.uris = uris
         self.num = num
         self.parent = parent
@@ -85,6 +88,7 @@ class ReferenceEntry:
                 "latex": self.latex,
                 "mathml": self.mathml,
                 "content": self.content,
+                "html": self.html,
                 "uris": self.uris,
                 "num": self.num,
                 "parent": self.parent
