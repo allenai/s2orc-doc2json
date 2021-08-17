@@ -3,7 +3,7 @@ import json
 import argparse
 import time
 from bs4 import BeautifulSoup
-from typing import Dict
+from typing import Optional, Dict
 
 from doc2json.grobid2json.grobid.grobid_client import GrobidClient
 from doc2json.grobid2json.tei_to_json import convert_tei_xml_file_to_s2orc_json, convert_tei_xml_soup_to_s2orc_json
@@ -13,7 +13,7 @@ BASE_OUTPUT_DIR = 'output'
 BASE_LOG_DIR = 'log'
 
 
-def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
+def process_pdf_stream(input_file: str, sha: str, input_stream: bytes, grobid_config: Optional[Dict] = None) -> Dict:
     """
     Process PDF stream
     :param input_file:
@@ -22,7 +22,7 @@ def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
     :return:
     """
     # process PDF through Grobid -> TEI.XML
-    client = GrobidClient()
+    client = GrobidClient(grobid_config)
     tei_text = client.process_pdf_stream(input_file, input_stream, 'temp', "processFulltextDocument")
 
     # make soup
@@ -37,7 +37,8 @@ def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
 def process_pdf_file(
         input_file: str,
         temp_dir: str = BASE_TEMP_DIR,
-        output_dir: str = BASE_OUTPUT_DIR
+        output_dir: str = BASE_OUTPUT_DIR,
+        grobid_config: Optional[Dict] = None
 ) -> str:
     """
     Process a PDF file and get JSON representation
@@ -61,7 +62,7 @@ def process_pdf_file(
         print(f'{output_file} already exists!')
 
     # process PDF through Grobid -> TEI.XML
-    client = GrobidClient()
+    client = GrobidClient(grobid_config)
     # TODO: compute PDF hash
     # TODO: add grobid version number to output
     client.process_pdf(input_file, temp_dir, "processFulltextDocument")
