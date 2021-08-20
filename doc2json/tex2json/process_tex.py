@@ -2,7 +2,7 @@ import os
 import json
 import argparse
 import time
-from typing import Optional
+from typing import Optional, Dict
 
 from doc2json.tex2json.tex_to_xml import convert_latex_to_s2orc_json
 from doc2json.tex2json.xml_to_json import convert_latex_xml_to_s2orc_json
