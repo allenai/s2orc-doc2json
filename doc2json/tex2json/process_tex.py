@@ -17,7 +17,8 @@ def process_tex_stream(
         fname: str,
         stream: bytes,
         temp_dir: str=BASE_TEMP_DIR,
-        keep_flag: bool=False
+        keep_flag: bool=False,
+        grobid_config: Optional[Dict] = None
 ):
     """
     Process a gz file stream
@@ -25,6 +26,7 @@ def process_tex_stream(
     :param stream:
     :param temp_dir:
     :param keep_flag:
+    :param grobid_config:
     :return:
     """
     temp_input_dir = os.path.join(temp_dir, 'input')
@@ -36,7 +38,9 @@ def process_tex_stream(
     with open(temp_input_file, 'wb') as outf:
         outf.write(stream)
 
-    output_file = process_tex_file(temp_input_file, temp_dir=temp_dir, keep_flag=keep_flag)
+    output_file = process_tex_file(
+        temp_input_file, temp_dir=temp_dir, keep_flag=keep_flag, grobid_config=grobid_config
+    )
 
     if os.path.exists(output_file):
         with open(output_file, 'r') as f:
@@ -52,6 +56,7 @@ def process_tex_file(
         output_dir: str=BASE_OUTPUT_DIR,
         log_dir: str=BASE_LOG_DIR,
         keep_flag: bool=False,
+        grobid_config: Optional[Dict]=None
 ) -> Optional[str]:
     """
     Process files in a TEX zip and get JSON representation
@@ -60,6 +65,7 @@ def process_tex_file(
     :param output_dir:
     :param log_dir:
     :param keep_flag:
+    :param grobid_config:
     :return:
     """
     # create directories
@@ -84,7 +90,7 @@ def process_tex_file(
         return None
 
     # convert to S2ORC
-    paper = convert_latex_xml_to_s2orc_json(xml_file, log_dir)
+    paper = convert_latex_xml_to_s2orc_json(xml_file, log_dir, grobid_config=grobid_config)
 
     # write to file
     with open(output_file, 'w') as outf:
