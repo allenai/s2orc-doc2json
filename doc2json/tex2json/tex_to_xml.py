@@ -13,10 +13,16 @@ Process all the files in a LaTeX zip file to extract paper content
 import os
 import gzip
 import tarfile
+import zipfile
 import shutil
 from typing import Optional
 
 from doc2json.utils.latex_util import normalize, latex_to_xml
+
+
+def _is_gzip_file(fpath):
+    with open(fpath, 'rb') as test_f:
+        return test_f.read(2) == b'\x1f\x8b'
 
 
 def extract_latex(zip_file: str, latex_dir: str, cleanup=True):
@@ -28,15 +34,20 @@ def extract_latex(zip_file: str, latex_dir: str, cleanup=True):
     :return:
     """
     assert os.path.exists(zip_file)
-    assert zip_file.endswith('.gz') or zip_file.endswith('.zip')
+    assert zip_file.endswith('.gz') or zip_file.endswith('.zip') or zip_file.endswith('.tar')
 
     # get name of zip file
     file_id = os.path.splitext(zip_file)[0].split('/')[-1]
 
-    if zip_file.endswith('.gz'):
+    # check if tar file -> untar
+    tar_dir = os.path.join(latex_dir, file_id)
+    os.makedirs(tar_dir, exist_ok=True)
+    if tarfile.is_tarfile(zip_file):
+        with tarfile.open(zip_file) as tar:
+            tar.extractall(tar_dir)
+    # check if gzip file -> un-gz and/or untar
+    elif _is_gzip_file(zip_file):
         tar_file = os.path.join(latex_dir, f'{file_id}.tar')
-        tar_dir = os.path.join(latex_dir, file_id)
-        os.makedirs(tar_dir, exist_ok=True)
         with gzip.open(zip_file, 'rb') as in_f, open(tar_file, 'wb') as out_f:
             s = in_f.read()
             out_f.write(s)
@@ -51,11 +62,18 @@ def extract_latex(zip_file: str, latex_dir: str, cleanup=True):
                 tex_file = os.path.join(latex_dir, file_id, f'{file_id}.tex')
                 os.makedirs(tar_dir, exist_ok=True)
                 os.rename(tar_file, tex_file)
+    # check if zip file -> unzip
+    elif zipfile.is_zipfile(zip_file):
+        with zipfile.ZipFile(zip_file, 'r') as in_f:
+            in_f.extractall(tar_dir)
+    else:
+        return None
 
     # clean up if needed
     if cleanup:
         os.remove(zip_file)
 
+    # returns directory
     if os.path.exists(tar_dir):
         return tar_dir
 
