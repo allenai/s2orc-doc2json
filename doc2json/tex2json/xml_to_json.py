@@ -863,6 +863,24 @@ def process_figures_from_tex(sp: BeautifulSoup, ref_map: Dict) -> Dict:
     return ref_map
 
 
+def convert_table_to_html(table_lst: List) -> str:
+    if not table_lst:
+        return ''
+    html_str = '<table>'
+    for i, row in enumerate(table_lst):
+        html_str += '<tr>'
+        bottom_border = row.get('bottom-border')
+        if i == 0 or bottom_border:
+            for cell in row['cells']:
+                html_str += f"<th>{cell['text']}</th>"
+        else:
+            for cell in row['cells']:
+                html_str += f"<td>{cell['text']}</td>"
+        html_str += '</tr>'
+    html_str += '</table>'
+    return html_str
+
+
 def extract_table(table: BeautifulSoup) -> List:
     """
     Extract table values from table entry
@@ -926,11 +944,15 @@ def get_table_map_from_text(sp: BeautifulSoup, keep_table_contents=True) -> Dict
                 if flt.get('id'):
                     # normalize table id
                     ref_id = flt.get('id').replace('uid', 'TABREF')
+                    # get table content
+                    content = extract_table(flt) if keep_table_contents else None
+                    html = convert_table_to_html(content) if keep_table_contents else None
                     # form tabmap entry
                     table_map[ref_id] = {
                         "num": flt.get('id-text', None),
                         "text": None,   # placeholder
-                        "content": extract_table(flt) if keep_table_contents else None,
+                        "content": content,
+                        "html": html,
                         "ref_id": ref_id
                     }
                     for row in flt.find_all('row'):
@@ -948,11 +970,15 @@ def get_table_map_from_text(sp: BeautifulSoup, keep_table_contents=True) -> Dict
             if tab.name and tab.get('id'):
                 # normalize table id
                 ref_id = tab.get('id').replace('uid', 'TABREF')
+                # get table content
+                content = extract_table(tab) if keep_table_contents else None
+                html = convert_table_to_html(content) if keep_table_contents else None
                 # form tabmap entry
                 table_map[ref_id] = {
                     "num": tab.get('id-text', None),
                     "text": None,   # placeholder
-                    "content": extract_table(tab) if keep_table_contents else None,
+                    "content": content,
+                    "html": html,
                     "ref_id": ref_id
                 }
                 for row in tab.find_all('row'):
@@ -1240,17 +1266,20 @@ def process_body_text_from_tex(sp: BeautifulSoup, bib_map: Dict, ref_map: Dict) 
     return [para.__dict__ for para in body_text]
 
 
-def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_file: str) -> Paper:
+def convert_xml_to_s2orc(
+        sp: BeautifulSoup, file_id: str, year_str: str, log_file: str, grobid_config: Optional[Dict]=None
+) -> Paper:
     """
     Convert a bunch of xml to gorc format
     :param sp:
     :param file_id:
     :param year_str:
     :param log_file:
+    :param grobid_config:
     :return:
     """
     # create grobid client
-    client = GrobidClient()
+    client = GrobidClient(grobid_config)
 
     # TODO: not sure why but have to run twice
     decompose_tags_before_title(sp)
@@ -1328,10 +1357,11 @@ def convert_xml_to_s2orc(sp: BeautifulSoup, file_id: str, year_str: str, log_fil
     )
 
 
-def convert_latex_xml_to_s2orc_json(xml_fpath: str, log_dir: str) -> Paper:
+def convert_latex_xml_to_s2orc_json(xml_fpath: str, log_dir: str, grobid_config: Optional[Dict]=None) -> Paper:
     """
     :param xml_fpath:
     :param log_dir:
+    :param grobid_config:
     :return:
     """
     assert os.path.exists(xml_fpath)
@@ -1358,7 +1388,7 @@ def convert_latex_xml_to_s2orc_json(xml_fpath: str, log_dir: str) -> Paper:
         try:
             xml = f.read()
             soup = BeautifulSoup(xml, "lxml")
-            paper = convert_xml_to_s2orc(soup, file_id, year, log_file)
+            paper = convert_xml_to_s2orc(soup, file_id, year, log_file, grobid_config=grobid_config)
             return paper
         except UnicodeDecodeError:
             with open(log_file, 'a+') as log_f:

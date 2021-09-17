@@ -3,13 +3,17 @@ import json
 import argparse
 import time
 from bs4 import BeautifulSoup
-from typing import Dict
+from typing import Optional, Dict
 
 from doc2json.grobid2json.grobid.grobid_client import GrobidClient
 from doc2json.grobid2json.tei_to_json import convert_tei_xml_file_to_s2orc_json, convert_tei_xml_soup_to_s2orc_json
 
+BASE_TEMP_DIR = 'temp'
+BASE_OUTPUT_DIR = 'output'
+BASE_LOG_DIR = 'log'
 
-def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
+
+def process_pdf_stream(input_file: str, sha: str, input_stream: bytes, grobid_config: Optional[Dict] = None) -> Dict:
     """
     Process PDF stream
     :param input_file:
@@ -18,7 +22,7 @@ def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
     :return:
     """
     # process PDF through Grobid -> TEI.XML
-    client = GrobidClient()
+    client = GrobidClient(grobid_config)
     tei_text = client.process_pdf_stream(input_file, input_stream, 'temp', "processFulltextDocument")
 
     # make soup
@@ -27,10 +31,15 @@ def process_pdf_stream(input_file: str, sha: str, input_stream: bytes) -> Dict:
     # get paper
     paper = convert_tei_xml_soup_to_s2orc_json(soup, input_file, sha)
 
-    return paper.as_json()
+    return paper.release_json('pdf')
 
 
-def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:
+def process_pdf_file(
+        input_file: str,
+        temp_dir: str = BASE_TEMP_DIR,
+        output_dir: str = BASE_OUTPUT_DIR,
+        grobid_config: Optional[Dict] = None
+) -> str:
     """
     Process a PDF file and get JSON representation
     :param input_file:
@@ -38,6 +47,9 @@ def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:
     :param output_dir:
     :return:
     """
+    os.makedirs(temp_dir, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
+
     # get paper id as the name of the file
     paper_id = '.'.join(input_file.split('/')[-1].split('.')[:-1])
     tei_file = os.path.join(temp_dir, f'{paper_id}.tei.xml')
@@ -47,10 +59,10 @@ def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:
     if not os.path.exists(input_file):
         raise FileNotFoundError(f"{input_file} doesn't exist")
     if os.path.exists(output_file):
-        raise Warning(f'{output_file} already exists!')
+        print(f'{output_file} already exists!')
 
     # process PDF through Grobid -> TEI.XML
-    client = GrobidClient()
+    client = GrobidClient(grobid_config)
     # TODO: compute PDF hash
     # TODO: add grobid version number to output
     client.process_pdf(input_file, temp_dir, "processFulltextDocument")
@@ -69,8 +81,8 @@ def process_pdf_file(input_file: str, temp_dir: str, output_dir: str) -> str:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run S2ORC PDF2JSON")
     parser.add_argument("-i", "--input", default=None, help="path to the input PDF file")
-    parser.add_argument("-t", "--temp", default='temp/', help="path to the temp dir for putting tei xml files")
-    parser.add_argument("-o", "--output", default='output/', help="path to the output dir for putting json files")
+    parser.add_argument("-t", "--temp", default=BASE_TEMP_DIR, help="path to the temp dir for putting tei xml files")
+    parser.add_argument("-o", "--output", default=BASE_OUTPUT_DIR, help="path to the output dir for putting json files")
     parser.add_argument("-k", "--keep", action='store_true')
 
     args = parser.parse_args()

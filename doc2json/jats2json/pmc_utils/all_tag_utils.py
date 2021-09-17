@@ -39,7 +39,7 @@ def recurse_parse_section(
         {
             'text': ...,
             ...,
-            'section': SUBSUBSECTION_NAME ::: SUBSECTION_NAME :: SECTION_NAME
+            'section': SUBSUBSECTION_NAME :: SUBSECTION_NAME :: SECTION_NAME
         }
     """
     subsections = sec_tag.find_all("sec", recursive=False)
@@ -57,7 +57,7 @@ def recurse_parse_section(
                 # PMC373254 - process blob['section'] to remove any span markers left in there
                 for t in ALL_TOKENS:
                     blob['section'] = blob['section'].replace(t, '')
-                blob["section"] = blob["section"] + " ::: " + sec_tag.find("title").text
+                blob["section"] = blob["section"] + " :: " + sec_tag.find("title").text
             outputs.extend(child_blobs)
         return outputs
 
