@@ -70,7 +70,7 @@ To process LaTeX, all files must be in a zip file, similar to the `*.gz` files y
 A few examples are available under `tests/latex/`. For example, you can try:
 
 ```console
-python doc2json/grobid2json/process_tex.py -i test/latex/1911.02782.gz -t temp_dir/ -o output_dir/
+python doc2json/tex2json/process_tex.py -i test/latex/1911.02782.gz -t temp_dir/ -o output_dir/
 ```
 
 Again, this will produce a JSON file in the specified `output_dir`.
