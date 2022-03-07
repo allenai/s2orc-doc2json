@@ -53,6 +53,16 @@ def upload_file():
 
     return redirect(url_for('index'))
 
+@app.route('/upload_url')
+def upload_url():
+    url = request.args.get('url')
+    filename = "unknown"
+    pdf_content = requests.get(url).content
+    # compute hash
+    pdf_sha = hashlib.sha1(pdf_content).hexdigest()
+    # get results
+    results = process_pdf_stream(filename, pdf_sha, pdf_content)
+    return jsonify(results)
 
 if __name__ == '__main__':
     app.run(port=8080, host='0.0.0.0')
