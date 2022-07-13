@@ -6,3 +6,4 @@ Flask==1.0.2
 lxml
 python-magic==0.4.18
 latex2mathml==2.16.2
+itsdangerous==2.0.1
