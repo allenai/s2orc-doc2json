@@ -36,6 +36,8 @@ You will need to have Java installed on your machine. Then, you can install your
 bash scripts/setup_grobid.sh
 ```
 
+Note: before running this script, make sure the paths match your installation path. Else it will fail to install.
+
 This will setup Grobid, currently hard-coded as version 0.6.1. Then run:
 
 ```console
@@ -60,20 +62,22 @@ This will generate a JSON file in the specified `output_dir`. If unspecified, th
 
 ## LaTeX Processing
 
-If you want to process LaTeX, you also need to install the following libraries:
+If you want to process LaTeX, in addition to installing Grobid, you also need to install the following libraries:
 
 - [latexpand](https://ctan.org/pkg/latexpand?lang=en) (`apt install texlive-extra-utils`)
 - [tralics](http://www-sop.inria.fr/marelle/tralics/) (`apt install tralics`)
 
 To process LaTeX, all files must be in a zip file, similar to the `*.gz` files you can download from arXiv. 
 
-A few examples are available under `tests/latex/`. For example, you can try:
+Like PDF, first start Grobid using the `run_grobid.sh` script. Then, try to process one of the test files available under `tests/latex/`. For example, you can try:
 
 ```console
 python doc2json/tex2json/process_tex.py -i test/latex/1911.02782.gz -t temp_dir/ -o output_dir/
 ```
 
 Again, this will produce a JSON file in the specified `output_dir`.
+
+Why do you need Grobid? We use the Grobid citation and author APIs to convert raw strings into structured forms.
 
 ## PMC JATS XML Processing
 
