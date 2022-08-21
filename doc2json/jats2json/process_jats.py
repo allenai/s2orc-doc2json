@@ -84,20 +84,18 @@ if __name__ == '__main__':
     parser.add_argument("-i", "--input", default=None, help="path to the input JATS XML file")
     parser.add_argument("-o", "--output", default='output', help="path to the output dir for putting json files")
     parser.add_argument("-l", "--log", default='log', help="path to the log dir")
-    parser.add_argument("-k", "--keep", default=False, help="keep temporary files")
 
     args = parser.parse_args()
 
     input_path = args.input
     output_path = args.output
     log_path = args.log
-    keep_temp = args.keep
 
     start_time = time.time()
 
     os.makedirs(output_path, exist_ok=True)
 
-    process_jats_file(input_path, output_path, log_path, keep_temp)
+    process_jats_file(input_path, output_path, log_path)
 
     runtime = round(time.time() - start_time, 3)
     print("runtime: %s seconds " % (runtime))
