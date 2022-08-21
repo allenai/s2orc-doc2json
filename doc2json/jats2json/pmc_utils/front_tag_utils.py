@@ -39,6 +39,11 @@ def parse_journal_id_tag(front_tag) -> str:
     for tag in front_tag.find_all('journal-id'):
         c[tag.text] += 1
         tag.decompose()
+
+    # if the counter is empty, the 'journal-id' tag could not be found.
+    if not c:
+        return ""
+
     journal_id, n = c.most_common(1)[0]
     return journal_id
 
