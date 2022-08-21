@@ -86,7 +86,8 @@ def parse_pubmed_id_tag(front_tag) -> Optional[str]:
 
 
 def parse_pmc_id_tag(front_tag) -> str:
-    return f"PMC{front_tag.find('article-id', {'pub-id-type': 'pmc'}).extract().text}"
+    pmc_tag = front_tag.find('article-id', {'pub-id-type': 'pmc'})
+    return f"PMC{pmc_tag.extract().text}" if pmc_tag else ""
 
 
 def parse_doi_tag(front_tag) -> Optional[str]:
