@@ -72,7 +72,8 @@ def parse_journal_name_tag(front_tag) -> str:
     """
     if len(front_tag.find_all('journal-title')) > 1:
         raise Exception('Multiple journal titles?!')
-    return front_tag.find('journal-title').extract().text
+    journal_title_tag = front_tag.find('journal-title')
+    return journal_title_tag.extract().text if journal_title_tag else ""
 
 
 def parse_pubmed_id_tag(front_tag) -> Optional[str]:
