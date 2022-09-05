@@ -113,7 +113,10 @@ def parse_title_tag(front_tag) -> str:
 
     Want to restrict to `title-group` because sometimes title shows up in <notes> under self-citation
     """
-    title_group = front_tag.find('title-group').extract()
+    search = front_tag.find('title-group')
+    if not search:
+        return ""
+    title_group = search.extract()
     if len(title_group.find_all('article-title')) > 1:
         raise Exception('Multiple article titles?!')
     return title_group.find('article-title').text
