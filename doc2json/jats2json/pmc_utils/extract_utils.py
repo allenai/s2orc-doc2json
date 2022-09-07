@@ -12,10 +12,11 @@ def extract_fig_blobs(body_tag) -> Dict:
     for fig_tag in body_tag.find_all('fig'):
         fig = fig_tag.extract()
         label = fig.find('label')
-        fig_blobs[fig['id']] = {
-            'label': label and label.text,
-            'caption': fig.find('caption')
-        }
+        if fig.has_attr('id'):
+            fig_blobs[fig['id']] = {
+                'label': label and label.text,
+                'caption': fig.find('caption'),
+            }
     _update_fig_blobs(fig_blobs)
     return fig_blobs
 

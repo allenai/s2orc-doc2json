@@ -39,6 +39,11 @@ def parse_journal_id_tag(front_tag) -> str:
     for tag in front_tag.find_all('journal-id'):
         c[tag.text] += 1
         tag.decompose()
+
+    # if the counter is empty, the 'journal-id' tag could not be found.
+    if not c:
+        return ""
+
     journal_id, n = c.most_common(1)[0]
     return journal_id
 
@@ -67,7 +72,8 @@ def parse_journal_name_tag(front_tag) -> str:
     """
     if len(front_tag.find_all('journal-title')) > 1:
         raise Exception('Multiple journal titles?!')
-    return front_tag.find('journal-title').extract().text
+    journal_title_tag = front_tag.find('journal-title')
+    return journal_title_tag.extract().text if journal_title_tag else ""
 
 
 def parse_pubmed_id_tag(front_tag) -> Optional[str]:
@@ -80,7 +86,8 @@ def parse_pubmed_id_tag(front_tag) -> Optional[str]:
 
 
 def parse_pmc_id_tag(front_tag) -> str:
-    return f"PMC{front_tag.find('article-id', {'pub-id-type': 'pmc'}).extract().text}"
+    pmc_tag = front_tag.find('article-id', {'pub-id-type': 'pmc'})
+    return f"PMC{pmc_tag.extract().text}" if pmc_tag else ""
 
 
 def parse_doi_tag(front_tag) -> Optional[str]:
@@ -106,7 +113,10 @@ def parse_title_tag(front_tag) -> str:
 
     Want to restrict to `title-group` because sometimes title shows up in <notes> under self-citation
     """
-    title_group = front_tag.find('title-group').extract()
+    search = front_tag.find('title-group')
+    if not search:
+        return ""
+    title_group = search.extract()
     if len(title_group.find_all('article-title')) > 1:
         raise Exception('Multiple article titles?!')
     return title_group.find('article-title').text
