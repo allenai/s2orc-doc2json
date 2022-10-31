@@ -44,7 +44,26 @@ def extract_latex(zip_file: str, latex_dir: str, cleanup=True):
     os.makedirs(tar_dir, exist_ok=True)
     if tarfile.is_tarfile(zip_file):
         with tarfile.open(zip_file) as tar:
-            tar.extractall(tar_dir)
+            def is_within_directory(directory, target):
+                
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+            
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+                
+                return prefix == abs_directory
+            
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+            
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+            
+                tar.extractall(path, members, numeric_owner=numeric_owner) 
+                
+            
+            safe_extract(tar, tar_dir)
     # check if gzip file -> un-gz and/or untar
     elif _is_gzip_file(zip_file):
         tar_file = os.path.join(latex_dir, f'{file_id}.tar')
@@ -55,7 +74,26 @@ def extract_latex(zip_file: str, latex_dir: str, cleanup=True):
             # check if tarfile
             if tarfile.is_tarfile(tar_file):
                 with tarfile.open(tar_file) as tar:
-                    tar.extractall(tar_dir)
+                    def is_within_directory(directory, target):
+                        
+                        abs_directory = os.path.abspath(directory)
+                        abs_target = os.path.abspath(target)
+                    
+                        prefix = os.path.commonprefix([abs_directory, abs_target])
+                        
+                        return prefix == abs_directory
+                    
+                    def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+                    
+                        for member in tar.getmembers():
+                            member_path = os.path.join(path, member.name)
+                            if not is_within_directory(path, member_path):
+                                raise Exception("Attempted Path Traversal in Tar File")
+                    
+                        tar.extractall(path, members, numeric_owner=numeric_owner) 
+                        
+                    
+                    safe_extract(tar, tar_dir)
                 os.remove(tar_file)
             # else, copy to tex file
             else:
