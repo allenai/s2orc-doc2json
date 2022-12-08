@@ -129,14 +129,20 @@ def extract_figures_and_tables_from_tei_xml(sp: BeautifulSoup) -> Dict[str, Dict
                         "text": fig.figDesc.text.strip() if fig.figDesc else fig.head.text.strip() if fig.head else "",
                         "latex": None,
                         "type": "table",
-                        "content": table_to_html(fig.table)
+                        "content": table_to_html(fig.table),
+                        "fig_num": fig.get('xml:id')
                     }
                 else:
+                    if True in [char.isdigit() for char in fig.findNext('head').findNext('label')]:
+                        fig_num = fig.findNext('head').findNext('label').contents[0]
+                    else:
+                        fig_num = None
                     ref_map[normalize_grobid_id(fig.get('xml:id'))] = {
                         "text": fig.figDesc.text.strip() if fig.figDesc else "",
                         "latex": None,
                         "type": "figure",
-                        "content": ""
+                        "content": "",
+                        "fig_num": fig_num
                     }
         except AttributeError:
             continue

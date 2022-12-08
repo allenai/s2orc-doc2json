@@ -18,7 +18,7 @@ SKIP_KEYS = {
 }
 
 REFERENCE_OUTPUT_KEYS = {
-    'figure': {'text', 'type_str', 'uris', 'num'},
+    'figure': {'text', 'type_str', 'uris', 'num', 'fig_num'},
     'table': {'text', 'type_str', 'content', 'num', 'html'},
     'footnote': {'text', 'type_str', 'num'},
     'section': {'text', 'type_str', 'num', 'parent'},
@@ -62,7 +62,8 @@ class ReferenceEntry:
             html: Optional[str] = None,
             uris: Optional[List[str]] = None,
             num: Optional[str] = None,
-            parent: Optional[str] = None
+            parent: Optional[str] = None,
+            fig_num: Optional[str] = None
     ):
         self.ref_id = ref_id
         self.text = text
@@ -74,6 +75,7 @@ class ReferenceEntry:
         self.uris = uris
         self.num = num
         self.parent = parent
+        self.fig_num = fig_num
 
     def as_json(self):
         keep_keys = REFERENCE_OUTPUT_KEYS.get(self.type_str, None)
@@ -91,7 +93,8 @@ class ReferenceEntry:
                 "html": self.html,
                 "uris": self.uris,
                 "num": self.num,
-                "parent": self.parent
+                "parent": self.parent,
+                "fig_num": self.fig_num
             }
 
 
