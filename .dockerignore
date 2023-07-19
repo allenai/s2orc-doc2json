@@ -6,3 +6,6 @@ tests/temp/*
 .DS_Store
 output_dir
 temp_dir
+
+.git
+README.md

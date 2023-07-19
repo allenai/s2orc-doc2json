@@ -19,4 +19,4 @@ cp $PDF2JSON_HOME/pdf2json/grobid/config.yaml $HOME/grobid-0.6.1/grobid-service/
 cp $PDF2JSON_HOME/pdf2json/grobid/grobid.properties $HOME/grobid-0.6.1/grobid-home/config/grobid.properties
 
 ## Start Grobid
-./gradlew run
+# ./gradlew run > $PDF2JSON_HOME/grobid.log 2>&1 &
