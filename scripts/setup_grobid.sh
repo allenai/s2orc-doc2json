@@ -5,9 +5,9 @@ export PDF2JSON_HOME=$HOME/s2orc-doc2json
 
 # Download Grobid
 cd $HOME
-# wget https://github.com/kermitt2/grobid/archive/0.7.3.zip
-# unzip 0.7.3.zip
-# rm 0.7.3.zip
+wget https://github.com/kermitt2/grobid/archive/0.7.3.zip
+unzip 0.7.3.zip
+rm 0.7.3.zip
 cd $HOME/grobid-0.7.3
 ./gradlew clean install
 
