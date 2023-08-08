@@ -30,7 +30,7 @@ The current `grobid2json` tool uses Grobid to first process each PDF into XML, t
 
 ### Install Grobid
 
-You will need to have Java installed on your machine. Then, you can install your own version of Grobid and get it running, or you can run the following script:
+You will need to have Java (compatible with Java 11) installed on your machine. Then, you can install your own version of Grobid and get it running, or you can run the following script:
 
 ```console
 bash scripts/setup_grobid.sh
@@ -38,7 +38,7 @@ bash scripts/setup_grobid.sh
 
 Note: before running this script, make sure the paths match your installation path. Else it will fail to install.
 
-This will setup Grobid, currently hard-coded as version 0.6.1. Then run:
+This will setup Grobid, currently hard-coded as version 0.7.3. Then run:
 
 ```console
 bash scripts/run_grobid.sh
