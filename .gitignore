@@ -4,5 +4,5 @@
 tests/output/*
 tests/temp/*
 .DS_Store
-output_dir
-temp_dir
+temp_dir/
+output_dir/
