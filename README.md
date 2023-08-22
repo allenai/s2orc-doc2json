@@ -117,6 +117,19 @@ Or alternatively, you can do things like:
 curl localhost:8080/ -F file=@tests/pdf/N18-3011.pdf
 ```
 
+## Docker
+
+You can quickly set up a development environment with Docker.
+
+```sh
+docker compose up -d
+
+docker attach s2orc-doc2json-dev
+# The environment is complete in this container and you can run the commands mentioned above, such as
+# python doc2json/grobid2json/process_pdf.py -i tests/pdf/N18-3011.pdf -t temp_dir/ -o output_dir/
+
+```
+
 ## Citation
 
 If you use this utility in your research, please cite:

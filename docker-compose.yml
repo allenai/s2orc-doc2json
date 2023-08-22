@@ -1,0 +1,15 @@
+version: '3'
+services:
+  grobid:
+    build:
+      dockerfile: doc2json/grobid2json/grobid/Dockerfile
+    container_name: grobid
+    network_mode: host
+  dev:
+    build: .
+    container_name: s2orc-doc2json-dev
+    network_mode: host
+    volumes:
+      - .:/workspaces/s2orc-pdf2json
+    stdin_open: true
+    tty: true 
