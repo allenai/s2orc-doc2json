@@ -29,8 +29,10 @@ python setup.py develop
 The current `grobid2json` tool uses Grobid to first process each PDF into XML, then extracts paper components from the XML.
 
 ### Install Grobid
+> Build from the [latest Grobid repo](https://github.com/kermitt2/grobid) or use [Grobid docker](https://grobid.readthedocs.io/en/latest/Grobid-docker/) if you have problems on installing Gorbid.
 
-You will need to have Java (compatible with Java 11) installed on your machine. Then, you can install your own version of Grobid and get it running, or you can run the following script:
+
+You will need to have Java (tested with Java 11) installed on your machine. Then, you can install your own version of Grobid and get it running, or you can run the following script:
 
 ```console
 bash scripts/setup_grobid.sh
