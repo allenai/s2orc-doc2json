@@ -336,7 +336,7 @@ def get_publication_datetime_from_grobid_xml(raw_xml: BeautifulSoup) -> str:
     :param raw_xml:
     :return:
     """
-    if raw_xml.publicationStmt:
+    if raw_xml.publicationstmt:
         for child in raw_xml.publicationstmt:
             if child.name == "date" \
                     and child.has_attr("type") \
